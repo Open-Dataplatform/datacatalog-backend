@@ -1,7 +1,7 @@
 ﻿using System.Linq;
 using AutoFixture;
+using DataCatalog.Api.UnitTests.Extensions;
 using DataCatalog.Api.UnitTests.SpecimenBuilders;
-using Energinet.DataPlatform.Shared.Testing.AutoFixture;
 
 namespace DataCatalog.Api.UnitTests.AutoMoqAttribute
 {
