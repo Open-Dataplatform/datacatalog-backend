@@ -24,6 +24,7 @@ using DataCatalog.Api.MessageBus;
 using DataCatalog.Api.Services.AD;
 using DataCatalog.Api.Services.Storage;
 using Energinet.DataPlatform.Shared.Environments;
+using Energinet.DataPlatform.Shared.Logging;
 using Microsoft.Graph;
 using Microsoft.Graph.Auth;
 using Microsoft.Identity.Client;
@@ -39,10 +40,13 @@ namespace DataCatalog.Api
     {
         private const string DataCatalogAllowSpecificOrigins = "_dataCatalogAllowSpecificOrigins";
         private const string DataCatalogAllowAll = "_dataCatalogAllowAll";
+        
+        private readonly Serilog.Core.Logger _logger;
 
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
+            _logger = DataPlatformLogging.CreateLogger(WebAppEnvironment.GetEnvironment().Name, Configuration);
         }
 
         public IConfiguration Configuration { get; }
@@ -106,10 +110,16 @@ namespace DataCatalog.Api
                 config.ApiVersionReader = new HeaderApiVersionReader("x-api-version");
             });
 
-            var dataCatalogUrl = Configuration.GetValidatedStringValue("AllowedCorsUrls:dataCatalogUrl");
-            var dataCatalogProdUrl = Configuration.GetValidatedStringValue("AllowedCorsUrls:dataCatalogProdUrl");
-            var ingressApiUrl = Configuration.GetValidatedStringValue("AllowedCorsUrls:ingressApiUrl");
-            var egressApiUrl = Configuration.GetValidatedStringValue("AllowedCorsUrls:egressApiUrl");
+            var dataCatalogUrl = Configuration.GetValidatedStringValue("AllowedCorsUrls:DataCatalogUrl");
+            var dataCatalogProdUrl = Configuration.GetValidatedStringValue("AllowedCorsUrls:DataCatalogProdUrl");
+            var ingressApiUrl = Configuration.GetValidatedStringValue("AllowedCorsUrls:IngressApiUrl");
+            var egressApiUrl = Configuration.GetValidatedStringValue("AllowedCorsUrls:EgressApiUrl");
+            _logger.Information("Logging configuration - AllowedCorsUrls start");
+            _logger.Information("AllowedCorsUrls:DataCatalogUrl = {DataCatalogUrl}", dataCatalogUrl);
+            _logger.Information("AllowedCorsUrls:DataCatalogProdUrl = {DataCatalogProdUrl}", dataCatalogProdUrl);
+            _logger.Information("AllowedCorsUrls:IngressApiUrl = {IngressApiUrl}", ingressApiUrl);
+            _logger.Information("AllowedCorsUrls:EgressApiUrl = {EgressApiUrl}", egressApiUrl);
+            _logger.Information("Logging configuration - AllowedCorsUrls end");
 
             //CORS
             services.AddCors(options =>
@@ -120,33 +130,37 @@ namespace DataCatalog.Api
                 options.AddPolicy(DataCatalogAllowSpecificOrigins,
                     builder => builder.WithOrigins(dataCatalogUrl, dataCatalogProdUrl, ingressApiUrl, egressApiUrl).AllowAnyHeader().AllowAnyMethod());
             });
-
+            
             // Azure KeyVault
             var dataCatalogKeyVaultUrl = Configuration.GetValidatedStringValue("DataCatalogKeyVaultUrl");
             var groupManagementClientSecretName = Configuration.GetValidatedStringValue("GroupManagementClientSecretName");
+            _logger.Information("DataCatalogKeyVaultUrl = {DataCatalogKeyVaultUrl}", dataCatalogKeyVaultUrl);
+            _logger.Information("GroupManagementClientSecretName = {GroupManagementClientSecretName}", groupManagementClientSecretName);
             var client = new SecretClient(new Uri(dataCatalogKeyVaultUrl), new DefaultAzureCredential());
             var groupManagementClientSecret = client.GetSecret(groupManagementClientSecretName);
 
-            // // Graph client registration
+            // Graph client registration
             var groupManagementClientId = Configuration.GetValidatedStringValue("GroupManagementClientId");
+            _logger.Information("GroupManagementClientId = {GroupManagementClientId}", groupManagementClientId);
             var confidentialGroupClient = ConfidentialClientApplicationBuilder
                 .Create(groupManagementClientId)
                 .WithClientSecret(groupManagementClientSecret.Value.Value)
                 .WithTenantId(azureAdConfiguration.TenantId)
                 .Build();
-
+            
             services.AddSingleton<IGraphServiceClient>(
                 new GraphServiceClient(new ClientCredentialProvider(confidentialGroupClient)));
-
+            
             services.AddTransient<IActiveDirectoryGroupService, AzureActiveDirectoryGroupService>();
 
-            var dataCatalogBlobStorageUrl = Configuration.GetValidatedStringValue("dataCatalogBlobStorageUrl");
+            var dataCatalogBlobStorageUrl = Configuration.GetValidatedStringValue("DataCatalogBlobStorageUrl");
+            _logger.Information("DataCatalogBlobStorageUrl = {DataCatalogBlobStorageUrl}", dataCatalogBlobStorageUrl);
             var serviceEndpoint = new Uri(dataCatalogBlobStorageUrl);
             services.AddSingleton(x => new DataLakeServiceClient(serviceEndpoint, new DefaultAzureCredential()));
             services.AddTransient<IStorageService, AzureStorageService>();
         }
 
-        private static void ValidateAzureAdConfiguration(AzureAd azureAdConfiguration)
+        private void ValidateAzureAdConfiguration(AzureAd azureAdConfiguration)
         {
             if (azureAdConfiguration == null)
             {
@@ -164,6 +178,14 @@ namespace DataCatalog.Api
             azureAdConfiguration.Roles.Admin.ValidateConfiguration("AzureAd:Roles:Admin");
             azureAdConfiguration.Roles.User.ValidateConfiguration("AzureAd:Roles:User");
             azureAdConfiguration.Roles.DataSteward.ValidateConfiguration("AzureAd:Roles:DataSteward");
+            _logger.Information("Logging Configuration - start AzureAd");
+            _logger.Information("AzureAd:Audience = {Audience}", azureAdConfiguration.Audience);
+            _logger.Information("AzureAd:Authority = {Authority}", azureAdConfiguration.Authority);
+            _logger.Information("AzureAd:TenantId = {TenantId}", azureAdConfiguration.TenantId);
+            _logger.Information("AzureAd:Roles:Admin = {AdminRole}", azureAdConfiguration.Roles.Admin);
+            _logger.Information("AzureAd:Roles:User = {UserRole}", azureAdConfiguration.Roles.User);
+            _logger.Information("AzureAd:Roles:DataSteward = {DataStewardRole}", azureAdConfiguration.Roles.DataSteward);
+            _logger.Information("Logging Configuration - end AzureAd");
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -250,7 +272,7 @@ namespace DataCatalog.Api
             // Db Context
             var conn = Configuration.GetConnectionString("DataCatalog");
             conn.ValidateConfiguration("ConnectionStrings:DataCatalog");
-            conn = string.Format(conn, WebAppEnvironment.GetEnvironment().Name.ToLower(), Configuration.GetValidatedStringValue("sqlpassword"));
+            conn = string.Format(conn, WebAppEnvironment.GetEnvironment().Name.ToLower(), Configuration.GetValidatedStringValue("SqlPassword"));
             services.AddDbContext<DataCatalogContext>(o => o.UseSqlServer(conn));
 
             //HttpContext

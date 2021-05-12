@@ -28,7 +28,7 @@ namespace DataCatalog.Api
 
             try
             {
-                exceptionLogger.Information("Configuring the DataCatalog Api");
+                exceptionLogger.Information("Configuring the DataCatalog Api using the environment {Environment}", environment.Name);
                 var host = Host.CreateDefaultBuilder(args)
                     .UseDataPlatformLogging(environment.Name)
                     .ConfigureAppConfiguration((context, config) =>
