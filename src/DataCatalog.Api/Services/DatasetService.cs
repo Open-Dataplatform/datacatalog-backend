@@ -197,7 +197,10 @@ namespace DataCatalog.Api.Services
         {
             var dataset = await _datasetRepository.FindByIdAsync(id);
 
-            if (dataset is not {RefinementLevel: RefinementLevel.Raw}) return null;
+            if (dataset is not {RefinementLevel: RefinementLevel.Raw})
+            {
+                return null;
+            }
             dataset.Id = Guid.NewGuid();
             dataset.CreatedDate = DateTime.Now;
             dataset.ModifiedDate = DateTime.Now;
