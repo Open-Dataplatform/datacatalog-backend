@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using AutoMapper;
 using DataCatalog.Api.Data.Model;
 using DataCatalog.Api.Repositories;
-using Energinet.DataPlatform.Shared.Environments;
+using DataCatalog.Api.Utils;
 
 namespace DataCatalog.Api.Services
 {
@@ -14,14 +14,14 @@ namespace DataCatalog.Api.Services
         private readonly IDataSourceRepository _dataSourceRepository;
         private readonly IUnitIOfWork _unitOfWork;
         private readonly IMapper _mapper;
-        private static string _environment;
+        private readonly string _environment;
 
-        public DataSourceService(IEnvironment environment, IDataSourceRepository dataSourceRepository, IMapper mapper, IUnitIOfWork unitIOfWork)
+        public DataSourceService(IDataSourceRepository dataSourceRepository, IMapper mapper, IUnitIOfWork unitIOfWork)
         {
             _dataSourceRepository = dataSourceRepository;
             _unitOfWork = unitIOfWork;
             _mapper = mapper;
-            _environment = environment.Name.ToLower();
+            _environment = EnvironmentUtil.GetCurrentEnvironment().ToLower();
         }
 
         public async Task<IEnumerable<Data.Domain.DataSource>> ListAsync()

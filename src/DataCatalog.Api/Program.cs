@@ -1,6 +1,6 @@
 using System;
 using DataCatalog.Api.Extensions;
-using Energinet.DataPlatform.Shared.Environments;
+using DataCatalog.Api.Utils;
 using Energinet.DataPlatform.Shared.Logging;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Azure.KeyVault;
@@ -13,24 +13,21 @@ namespace DataCatalog.Api
 {
     public class Program
     {
-        private static WebAppEnvironment environment;
-
         public static void Main(string[] args)
         {
-            // Use the GetEnvironment() method to access the current environment when IoC isn't available
-            environment = WebAppEnvironment.GetEnvironment();
+            var environmentName = EnvironmentUtil.GetCurrentEnvironment();
 
             var configuration = new ConfigurationBuilder()
-                .BuildPlatformConfiguration(environment.Name, args)
+                .BuildPlatformConfiguration(environmentName, args)
                 .Build();
             var exceptionLogger =
-                DataPlatformLogging.CreateLogger(environment.Name, configuration);
+                DataPlatformLogging.CreateLogger(environmentName, configuration);
 
             try
             {
-                exceptionLogger.Information("Configuring the DataCatalog Api using the environment {Environment}", environment.Name);
+                exceptionLogger.Information("Configuring the DataCatalog Api using the environment {Environment}", environmentName);
                 var host = Host.CreateDefaultBuilder(args)
-                    .UseDataPlatformLogging(environment.Name)
+                    .UseDataPlatformLogging(environmentName)
                     .ConfigureAppConfiguration((context, config) =>
                     {
                         if (!context.HostingEnvironment.IsDevelopment())

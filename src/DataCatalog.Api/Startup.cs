@@ -23,7 +23,7 @@ using DataCatalog.Api.Interfaces;
 using DataCatalog.Api.MessageBus;
 using DataCatalog.Api.Services.AD;
 using DataCatalog.Api.Services.Storage;
-using Energinet.DataPlatform.Shared.Environments;
+using DataCatalog.Api.Utils;
 using Energinet.DataPlatform.Shared.Logging;
 using Microsoft.Graph;
 using Microsoft.Graph.Auth;
@@ -42,22 +42,18 @@ namespace DataCatalog.Api
         private const string DataCatalogAllowAll = "_dataCatalogAllowAll";
         
         private readonly Serilog.Core.Logger _logger;
+        private IConfiguration Configuration { get; }
 
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
-            _logger = DataPlatformLogging.CreateLogger(WebAppEnvironment.GetEnvironment().Name, Configuration);
+            _logger = DataPlatformLogging.CreateLogger(EnvironmentUtil.GetCurrentEnvironment(), Configuration);
         }
-
-        public IConfiguration Configuration { get; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            // This will add WebAppEnvironment to the DI container as a IEnvironment you can take a dependency on        
-            services.AddWebAppEnvironment();
-
-            if (!WebAppEnvironment.GetEnvironment().IsProduction())
+            if (!EnvironmentUtil.IsProduction())
                 services.AddSwagger();
 
             AddServicesAndDbContext(services);
@@ -189,33 +185,46 @@ namespace DataCatalog.Api
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, DataCatalogContext db, IEnvironment environment)
+        public void Configure(IApplicationBuilder app, DataCatalogContext db)
         {
             db.Database.Migrate();
 
             //One-time update of OriginEnvironment
+            var originEnvironment = EnvironmentUtil.GetCurrentEnvironment().ToLower();
             var datasets = db.Datasets.Where(a => a.OriginEnvironment == null).ToArray();
-            foreach (var a in datasets) 
-                a.OriginEnvironment = WebAppEnvironment.GetEnvironment().Name.ToLower();
+            foreach (var a in datasets)
+            {
+                a.OriginEnvironment = originEnvironment;
+            }
+
             var dataContracts = db.DataContracts.Where(a => a.OriginEnvironment == null).ToArray();
-            foreach (var a in dataContracts) 
-                a.OriginEnvironment = WebAppEnvironment.GetEnvironment().Name.ToLower();
+            foreach (var a in dataContracts)
+            {
+                a.OriginEnvironment = originEnvironment;
+            }
+
             var categories = db.Categories.Where(a => a.OriginEnvironment == null).ToArray();
-            foreach (var a in categories) 
-                a.OriginEnvironment = WebAppEnvironment.GetEnvironment().Name.ToLower();
+            foreach (var a in categories)
+            { 
+                a.OriginEnvironment = originEnvironment;
+            } 
+            
             var dataSources = db.DataSources.Where(a => a.OriginEnvironment == null).ToArray();
-            foreach (var a in dataSources) 
-                a.OriginEnvironment = WebAppEnvironment.GetEnvironment().Name.ToLower();
+            foreach (var a in dataSources)
+            {
+                a.OriginEnvironment = originEnvironment;
+            }
+
             db.SaveChanges();
 
             // Use IEnvironment to check what environment the web app is running in
-            if (environment.IsDevelopment())
+            if (EnvironmentUtil.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
             }
 
             // Swagger setup from extensions
-            if (!environment.IsProduction()) 
+            if (!EnvironmentUtil.IsProduction()) 
                 app.UseCustomSwagger();
 
             // Exception handling and logging.
@@ -224,7 +233,7 @@ namespace DataCatalog.Api
             app.UseRouting();
 
             // CORS
-            if (environment.IsDevelopment())
+            if (EnvironmentUtil.IsDevelopment())
                 app.UseCors(DataCatalogAllowAll);
             else 
                 app.UseCors(DataCatalogAllowSpecificOrigins);
@@ -272,7 +281,7 @@ namespace DataCatalog.Api
             // Db Context
             var conn = Configuration.GetConnectionString("DataCatalog");
             conn.ValidateConfiguration("ConnectionStrings:DataCatalog");
-            conn = string.Format(conn, WebAppEnvironment.GetEnvironment().Name.ToLower(), Configuration.GetValidatedStringValue("SqlPassword"));
+            conn = string.Format(conn, EnvironmentUtil.GetCurrentEnvironment().ToLower(), Configuration.GetValidatedStringValue("SqlPassword"));
             services.AddDbContext<DataCatalogContext>(o => o.UseSqlServer(conn));
 
             //HttpContext

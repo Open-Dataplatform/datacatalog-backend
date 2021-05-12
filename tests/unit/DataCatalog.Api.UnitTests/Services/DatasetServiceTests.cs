@@ -1,22 +1,27 @@
-﻿using AutoFixture;
-using AutoFixture.AutoMoq;
-using AutoMapper;
-using DataCatalog.Api.Data;
-using DataCatalog.Api.Data.Model;
-using DataCatalog.Api.Repositories;
-using DataCatalog.Api.Services;
-using FluentAssertions;
-using Moq;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AutoFixture;
+using AutoFixture.AutoMoq;
+using AutoMapper;
+using DataCatalog.Api.Data;
+using DataCatalog.Api.Data.Domain;
 using DataCatalog.Api.Data.Dto;
 using DataCatalog.Api.Enums;
 using DataCatalog.Api.Exceptions;
 using DataCatalog.Api.MessageBus;
-using Energinet.DataPlatform.Shared.Environments;
+using DataCatalog.Api.Repositories;
+using DataCatalog.Api.Services;
+using FluentAssertions;
+using Moq;
 using Xunit;
+using Dataset = DataCatalog.Api.Data.Model.Dataset;
+using DatasetDuration = DataCatalog.Api.Data.Model.DatasetDuration;
+using Duration = DataCatalog.Api.Data.Model.Duration;
+using Hierarchy = DataCatalog.Api.Data.Model.Hierarchy;
+using Transformation = DataCatalog.Api.Data.Model.Transformation;
+using TransformationDataset = DataCatalog.Api.Data.Model.TransformationDataset;
 
 namespace DataCatalog.Api.UnitTests.Services
 {
@@ -30,10 +35,6 @@ namespace DataCatalog.Api.UnitTests.Services
             _fixture.Behaviors.OfType<ThrowingRecursionBehavior>().ToList()
                 .ForEach(b => _fixture.Behaviors.Remove(b));
             _fixture.Behaviors.Add(new OmitOnRecursionBehavior());
-
-            var environmentMock = new Mock<IEnvironment>();
-            environmentMock.Setup(x => x.Name).Returns("test");
-            _fixture.Inject(environmentMock.Object);
 
             // Setup automapper
             var config = new MapperConfiguration(cfg =>
@@ -239,7 +240,7 @@ namespace DataCatalog.Api.UnitTests.Services
             _fixture.Inject(transformationRepositoryMock.Object);
             _fixture.Freeze<ITransformationRepository>();
             _datasetCreateRequest.Location = null;
-            var messageBusSenderMock = new Mock<IMessageBusSender<Data.Domain.DatasetCreated>>();
+            var messageBusSenderMock = new Mock<IMessageBusSender<DatasetCreated>>();
             _fixture.Inject(messageBusSenderMock.Object);
             var datasetService = _fixture.Create<DatasetService>();
 
@@ -274,7 +275,7 @@ namespace DataCatalog.Api.UnitTests.Services
             dataset.SlaLink.Should().Be(_datasetCreateRequest.SlaLink);
             dataset.Status.Should().Be(_datasetCreateRequest.Status);
             dataset.Version.Should().Be(0);
-            messageBusSenderMock.Verify(mock => mock.PublishAsync(It.Is<Data.Domain.DatasetCreated>(dto =>
+            messageBusSenderMock.Verify(mock => mock.PublishAsync(It.Is<DatasetCreated>(dto =>
                 dto.DatasetName == _datasetCreateRequest.Name  &&
                 dto.Container == "RAW" &&
                 dto.Hierarchy == hierarchy.ParentHierarchy.Name + "/" + hierarchy.Name &&

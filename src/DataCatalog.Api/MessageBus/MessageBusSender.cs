@@ -3,18 +3,18 @@ using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
 using DataCatalog.Api.Data.Dto;
-using Energinet.DataPlatform.Shared.Environments;
+using DataCatalog.Api.Utils;
 using Microsoft.Azure.ServiceBus;
 
 namespace DataCatalog.Api.MessageBus
 {
     public class MessageBusSender<T> : IMessageBusSender<T> where T : MessageBusPublishMessage
     {
-        readonly ITopicClient _topicClient;
+        private readonly ITopicClient _topicClient;
 
-        public MessageBusSender(IEnvironment environment)
+        public MessageBusSender()
         {
-            var serviceBusNamespace = $"dpdomainevents-servicebus-{environment.Name.ToLower()}";
+            var serviceBusNamespace = $"dpdomainevents-servicebus-{EnvironmentUtil.GetCurrentEnvironment().ToLower()}";
             var serviceBusEndpoint = $"Endpoint=sb://{serviceBusNamespace}.servicebus.windows.net/;Authentication=Managed Identity;";
             _topicClient = new TopicClient(serviceBusEndpoint, typeof(T).Name, RetryPolicy.Default);
         }
