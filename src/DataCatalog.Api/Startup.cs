@@ -1,5 +1,4 @@
 using System;
-using AutoMapper;
 using DataCatalog.Api.Data;
 using DataCatalog.Api.Data.Common;
 using DataCatalog.Api.Extensions;
@@ -38,12 +37,8 @@ namespace DataCatalog.Api
 {
     public class Startup
     {
-        readonly string egressApiUrl = "https://dpegresswebapi-appservice-{0}.azurewebsites.net";
-        readonly string ingressApiUrl = "https://dpingresswebapi-appservice-{0}.azurewebsites.net";
-        readonly string dataCatalogUrl = "https://dpdatacatalogwebapp-appservice-{0}.azurewebsites.net";
-        readonly string dataCatalogProdUrl = "https://dataplatform.energinet.dk";
-        readonly string dataCatalogAllowSpecificOrigins = "_dataCatalogAllowSpecificOrigins";
-        readonly string dataCatalogAllowAll = "_dataCatalogAllowAll";
+        private const string DataCatalogAllowSpecificOrigins = "_dataCatalogAllowSpecificOrigins";
+        private const string DataCatalogAllowAll = "_dataCatalogAllowAll";
 
         public Startup(IConfiguration configuration)
         {
@@ -62,6 +57,11 @@ namespace DataCatalog.Api
                 services.AddSwagger();
 
             AddServicesAndDbContext(services);
+
+            var azureAdConfiguration = Configuration.GetSection("AzureAd").Get<AzureAd>();
+            ValidateAzureAdConfiguration(azureAdConfiguration);
+            // Groups and roles
+            services.AddSingleton(azureAdConfiguration);
 
             services.AddAuthentication(options =>
             {
@@ -89,7 +89,8 @@ namespace DataCatalog.Api
             services.AddScoped<ITransformationDatasetRepository, TransformationDatasetRepository>();
             services.AddScoped<ITransformationRepository, TransformationRepository>();
             services.AddScoped<IUnitIOfWork, UnitOfWork>();
-            services.AddSingleton<IAllUsersGroupProvider>(new AllUsersGroupProvider(Configuration.GetValue<string>("ALL_USERS_GROUP")));
+            var allUsersGroup = Configuration.GetValidatedStringValue("ALL_USERS_GROUP");
+            services.AddSingleton<IAllUsersGroupProvider>(new AllUsersGroupProvider(allUsersGroup));
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_3_0);
             services.AddApiVersioning(config =>
@@ -105,34 +106,31 @@ namespace DataCatalog.Api
                 config.ApiVersionReader = new HeaderApiVersionReader("x-api-version");
             });
 
+            var dataCatalogUrl = Configuration.GetValidatedStringValue("AllowedCorsUrls:dataCatalogUrl");
+            var dataCatalogProdUrl = Configuration.GetValidatedStringValue("AllowedCorsUrls:dataCatalogProdUrl");
+            var ingressApiUrl = Configuration.GetValidatedStringValue("AllowedCorsUrls:ingressApiUrl");
+            var egressApiUrl = Configuration.GetValidatedStringValue("AllowedCorsUrls:egressApiUrl");
+
             //CORS
             services.AddCors(options =>
             {
-                options.AddPolicy(dataCatalogAllowAll,
+                options.AddPolicy(DataCatalogAllowAll,
                     builder => builder.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod());
 
-                var dataCatalogFormattedUrl = string.Format(dataCatalogUrl, WebAppEnvironment.GetEnvironment().Name.ToLower());
-                var ingressApiFormattedUrl = string.Format(ingressApiUrl, WebAppEnvironment.GetEnvironment().Name.ToLower());
-                var egressApiFormattedUrl = string.Format(egressApiUrl, WebAppEnvironment.GetEnvironment().Name.ToLower());
-                options.AddPolicy(dataCatalogAllowSpecificOrigins,
-                    builder => builder.WithOrigins(dataCatalogFormattedUrl, dataCatalogProdUrl, ingressApiFormattedUrl, egressApiFormattedUrl).AllowAnyHeader().AllowAnyMethod());
+                options.AddPolicy(DataCatalogAllowSpecificOrigins,
+                    builder => builder.WithOrigins(dataCatalogUrl, dataCatalogProdUrl, ingressApiUrl, egressApiUrl).AllowAnyHeader().AllowAnyMethod());
             });
 
-            // Groups and roles
-            AzureAd azureAdConfiguration = Configuration.GetSection("AzureAd").Get<AzureAd>();
-            services.AddSingleton(azureAdConfiguration);
-
             // Azure KeyVault
-            var keyVaultEnvironment = WebAppEnvironment.GetEnvironment().IsDevelopment()
-                ? Environments.TestingShort
-                : WebAppEnvironment.GetEnvironment().Name;
+            var dataCatalogKeyVaultUrl = Configuration.GetValidatedStringValue("DataCatalogKeyVaultUrl");
+            var groupManagementClientSecretName = Configuration.GetValidatedStringValue("GroupManagementClientSecretName");
+            var client = new SecretClient(new Uri(dataCatalogKeyVaultUrl), new DefaultAzureCredential());
+            var groupManagementClientSecret = client.GetSecret(groupManagementClientSecretName);
 
-            var client = new SecretClient(new Uri($"https://dpvault-{keyVaultEnvironment}.vault.azure.net/"), new DefaultAzureCredential());
-            var groupManagementClientSecret = client.GetSecret(Configuration["GroupManagementClientSecretName"]);
-            
-            // Graph client registration
-            IConfidentialClientApplication confidentialGroupClient = ConfidentialClientApplicationBuilder
-                .Create(Configuration["GroupManagementClientId"])
+            // // Graph client registration
+            var groupManagementClientId = Configuration.GetValidatedStringValue("GroupManagementClientId");
+            var confidentialGroupClient = ConfidentialClientApplicationBuilder
+                .Create(groupManagementClientId)
                 .WithClientSecret(groupManagementClientSecret.Value.Value)
                 .WithTenantId(azureAdConfiguration.TenantId)
                 .Build();
@@ -142,10 +140,30 @@ namespace DataCatalog.Api
 
             services.AddTransient<IActiveDirectoryGroupService, AzureActiveDirectoryGroupService>();
 
-            var storageAccountName = $"dpcontentstorage{WebAppEnvironment.GetEnvironment().Name}";
-            var serviceEndpoint = new Uri($"https://{storageAccountName}.blob.core.windows.net");
+            var dataCatalogBlobStorageUrl = Configuration.GetValidatedStringValue("dataCatalogBlobStorageUrl");
+            var serviceEndpoint = new Uri(dataCatalogBlobStorageUrl);
             services.AddSingleton(x => new DataLakeServiceClient(serviceEndpoint, new DefaultAzureCredential()));
             services.AddTransient<IStorageService, AzureStorageService>();
+        }
+
+        private static void ValidateAzureAdConfiguration(AzureAd azureAdConfiguration)
+        {
+            if (azureAdConfiguration == null)
+            {
+                throw new ArgumentException("'AzureAd' must have a value");
+            }
+
+            azureAdConfiguration.Audience.ValidateConfiguration("AzureAd:Audience");
+            azureAdConfiguration.Authority.ValidateConfiguration("AzureAd:Authority");
+            azureAdConfiguration.TenantId.ValidateConfiguration("AzureAd:TenantId");
+            if (azureAdConfiguration.Roles == null)
+            {
+                throw new ArgumentException("'AzureAd:Roles' must have a value");
+            }
+
+            azureAdConfiguration.Roles.Admin.ValidateConfiguration("AzureAd:Roles:Admin");
+            azureAdConfiguration.Roles.User.ValidateConfiguration("AzureAd:Roles:User");
+            azureAdConfiguration.Roles.DataSteward.ValidateConfiguration("AzureAd:Roles:DataSteward");
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -185,9 +203,9 @@ namespace DataCatalog.Api
 
             // CORS
             if (environment.IsDevelopment())
-                app.UseCors(dataCatalogAllowAll);
+                app.UseCors(DataCatalogAllowAll);
             else 
-                app.UseCors(dataCatalogAllowSpecificOrigins);
+                app.UseCors(DataCatalogAllowSpecificOrigins);
 
             app.UseAuthentication();
 
@@ -196,7 +214,7 @@ namespace DataCatalog.Api
             // Push properties to the log context
             app.Use(async (context, next) =>
             {
-                LogContext.PushProperty("UserName", context.User.Identity.Name);
+                LogContext.PushProperty("UserName", context.User.Identity?.Name);
                 await next.Invoke();
             });
 
@@ -208,7 +226,7 @@ namespace DataCatalog.Api
             });
         }
 
-        internal void AddServicesAndDbContext(IServiceCollection services)
+        private void AddServicesAndDbContext(IServiceCollection services)
         {
             services.AddAutoMapper(typeof(Startup));
 
@@ -231,7 +249,8 @@ namespace DataCatalog.Api
 
             // Db Context
             var conn = Configuration.GetConnectionString("DataCatalog");
-            conn = string.Format(conn, WebAppEnvironment.GetEnvironment().Name.ToLower(), Configuration["sqlpassword"]);
+            conn.ValidateConfiguration("ConnectionStrings:DataCatalog");
+            conn = string.Format(conn, WebAppEnvironment.GetEnvironment().Name.ToLower(), Configuration.GetValidatedStringValue("sqlpassword"));
             services.AddDbContext<DataCatalogContext>(o => o.UseSqlServer(conn));
 
             //HttpContext
