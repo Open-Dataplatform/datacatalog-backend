@@ -1,4 +1,5 @@
 using System;
+using DataCatalog.Api.Extensions;
 using Energinet.DataPlatform.Shared.Environments;
 using Energinet.DataPlatform.Shared.Logging;
 using Microsoft.AspNetCore.Hosting;
@@ -12,19 +13,26 @@ namespace DataCatalog.Api
 {
     public class Program
     {
-        private static WebAppEnvironment _environment;
+        private static WebAppEnvironment environment;
 
         public static void Main(string[] args)
         {
-            // Use the GetEnvironment() method to access the current environment when IoC isn't available    
-            _environment = WebAppEnvironment.GetEnvironment();
+            // Use the GetEnvironment() method to access the current environment when IoC isn't available
+            environment = WebAppEnvironment.GetEnvironment();
 
-            var exceptionLogger = DataPlatformLogging.CreateLogger(_environment.Name);
+            var configuration = new ConfigurationBuilder()
+                .BuildPlatformConfiguration(environment.Name, args)
+                .Build();
+            var exceptionLogger =
+                DataPlatformLogging.CreateLogger(environment.Name, configuration);
 
             try
             {
-                exceptionLogger.Information("Starting up");
-                CreateHostBuilder(args).Build().Run();
+                exceptionLogger.Information("Configuring the DataCatalog Api using the environment {Environment}", environment.Name);
+                var host = CreateHost(args, configuration);
+                exceptionLogger.Information("Completed configuration of the DataCatalog Api");
+                exceptionLogger.Information("Starting up the DataCatalog Api");
+                host.Run();
             }
             catch (Exception ex)
             {
@@ -36,10 +44,10 @@ namespace DataCatalog.Api
             }
         }
 
-        public static IHostBuilder CreateHostBuilder(string[] args)
+        private static IHost CreateHost(string[] args, IConfigurationRoot configuration)
         {
             return Host.CreateDefaultBuilder(args)
-                .UseDataPlatformLogging(_environment.Name)
+                .UseDataPlatformLogging(environment.Name)
                 .ConfigureAppConfiguration((context, config) =>
                 {
                     if (!context.HostingEnvironment.IsDevelopment())
@@ -50,12 +58,13 @@ namespace DataCatalog.Api
                                 azureServiceTokenProvider.KeyVaultTokenCallback));
 
                         config.AddAzureKeyVault(
-                            $"https://dpvault-{_environment.Name}.vault.azure.net/",
+                            configuration.GetValidatedStringValue("DataCatalogKeyVaultUrl"),
                             keyVaultClient,
                             new DefaultKeyVaultSecretManager());
                     }
                 })
-                .ConfigureWebHostDefaults(webBuilder => { webBuilder.UseStartup<Startup>(); });
+                .ConfigureWebHostDefaults(webBuilder => { webBuilder.UseStartup<Startup>(); })
+                .Build();
         }
     }
 }

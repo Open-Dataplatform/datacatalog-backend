@@ -4,7 +4,7 @@
     "DataCatalog.Api": {
       "commandName": "Project",
       "launchBrowser": false,
-      "applicationUrl": "https://localhost:8081",
+      "applicationUrl": "https://localhost:5000",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development",
         "DOTNET_ENVIRONMENT": "Development"

@@ -97,7 +97,12 @@ namespace DataCatalog.Api.Services
             await _messageBusSender.PublishAsync(new DatasetCreated
             {
                 DatasetId = dbDataset.Id.ToString(),
-                Container = request.RefinementLevel == RefinementLevel.Raw ? "RAW" : request.RefinementLevel == RefinementLevel.Stock ? "STOCK" : "REFINED",
+                Container = request.RefinementLevel switch
+                {
+                    RefinementLevel.Raw => "RAW",
+                    RefinementLevel.Stock => "STOCK",
+                    _ => "REFINED"
+                },
                 DatasetName = dbDataset.Name,
                 Owner = request.Owner,
                 Hierarchy = $"{GetHierarchyName(hierarchy).ToLower()}",
@@ -192,32 +197,32 @@ namespace DataCatalog.Api.Services
         {
             var dataset = await _datasetRepository.FindByIdAsync(id);
 
-            if (dataset != null && dataset.RefinementLevel == RefinementLevel.Raw)
+            if (dataset is not {RefinementLevel: RefinementLevel.Raw})
             {
-                dataset.Id = Guid.NewGuid();
-                dataset.CreatedDate = DateTime.Now;
-                dataset.ModifiedDate = DateTime.Now;
-
-                var promotedName = $"promoted_{dataset.Name}";
-                var currentLocation = dataset.Name.ToLower().Replace(' ', '-');
-                var newLocation = promotedName.ToLower().Replace(' ', '-');
-                dataset.Location = dataset.Location.Replace(currentLocation, newLocation);
-                dataset.Name = promotedName;
-                dataset.DatasetChangeLogs = new List<Data.Model.DatasetChangeLog>();
-                dataset.RefinementLevel++;
-                dataset.DataContracts = null;
-                dataset.DataFields.ForEach(f =>
-                {
-                    f.Id = Guid.NewGuid();
-                    f.DatasetId = dataset.Id;
-                });
-                dataset.DatasetCategories.ForEach(d => d.DatasetId = dataset.Id);
-                dataset.DatasetDurations.ForEach(d => d.DatasetId = dataset.Id);
-
-                return _mapper.Map<Dataset>(dataset);
+                return null;
             }
+            dataset.Id = Guid.NewGuid();
+            dataset.CreatedDate = DateTime.Now;
+            dataset.ModifiedDate = DateTime.Now;
 
-            return null;
+            var promotedName = $"promoted_{dataset.Name}";
+            var currentLocation = dataset.Name.ToLower().Replace(' ', '-');
+            var newLocation = promotedName.ToLower().Replace(' ', '-');
+            dataset.Location = dataset.Location.Replace(currentLocation, newLocation);
+            dataset.Name = promotedName;
+            dataset.DatasetChangeLogs = new List<Data.Model.DatasetChangeLog>();
+            dataset.RefinementLevel++;
+            dataset.DataContracts = null;
+            dataset.DataFields.ForEach(f =>
+            {
+                f.Id = Guid.NewGuid();
+                f.DatasetId = dataset.Id;
+            });
+            dataset.DatasetCategories.ForEach(d => d.DatasetId = dataset.Id);
+            dataset.DatasetDurations.ForEach(d => d.DatasetId = dataset.Id);
+
+            return _mapper.Map<Dataset>(dataset);
+
         }
 
         public async Task HandleMessage(string messageJson)
