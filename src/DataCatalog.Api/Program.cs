@@ -50,6 +50,13 @@ namespace DataCatalog.Api
         private static IHost CreateHost(string[] args, IConfiguration configuration)
         {
             return Host.CreateDefaultBuilder(args)
+                .UseSerilog((hostingContext, loggerConfiguration) =>
+                {
+                    loggerConfiguration
+                        .ReadFrom.Configuration(hostingContext.Configuration)
+                        .Enrich.FromLogContext()
+                        .Enrich.WithEnvironment();
+                })
                 .ConfigureAppConfiguration((context, config) =>
                 {
                     if (!context.HostingEnvironment.IsDevelopment())
