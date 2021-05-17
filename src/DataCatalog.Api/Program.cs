@@ -1,53 +1,55 @@
 using System;
 using DataCatalog.Api.Extensions;
-using Energinet.DataPlatform.Shared.Environments;
-using Energinet.DataPlatform.Shared.Logging;
+using DataCatalog.Api.Utils;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Azure.KeyVault;
 using Microsoft.Azure.Services.AppAuthentication;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Configuration.AzureKeyVault;
 using Microsoft.Extensions.Hosting;
+using Serilog;
+using Serilog.Events;
 
 namespace DataCatalog.Api
 {
     public class Program
     {
-        private static WebAppEnvironment environment;
-
         public static void Main(string[] args)
         {
-            // Use the GetEnvironment() method to access the current environment when IoC isn't available
-            environment = WebAppEnvironment.GetEnvironment();
+            var environmentName = EnvironmentUtil.GetCurrentEnvironment();
 
             var configuration = new ConfigurationBuilder()
-                .BuildPlatformConfiguration(environment.Name, args)
+                .BuildPlatformConfiguration(environmentName, args)
                 .Build();
-            var exceptionLogger =
-                DataPlatformLogging.CreateLogger(environment.Name, configuration);
+            
+            Log.Logger = new LoggerConfiguration()
+                .ReadFrom.Configuration(configuration)
+                .MinimumLevel.Override("Microsoft", LogEventLevel.Information)
+                .Enrich.FromLogContext()
+                .Enrich.WithEnvironment()
+                .CreateLogger();
 
             try
             {
-                exceptionLogger.Information("Configuring the DataCatalog Api using the environment {Environment}", environment.Name);
+                Log.Information("Configuring the DataCatalog Api using the environment {Environment}", environmentName);
                 var host = CreateHost(args, configuration);
-                exceptionLogger.Information("Completed configuration of the DataCatalog Api");
-                exceptionLogger.Information("Starting up the DataCatalog Api");
+                Log.Information("Completed configuration of the DataCatalog Api");
+                Log.Information("Starting up the DataCatalog Api");
                 host.Run();
             }
             catch (Exception ex)
             {
-                exceptionLogger.Fatal(ex, "Application start-up failed");
+                Log.Fatal(ex, "Application start-up failed");
             }
             finally
             {
-                exceptionLogger?.Dispose();
+                Log.CloseAndFlush();
             }
         }
-
-        private static IHost CreateHost(string[] args, IConfigurationRoot configuration)
+        
+        private static IHost CreateHost(string[] args, IConfiguration configuration)
         {
             return Host.CreateDefaultBuilder(args)
-                .UseDataPlatformLogging(environment.Name)
                 .ConfigureAppConfiguration((context, config) =>
                 {
                     if (!context.HostingEnvironment.IsDevelopment())

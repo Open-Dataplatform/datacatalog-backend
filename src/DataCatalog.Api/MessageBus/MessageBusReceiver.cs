@@ -1,11 +1,11 @@
-﻿using Microsoft.Extensions.DependencyInjection;
-using System;
+﻿using System;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using DataCatalog.Api.Services;
-using Energinet.DataPlatform.Shared.Environments;
+using DataCatalog.Api.Utils;
 using Microsoft.Azure.ServiceBus;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
 namespace DataCatalog.Api.MessageBus
@@ -23,10 +23,9 @@ namespace DataCatalog.Api.MessageBus
         public Task StartAsync(CancellationToken cancellationToken)
         {
             using var scope = _serviceScopeFactory.CreateScope();
-            var environment = scope.ServiceProvider.GetService<IEnvironment>();
 
             // Subscribe to service bus messages
-            var serviceBusNamespace = $"dpdomainevents-servicebus-{environment.Name.ToLower()}";
+            var serviceBusNamespace = $"dpdomainevents-servicebus-{EnvironmentUtil.GetCurrentEnvironment().ToLower()}";
             var serviceBusEndpoint = $"Endpoint=sb://{serviceBusNamespace}.servicebus.windows.net/;Authentication=Managed Identity;";
             _subscriptionClient = new SubscriptionClient(serviceBusEndpoint, typeof(TMessage).Name, "DataCatalog-API", ReceiveMode.PeekLock, RetryPolicy.Default);
             var messageHandlerOptions = new MessageHandlerOptions(ExceptionReceivedHandler)
@@ -54,7 +53,7 @@ namespace DataCatalog.Api.MessageBus
             await _subscriptionClient.CompleteAsync(message.SystemProperties.LockToken);
         }
 
-        Task ExceptionReceivedHandler(ExceptionReceivedEventArgs exceptionReceivedEventArgs)
+        private static Task ExceptionReceivedHandler(ExceptionReceivedEventArgs exceptionReceivedEventArgs)
         {
             Console.WriteLine($"Message handler encountered an exception {exceptionReceivedEventArgs.Exception}.");
             var context = exceptionReceivedEventArgs.ExceptionReceivedContext;

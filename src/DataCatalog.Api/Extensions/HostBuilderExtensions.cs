@@ -10,6 +10,8 @@ namespace DataCatalog.Api.Extensions
             builder.SetBasePath(Directory.GetCurrentDirectory());
             builder.AddJsonFile("appsettings.json", false, true);
             builder.AddJsonFile($"appsettings.{environmentName}.json", true, true);
+            builder.AddJsonFile("appsettings.serilog.json", false, true);
+            builder.AddJsonFile($"appsettings.serilog.{environmentName}.json", true, true);
             builder.AddEnvironmentVariables();
             builder.AddCommandLine(commandLineArgs);
             return builder;

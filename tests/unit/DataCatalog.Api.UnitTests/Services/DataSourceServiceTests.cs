@@ -1,4 +1,8 @@
-﻿using AutoFixture;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using AutoFixture;
 using AutoFixture.AutoMoq;
 using AutoMapper;
 using DataCatalog.Api.Data;
@@ -7,11 +11,6 @@ using DataCatalog.Api.Repositories;
 using DataCatalog.Api.Services;
 using FluentAssertions;
 using Moq;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Energinet.DataPlatform.Shared.Environments;
 using Xunit;
 
 namespace DataCatalog.Api.UnitTests.Services
@@ -26,10 +25,6 @@ namespace DataCatalog.Api.UnitTests.Services
                 .ForEach(b => _fixture.Behaviors.Remove(b));
             _fixture.Behaviors.Add(new OmitOnRecursionBehavior());
 
-            var environmentMock = new Mock<IEnvironment>();
-            environmentMock.Setup(x => x.Name).Returns("test");
-            _fixture.Inject(environmentMock.Object);
-
             // Setup automapper
             var config = new MapperConfiguration(cfg => {
                 cfg.AddProfile<AutoMapperProfile>();
@@ -38,6 +33,8 @@ namespace DataCatalog.Api.UnitTests.Services
             var mapper = config.CreateMapper();
             _fixture.Inject(mapper);
             _fixture.Freeze<IMapper>();
+            
+            Environment.SetEnvironmentVariable("ASPNETCORE_ENVIRONMENT", "test");
         }
 
         [Fact]

@@ -6,7 +6,7 @@ using Azure;
 using Azure.Storage.Files.DataLake;
 using Azure.Storage.Files.DataLake.Models;
 using DataCatalog.Api.Services.Storage;
-using Energinet.DataPlatform.Shared.Testing.AutoFixture;
+using DataCatalog.Api.UnitTests.AutoMoqAttribute;
 using Microsoft.Extensions.Logging;
 using Moq;
 using Shouldly;

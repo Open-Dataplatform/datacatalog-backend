@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using AutoFixture;
 using AutoFixture.Kernel;
-using Energinet.DataPlatform.Shared.Testing.AutoFixture;
 using Microsoft.Graph;
 
 namespace DataCatalog.Api.UnitTests.SpecimenBuilders

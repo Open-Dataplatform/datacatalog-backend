@@ -1,11 +1,11 @@
-﻿using AutoMapper;
-using DataCatalog.Api.Data.Model;
-using DataCatalog.Api.Repositories;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Threading.Tasks;
 using System.Linq;
-using Energinet.DataPlatform.Shared.Environments;
+using System.Threading.Tasks;
+using AutoMapper;
+using DataCatalog.Api.Data.Domain;
+using DataCatalog.Api.Repositories;
+using DataCatalog.Api.Utils;
 
 namespace DataCatalog.Api.Services
 {
@@ -15,21 +15,21 @@ namespace DataCatalog.Api.Services
         private readonly IDatasetCategoryRepository _datasetCategoryRepository;
         private readonly IUnitIOfWork _unitOfWork;
         private readonly IMapper _mapper;
-        private static string _environment;
+        private readonly string _environment;
 
-        public CategoryService(IEnvironment environment, ICategoryRepository categoryRepository, IDatasetCategoryRepository datasetCategoryRepository, IMapper mapper, IUnitIOfWork unitIOfWork)
+        public CategoryService(ICategoryRepository categoryRepository, IDatasetCategoryRepository datasetCategoryRepository, IMapper mapper, IUnitIOfWork unitIOfWork)
         {
             _categoryRepository = categoryRepository;
             _datasetCategoryRepository = datasetCategoryRepository;
             _unitOfWork = unitIOfWork;
             _mapper = mapper;
-            _environment = environment.Name.ToLower();
+            _environment = EnvironmentUtil.GetCurrentEnvironment().ToLower();
         }
 
-        public async Task<IEnumerable<Data.Domain.Category>> ListAsync(bool includeEmpty = false)
+        public async Task<IEnumerable<Category>> ListAsync(bool includeEmpty = false)
         {
             var categories = await _categoryRepository.ListAsync();
-            var result = categories.Select(x => _mapper.Map<Data.Domain.Category>(x));
+            var result = categories.Select(x => _mapper.Map<Category>(x));
 
             if (includeEmpty)
                 return result;
@@ -40,19 +40,19 @@ namespace DataCatalog.Api.Services
             return result.Where(x => categoriesWithDataSets.Contains(x.Id));
         }
 
-        public async Task<Data.Domain.Category> FindByIdAsync(Guid id)
+        public async Task<Category> FindByIdAsync(Guid id)
         {
             var category = await _categoryRepository.FindByIdAsync(id);
 
             if (category != null)
-                return _mapper.Map<Data.Domain.Category>(category);
+                return _mapper.Map<Category>(category);
 
             return null;
         }
 
-        public async Task SaveAsync(Data.Domain.Category category)
+        public async Task SaveAsync(Category category)
         {
-            var categoryEntity = new Category 
+            var categoryEntity = new Data.Model.Category 
                                     { 
                                         Colour = category.Colour, 
                                         CreatedDate = category.CreatedDate, 
@@ -67,7 +67,7 @@ namespace DataCatalog.Api.Services
             await _unitOfWork.CompleteAsync();
         }
 
-        public async Task UpdateAsync(Data.Domain.Category category)
+        public async Task UpdateAsync(Category category)
         {
             var existingCategory = await _categoryRepository.FindByIdAsync(category.Id);
 
