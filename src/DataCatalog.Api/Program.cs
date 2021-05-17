@@ -29,25 +29,7 @@ namespace DataCatalog.Api
             try
             {
                 exceptionLogger.Information("Configuring the DataCatalog Api using the environment {Environment}", environment.Name);
-                var host = Host.CreateDefaultBuilder(args)
-                    .UseDataPlatformLogging(environment.Name)
-                    .ConfigureAppConfiguration((context, config) =>
-                    {
-                        if (!context.HostingEnvironment.IsDevelopment())
-                        {
-                            var azureServiceTokenProvider = new AzureServiceTokenProvider();
-                            var keyVaultClient = new KeyVaultClient(
-                                new KeyVaultClient.AuthenticationCallback(
-                                    azureServiceTokenProvider.KeyVaultTokenCallback));
-
-                            config.AddAzureKeyVault(
-                                configuration.GetValidatedStringValue("DataCatalogKeyVaultUrl"),
-                                keyVaultClient,
-                                new DefaultKeyVaultSecretManager());
-                        }
-                    })
-                    .ConfigureWebHostDefaults(webBuilder => { webBuilder.UseStartup<Startup>(); })
-                    .Build();
+                var host = CreateHost(args, configuration);
                 exceptionLogger.Information("Completed configuration of the DataCatalog Api");
                 exceptionLogger.Information("Starting up the DataCatalog Api");
                 host.Run();
@@ -60,6 +42,29 @@ namespace DataCatalog.Api
             {
                 exceptionLogger?.Dispose();
             }
+        }
+
+        private static IHost CreateHost(string[] args, IConfigurationRoot configuration)
+        {
+            return Host.CreateDefaultBuilder(args)
+                .UseDataPlatformLogging(environment.Name)
+                .ConfigureAppConfiguration((context, config) =>
+                {
+                    if (!context.HostingEnvironment.IsDevelopment())
+                    {
+                        var azureServiceTokenProvider = new AzureServiceTokenProvider();
+                        var keyVaultClient = new KeyVaultClient(
+                            new KeyVaultClient.AuthenticationCallback(
+                                azureServiceTokenProvider.KeyVaultTokenCallback));
+
+                        config.AddAzureKeyVault(
+                            configuration.GetValidatedStringValue("DataCatalogKeyVaultUrl"),
+                            keyVaultClient,
+                            new DefaultKeyVaultSecretManager());
+                    }
+                })
+                .ConfigureWebHostDefaults(webBuilder => { webBuilder.UseStartup<Startup>(); })
+                .Build();
         }
     }
 }
