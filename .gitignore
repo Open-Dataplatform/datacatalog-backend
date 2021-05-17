@@ -389,3 +389,5 @@ FodyWeavers.xsd
 
 # Log files
 **/DataCatalog-log-*.txt
+# Visual Studio Code
+.vscode/

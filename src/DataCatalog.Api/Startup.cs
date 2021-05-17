@@ -150,6 +150,8 @@ namespace DataCatalog.Api
             var serviceEndpoint = new Uri(dataCatalogBlobStorageUrl);
             services.AddSingleton(x => new DataLakeServiceClient(serviceEndpoint, new DefaultAzureCredential()));
             services.AddTransient<IStorageService, AzureStorageService>();
+
+            services.AddHealthChecks();
         }
 
         private void ValidateAzureAdConfiguration(AzureAd azureAdConfiguration)
@@ -250,6 +252,7 @@ namespace DataCatalog.Api
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
+                endpoints.MapHealthChecks("/health");
             });
         }
 
