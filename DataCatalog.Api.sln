@@ -9,6 +9,10 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DataCatalog.Api.UnitTests",
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataCatalog.Api.IntegrationTests", "tests\integration\DataCatalog.Api.IntegrationTests\DataCatalog.Api.IntegrationTests.csproj", "{8A0D18C0-ABEC-488E-95F3-31D49EA4E474}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataCatalog.Data", "src\DataCatalog.Data\DataCatalog.Data.csproj", "{9E42B1E2-E24B-4E3D-9E8B-474DD5F35114}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataCatalog.Migrations", "src\DataCatalog.Migrations\DataCatalog.Migrations.csproj", "{2C67D364-0A76-41C8-A4B2-A4A928163B4F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +31,14 @@ Global
 		{8A0D18C0-ABEC-488E-95F3-31D49EA4E474}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8A0D18C0-ABEC-488E-95F3-31D49EA4E474}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8A0D18C0-ABEC-488E-95F3-31D49EA4E474}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9E42B1E2-E24B-4E3D-9E8B-474DD5F35114}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9E42B1E2-E24B-4E3D-9E8B-474DD5F35114}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9E42B1E2-E24B-4E3D-9E8B-474DD5F35114}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9E42B1E2-E24B-4E3D-9E8B-474DD5F35114}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2C67D364-0A76-41C8-A4B2-A4A928163B4F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2C67D364-0A76-41C8-A4B2-A4A928163B4F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2C67D364-0A76-41C8-A4B2-A4A928163B4F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2C67D364-0A76-41C8-A4B2-A4A928163B4F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
