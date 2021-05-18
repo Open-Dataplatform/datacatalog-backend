@@ -11,14 +11,15 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using DataCatalog.Api.Utils;
 
 namespace DataCatalog.Api.Infrastructure
 {
     public class AuthorizeRolesAttribute : AuthorizeAttribute, IAsyncAuthorizationFilter
     {
-        readonly List<Role> _allowedRoles = null;
+        private readonly List<Role> _allowedRoles;
 
-        public AuthorizeRolesAttribute(params Role[] allowedRoles) : base()
+        public AuthorizeRolesAttribute(params Role[] allowedRoles)
         {
             _allowedRoles = allowedRoles.ToList();
         }
@@ -27,6 +28,12 @@ namespace DataCatalog.Api.Infrastructure
         {
             // Get calling user and return if user do not carry an authentication
             var executingUser = context.HttpContext.User;
+            if (EnvironmentUtil.IsLocal())
+            {
+                await HandleLocalEnvironment(context, executingUser);
+                return;
+            }
+
             if (!executingUser.Identity.IsAuthenticated)
             {
                 context.Result = new StatusCodeResult((int)System.Net.HttpStatusCode.Unauthorized);
@@ -62,6 +69,33 @@ namespace DataCatalog.Api.Infrastructure
                 return;
 
             context.Result = new StatusCodeResult((int)System.Net.HttpStatusCode.Forbidden);
+        }
+
+        /// <summary>
+        /// If running in a local environment, we ignore security concerns, and give the user every role
+        /// </summary>
+        /// <param name="context">The context of the http request</param>
+        /// <param name="executingUser">The principal calling user</param>
+        private async Task HandleLocalEnvironment(ActionContext context, ClaimsPrincipal executingUser)
+        {
+            var services = context.HttpContext.RequestServices;
+            var memberService = services.GetService<IMemberService>();
+            if (memberService != null)
+            {
+                var member = await memberService.GetOrCreateAsync(string.Empty, Guid.Empty);
+
+                // Initialize the Current object
+                var settings = services.GetService<AzureAd>();
+                var claimsIdentity = new ClaimsIdentity(new List<Claim>
+                {
+                    new(ClaimsUtility.ClaimName, "LocalTester"),
+                    new(ClaimTypes.Role, settings.Roles.Admin),
+                    new(ClaimTypes.Role, settings.Roles.User),
+                    new(ClaimTypes.Role, settings.Roles.DataSteward)
+                });
+                executingUser.AddIdentity(claimsIdentity);
+                InitializeCurrentObject(services, executingUser, settings, member);
+            }
         }
 
         private void InitializeCurrentObject(IServiceProvider services, ClaimsPrincipal executingUser, AzureAd settings, Member member)

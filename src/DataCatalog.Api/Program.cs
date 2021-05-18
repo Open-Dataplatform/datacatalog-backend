@@ -59,7 +59,7 @@ namespace DataCatalog.Api
                 })
                 .ConfigureAppConfiguration((context, config) =>
                 {
-                    if (!context.HostingEnvironment.IsDevelopment())
+                    if (!context.HostingEnvironment.IsDevelopment() && !EnvironmentUtil.IsLocal())
                     {
                         var azureServiceTokenProvider = new AzureServiceTokenProvider();
                         var keyVaultClient = new KeyVaultClient(
