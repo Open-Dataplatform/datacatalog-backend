@@ -16,6 +16,7 @@ namespace DataCatalog.Api.Extensions
         public static string GetValidatedStringValue(this IConfiguration conf, string configurationKey)
         {
             var stringValue = conf.GetValue<string>(configurationKey);
+            
             if (string.IsNullOrEmpty(stringValue))
             {
                 throw new ArgumentException($"'{configurationKey}' must have a value");

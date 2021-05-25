@@ -60,6 +60,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\DataCatalog.Data\DataCatalog.Data.csproj" />
+    <ProjectReference Include="..\DataCatalog.Common\DataCatalog.Common.csproj" />
   </ItemGroup>
 
 

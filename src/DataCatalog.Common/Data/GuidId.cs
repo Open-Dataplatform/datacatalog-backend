@@ -12,4 +12,4 @@ namespace DataCatalog.Api.Data.Common
     {
         public Guid? Id { get; set; }
     }
-}
+} 

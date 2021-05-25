@@ -13,6 +13,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataCatalog.Data", "src\Dat
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataCatalog.Migrations", "src\DataCatalog.Migrations\DataCatalog.Migrations.csproj", "{2C67D364-0A76-41C8-A4B2-A4A928163B4F}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataCatalog.Common", "src\DataCatalog.Common\DataCatalog.Common.csproj", "{3ECFA317-25A5-428B-9A12-9B8D7A19551B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -39,6 +41,10 @@ Global
 		{2C67D364-0A76-41C8-A4B2-A4A928163B4F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2C67D364-0A76-41C8-A4B2-A4A928163B4F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2C67D364-0A76-41C8-A4B2-A4A928163B4F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3ECFA317-25A5-428B-9A12-9B8D7A19551B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3ECFA317-25A5-428B-9A12-9B8D7A19551B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3ECFA317-25A5-428B-9A12-9B8D7A19551B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3ECFA317-25A5-428B-9A12-9B8D7A19551B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
