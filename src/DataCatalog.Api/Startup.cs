@@ -185,36 +185,6 @@ namespace DataCatalog.Api
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, DataCatalogContext db)
         {
-            db.Database.Migrate();
-
-            //One-time update of OriginEnvironment
-            var originEnvironment = EnvironmentUtil.GetCurrentEnvironment().ToLower();
-            var datasets = db.Datasets.Where(a => a.OriginEnvironment == null).ToArray();
-            foreach (var a in datasets)
-            {
-                a.OriginEnvironment = originEnvironment;
-            }
-
-            var dataContracts = db.DataContracts.Where(a => a.OriginEnvironment == null).ToArray();
-            foreach (var a in dataContracts)
-            {
-                a.OriginEnvironment = originEnvironment;
-            }
-
-            var categories = db.Categories.Where(a => a.OriginEnvironment == null).ToArray();
-            foreach (var a in categories)
-            { 
-                a.OriginEnvironment = originEnvironment;
-            } 
-            
-            var dataSources = db.DataSources.Where(a => a.OriginEnvironment == null).ToArray();
-            foreach (var a in dataSources)
-            {
-                a.OriginEnvironment = originEnvironment;
-            }
-
-            db.SaveChanges();
-
             // Use IEnvironment to check what environment the web app is running in
             if (EnvironmentUtil.IsDevelopment())
             {
