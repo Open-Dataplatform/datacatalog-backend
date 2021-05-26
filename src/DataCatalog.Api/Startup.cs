@@ -123,20 +123,14 @@ namespace DataCatalog.Api
                     builder => builder.WithOrigins(dataCatalogUrl, dataCatalogProdUrl, ingressApiUrl, egressApiUrl).AllowAnyHeader().AllowAnyMethod());
             });
             
-            // Azure KeyVault
-            var dataCatalogKeyVaultUrl = Configuration.GetValidatedStringValue("DataCatalogKeyVaultUrl");
-            var groupManagementClientSecretName = Configuration.GetValidatedStringValue("GroupManagementClientSecretName");
-            Log.Information("DataCatalogKeyVaultUrl = {DataCatalogKeyVaultUrl}", dataCatalogKeyVaultUrl);
-            Log.Information("GroupManagementClientSecretName = {GroupManagementClientSecretName}", groupManagementClientSecretName);
-            var client = new SecretClient(new Uri(dataCatalogKeyVaultUrl), new DefaultAzureCredential());
-            var groupManagementClientSecret = client.GetSecret(groupManagementClientSecretName);
-
             // Graph client registration
             var groupManagementClientId = Configuration.GetValidatedStringValue("GroupManagementClientId");
             Log.Information("GroupManagementClientId = {GroupManagementClientId}", groupManagementClientId);
+            var groupManagementClientSecret = Configuration.GetValidatedStringValue("GroupManagementClientSecret");
+            
             var confidentialGroupClient = ConfidentialClientApplicationBuilder
                 .Create(groupManagementClientId)
-                .WithClientSecret(groupManagementClientSecret.Value.Value)
+                .WithClientSecret(groupManagementClientSecret)
                 .WithTenantId(azureAdConfiguration.TenantId)
                 .Build();
             
