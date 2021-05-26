@@ -11,7 +11,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataCatalog.Api.Integration
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataCatalog.Data", "src\DataCatalog.Data\DataCatalog.Data.csproj", "{9E42B1E2-E24B-4E3D-9E8B-474DD5F35114}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataCatalog.Migrations", "src\DataCatalog.Migrations\DataCatalog.Migrations.csproj", "{2C67D364-0A76-41C8-A4B2-A4A928163B4F}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataCatalog.Migrator", "src\DataCatalog.Migrator\DataCatalog.Migrator.csproj", "{2C67D364-0A76-41C8-A4B2-A4A928163B4F}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataCatalog.Common", "src\DataCatalog.Common\DataCatalog.Common.csproj", "{3ECFA317-25A5-428B-9A12-9B8D7A19551B}"
 EndProject
