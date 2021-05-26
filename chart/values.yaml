@@ -2,6 +2,10 @@
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
 
+secretName: datacatalog-api-test
+environment: test
+appName: datacatalog-backend
+
 deployment:
   replicaCount: 1
 
@@ -21,7 +25,22 @@ deployment:
 
   securityContext: {}
 
-  annotations: {}
+  annotations:
+    vault.hashicorp.com/agent-inject: "true"
+    vault.hashicorp.com/role: "{{ .Values.secretName }}-reader"
+    vault.hashicorp.com/auth-path: "auth/kubernetes-{{ .Values.environment }}"
+    vault.hashicorp.com/agent-inject-secret-appsettings.secrets.json: "{{ .Values.secretName }}/data/credentials"
+    vault.hashicorp.com/agent-inject-template-appsettings.secrets.json: |
+      {{`{{-`}} with secret "{{ .Values.secretName }}/data/credentials" {{`-}}`}}
+      {{`{
+        "GroupManagementClientId": "{{ .Data.data.client_id }}",
+        "GroupManagementClientSecret": "{{ .Data.data.secret }}",
+        "SqlPassword": "{{ .Data.data.sqlpassword }}",
+        "AzureAd": {
+          "TenantId": "{{ .Data.data.tenant_id }}"
+        }
+      }
+      {{- end -}}`}}
 
   autoscaling:
     enabled: false
@@ -39,7 +58,7 @@ deployment:
   #   memory: 128Mi
 
   env: 
-    "ASPNETCORE_ENVIRONMENT": "Development"
+    "ASPNETCORE_ENVIRONMENT": "{{ .Values.environment }}"
     "ASPNETCORE_FORWARDEDHEADERS_ENABLED": "true"
 
 service:
@@ -51,6 +70,6 @@ ingress:
   annotations:
     nginx.ingress.kubernetes.io/rewrite-target: /$2
     kubernetes.io/ingress.class: nginx
-    # cert-manager.io/cluster-issuer: letsencrypt-prod
+    cert-manager.io/cluster-issuer: letsencrypt-prod
   host: 
   path: /

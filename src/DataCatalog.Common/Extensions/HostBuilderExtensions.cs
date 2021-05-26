@@ -9,7 +9,8 @@ namespace DataCatalog.Api.Extensions
         {
             builder.SetBasePath(Directory.GetCurrentDirectory());
             builder.AddJsonFile("appsettings.json", false, true);
-            builder.AddJsonFile($"appsettings.{environmentName}.json", true, true);
+            builder.AddJsonFile($"appsettings.{environmentName.FirstCharToUpper()}.json", true, true);
+            builder.AddJsonFile($"/vault/secrets/appsettings.secrets.json", true, true); // This file is injected when running on Kubernetes
             builder.AddEnvironmentVariables();
             builder.AddCommandLine(commandLineArgs);
             return builder;
