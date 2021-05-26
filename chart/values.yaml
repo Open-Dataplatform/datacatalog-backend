@@ -4,6 +4,7 @@
 
 secretName: datacatalog-api-test
 environment: test
+appName: datacatalog-backend
 
 deployment:
   replicaCount: 1
