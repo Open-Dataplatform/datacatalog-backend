@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 
-namespace DataCatalog.Api.Extensions
+namespace DataCatalog.Common.Extensions
 {
     public static class EnumExtensions
     {

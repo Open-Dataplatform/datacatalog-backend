@@ -1,9 +1,10 @@
-using DataCatalog.Api.Data;
-using DataCatalog.Api.Extensions;
-using DataCatalog.Api.Utils;
+using DataCatalog.Data;
+using DataCatalog.Data.Extensions;
+using DataCatalog.Common.Utils;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
 using Microsoft.Extensions.Configuration;
+using DataCatalog.Common.Extensions;
 
 namespace src.DataCatalog.Migrations
 {

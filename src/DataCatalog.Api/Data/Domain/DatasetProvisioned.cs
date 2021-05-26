@@ -1,5 +1,5 @@
 ﻿using System;
-using DataCatalog.Api.Enums;
+using DataCatalog.Common.Enums;
 
 namespace DataCatalog.Api.Data.Domain
 {

@@ -1,5 +1,5 @@
-﻿using DataCatalog.Api.Data.Common;
-using DataCatalog.Api.Enums;
+﻿using DataCatalog.Common.Data;
+using DataCatalog.Common.Enums;
 using System.Collections.Generic;
 
 namespace DataCatalog.Api.Data.Dto

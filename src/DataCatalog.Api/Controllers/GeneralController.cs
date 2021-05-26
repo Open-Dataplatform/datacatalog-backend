@@ -1,5 +1,5 @@
 ﻿using DataCatalog.Api.Data.Dto;
-using DataCatalog.Api.Enums;
+using DataCatalog.Common.Enums;
 using DataCatalog.Api.Infrastructure;
 using DataCatalog.Api.Services;
 using Microsoft.AspNetCore.Mvc;
@@ -8,7 +8,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
-using DataCatalog.Api.Extensions;
+using DataCatalog.Common.Extensions;
 
 namespace DataCatalog.Api.Controllers
 {

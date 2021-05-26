@@ -1,4 +1,4 @@
-﻿using DataCatalog.Api.Extensions;
+﻿using DataCatalog.Common.Extensions;
 using Xunit;
 using FluentAssertions;
 

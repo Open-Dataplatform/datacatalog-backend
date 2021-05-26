@@ -1,10 +1,10 @@
-﻿using DataCatalog.Api.Data.Model;
-using DataCatalog.Api.Enums;
-using DataCatalog.Api.Extensions;
+﻿using DataCatalog.Data.Model;
+using DataCatalog.Common.Enums;
+using DataCatalog.Data.Extensions;
 using Microsoft.EntityFrameworkCore;
 using System;
 
-namespace DataCatalog.Api.Data
+namespace DataCatalog.Data
 {
     public class DataCatalogContext : DbContext
     {

@@ -1,7 +1,7 @@
-﻿using DataCatalog.Api.Interfaces;
+﻿using DataCatalog.Common.Interfaces;
 using System;
 
-namespace DataCatalog.Api.Data.Common
+namespace DataCatalog.Common.Data
 {
     public class GuidId : IGuidId
     {

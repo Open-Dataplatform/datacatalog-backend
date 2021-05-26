@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Net;
 using System.Text.Json;
-using DataCatalog.Api.Data.Model;
+using DataCatalog.Data.Model;
 using FluentAssertions;
 using Xunit;
 

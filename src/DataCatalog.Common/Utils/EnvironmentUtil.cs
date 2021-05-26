@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace DataCatalog.Api.Utils
+namespace DataCatalog.Common.Utils
 {
     public static class EnvironmentUtil
     {

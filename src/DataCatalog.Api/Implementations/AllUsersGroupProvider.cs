@@ -1,4 +1,4 @@
-﻿using DataCatalog.Api.Interfaces;
+﻿using DataCatalog.Common.Interfaces;
 
 namespace DataCatalog.Api.Implementations
 {

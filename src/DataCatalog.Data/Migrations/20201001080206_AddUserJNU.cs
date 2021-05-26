@@ -2,7 +2,7 @@
 using System;
 using System.Diagnostics.CodeAnalysis;
 
-namespace DataCatalog.Api.Data.Migrations
+namespace DataCatalog.Data.Migrations
 {
     [ExcludeFromCodeCoverage]
     public partial class AddUserJNU : Migration

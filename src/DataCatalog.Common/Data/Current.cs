@@ -1,8 +1,8 @@
-﻿using DataCatalog.Api.Enums;
+﻿using DataCatalog.Common.Enums;
 using System;
 using System.Collections.Generic;
 
-namespace DataCatalog.Api.Data.Common
+namespace DataCatalog.Common.Data
 {
     /// <summary>
     /// This class has been made for carrying any information required across services within a request scope.

@@ -1,7 +1,7 @@
 using System;
 using Microsoft.Extensions.Configuration;
 
-namespace DataCatalog.Api.Extensions
+namespace DataCatalog.Common.Extensions
 {
     public static class ConfigurationValidationExtensions
     {

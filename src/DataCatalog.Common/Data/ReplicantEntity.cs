@@ -1,4 +1,4 @@
-﻿namespace DataCatalog.Api.Data.Common
+﻿namespace DataCatalog.Common.Data
 {
     public class ReplicantEntity: Entity
     {       

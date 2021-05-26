@@ -2,7 +2,7 @@
 using Serilog;
 using Serilog.Configuration;
 
-namespace DataCatalog.Api.Extensions
+namespace DataCatalog.Common.Extensions
 {
     public static class LoggerConfigurationExtensions
     {

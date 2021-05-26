@@ -1,7 +1,7 @@
-﻿using DataCatalog.Api.Data.Common;
+﻿using DataCatalog.Common.Data;
 using System;
 
-namespace DataCatalog.Api.Data.Model
+namespace DataCatalog.Data.Model
 {
     public class DataContract: ReplicantEntity
     {

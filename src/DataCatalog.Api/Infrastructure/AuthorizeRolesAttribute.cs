@@ -1,6 +1,6 @@
-﻿using DataCatalog.Api.Data.Common;
+﻿using DataCatalog.Common.Data;
 using DataCatalog.Api.Data.Domain;
-using DataCatalog.Api.Enums;
+using DataCatalog.Common.Enums;
 using DataCatalog.Api.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;

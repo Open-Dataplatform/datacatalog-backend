@@ -1,6 +1,6 @@
 using System;
-using DataCatalog.Api.Data;
-using DataCatalog.Api.Data.Common;
+
+using DataCatalog.Common.Data;
 using DataCatalog.Api.Extensions;
 using DataCatalog.Api.Infrastructure;
 using DataCatalog.Api.Repositories;
@@ -19,15 +19,17 @@ using Azure.Security.KeyVault.Secrets;
 using Azure.Storage.Files.DataLake;
 using DataCatalog.Api.Data.Domain;
 using DataCatalog.Api.Implementations;
-using DataCatalog.Api.Interfaces;
+using DataCatalog.Common.Interfaces;
 using DataCatalog.Api.MessageBus;
 using DataCatalog.Api.Services.AD;
 using DataCatalog.Api.Services.Storage;
-using DataCatalog.Api.Utils;
+using DataCatalog.Common.Utils;
 using Microsoft.Graph;
 using Microsoft.Graph.Auth;
 using Microsoft.Identity.Client;
 using Serilog.Context;
+using DataCatalog.Data;
+using DataCatalog.Common.Extensions;
 
 [assembly: ApiConventionType(typeof(ApiConventions))]
 [assembly: InternalsVisibleTo("DynamicProxyGenAssembly2")]

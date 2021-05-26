@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace DataCatalog.Api.Interfaces
+namespace DataCatalog.Common.Interfaces
 {
     public interface IGuidId
     {

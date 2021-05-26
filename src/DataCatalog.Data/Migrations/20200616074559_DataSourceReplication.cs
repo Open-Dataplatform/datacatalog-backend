@@ -2,7 +2,7 @@
 using Microsoft.EntityFrameworkCore.Migrations;
 using System.Diagnostics.CodeAnalysis;
 
-namespace DataCatalog.Api.Data.Migrations
+namespace DataCatalog.Data.Migrations
 {
     [ExcludeFromCodeCoverage]
     public partial class DataSourceReplication : Migration

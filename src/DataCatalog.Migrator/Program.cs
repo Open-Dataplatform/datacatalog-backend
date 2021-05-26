@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Linq;
-using DataCatalog.Api.Data;
+
 using DataCatalog.Api.Extensions;
-using DataCatalog.Api.Utils;
+using DataCatalog.Common.Utils;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Serilog;

@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 
-namespace DataCatalog.Api.Extensions
+namespace DataCatalog.Data.Extensions
 {
     public static class ModelBuilderExtension
     {

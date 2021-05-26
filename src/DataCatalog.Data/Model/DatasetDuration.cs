@@ -1,8 +1,8 @@
-﻿using DataCatalog.Api.Data.Common;
-using DataCatalog.Api.Enums;
+﻿using DataCatalog.Common.Data;
+using DataCatalog.Common.Enums;
 using System;
 
-namespace DataCatalog.Api.Data.Model
+namespace DataCatalog.Data.Model
 {
     public class DatasetDuration : Created
     {

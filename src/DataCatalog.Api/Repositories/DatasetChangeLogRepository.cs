@@ -1,9 +1,9 @@
 ﻿using System;
-using DataCatalog.Api.Data;
-using DataCatalog.Api.Data.Model;
+using DataCatalog.Data.Model;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using DataCatalog.Data;
 
 namespace DataCatalog.Api.Repositories
 {

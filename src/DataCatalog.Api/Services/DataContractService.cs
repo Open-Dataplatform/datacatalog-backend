@@ -1,11 +1,11 @@
 ﻿using AutoMapper;
-using DataCatalog.Api.Data.Model;
+using DataCatalog.Data.Model;
 using DataCatalog.Api.Repositories;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Linq;
-using DataCatalog.Api.Utils;
+using DataCatalog.Common.Utils;
 
 namespace DataCatalog.Api.Services
 {

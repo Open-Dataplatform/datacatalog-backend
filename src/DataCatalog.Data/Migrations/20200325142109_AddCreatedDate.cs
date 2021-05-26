@@ -2,7 +2,7 @@
 using System.Diagnostics.CodeAnalysis;
 using Microsoft.EntityFrameworkCore.Migrations;
 
-namespace DataCatalog.Api.Data.Migrations
+namespace DataCatalog.Data.Migrations
 {
     [ExcludeFromCodeCoverage]
     public partial class AddCreatedDate : Migration

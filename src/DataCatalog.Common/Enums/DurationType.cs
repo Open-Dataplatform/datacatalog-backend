@@ -1,4 +1,4 @@
-﻿namespace DataCatalog.Api.Enums
+﻿namespace DataCatalog.Common.Enums
 {
     public enum DurationType
     {

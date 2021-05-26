@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using DataCatalog.Api.Enums;
+using DataCatalog.Common.Enums;
 
 namespace DataCatalog.Api.Data.Domain
 {

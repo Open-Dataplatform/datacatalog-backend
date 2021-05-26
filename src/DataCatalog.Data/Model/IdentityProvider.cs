@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace DataCatalog.Api.Data.Model
+namespace DataCatalog.Data.Model
 {
     public class IdentityProvider
     {
