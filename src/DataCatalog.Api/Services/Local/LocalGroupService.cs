@@ -4,9 +4,14 @@ using System.Linq;
 using System.Threading.Tasks;
 using DataCatalog.Api.Data.Domain;
 using DataCatalog.Api.Services.AD;
+using DataCatalog.Api.Utils;
 
 namespace DataCatalog.Api.Services.Local
 {
+    /// <summary>
+    /// Dummy Group service implementation used ONLY for the local environment runtime.
+    /// DO NOT use this in any other context! 
+    /// </summary>
     public class LocalGroupService : IGroupService
     {
         private readonly AccessMember _localAccessMember;
@@ -30,27 +35,40 @@ namespace DataCatalog.Api.Services.Local
 
         public Task<IEnumerable<AccessMember>> GetGroupMembersAsync(string id)
         {
+            EnsureLocalEnvironment();
             return Task.FromResult(new List<AccessMember> {_localAccessMember}.AsEnumerable());
         }
 
         public Task<AccessMember> GetAccessMemberAsync(string id)
         {
+            EnsureLocalEnvironment();
             return Task.FromResult(_localAccessMember);
         }
 
         public Task RemoveGroupMemberAsync(string groupId, string memberId)
         {
+            EnsureLocalEnvironment();
             return Task.CompletedTask;
         }
 
         public Task AddGroupMemberAsync(string groupId, string memberId)
         {
+            EnsureLocalEnvironment();
             return Task.CompletedTask;
         }
 
         public Task<IEnumerable<AdSearchResult>> SearchAsync(string searchString)
         {
+            EnsureLocalEnvironment();
             return Task.FromResult(new List<AdSearchResult> {_localSearchResult}.AsEnumerable());
+        }
+
+        private static void EnsureLocalEnvironment()
+        {
+            if (!EnvironmentUtil.IsLocal())
+            {
+                throw new InvalidOperationException("This class cannot be used unless the environment is local");
+            }
         }
     }
 }
