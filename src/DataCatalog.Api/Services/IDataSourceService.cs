@@ -1,7 +1,7 @@
-﻿using DataCatalog.Api.Data.Domain;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using DataCatalog.Api.Data.Domain;
 
 namespace DataCatalog.Api.Services
 {

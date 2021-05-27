@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
 using DataCatalog.Api.Data.Model;
+using DataCatalog.Api.MessageBus;
 using DataCatalog.Api.Repositories;
 using DataCatalog.Api.Utils;
 

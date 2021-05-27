@@ -26,7 +26,7 @@ namespace DataCatalog.Api.UnitTests.Services.AD
             ServicePrincipal spMember,
             GroupMembersCollectionWithReferencesPage memberPage,
             [Frozen] Mock<IGraphServiceClient> graphServiceClientMock,
-            AzureActiveDirectoryGroupService sut)
+            AzureGroupService sut)
         {
             // Arrange
             memberPage.Add(groupMember);
@@ -64,7 +64,7 @@ namespace DataCatalog.Api.UnitTests.Services.AD
             string groupId,
             ServiceException se,
             [Frozen] Mock<IGraphServiceClient> graphServiceClientMock,
-            AzureActiveDirectoryGroupService sut)
+            AzureGroupService sut)
         {
             // Arrange
             graphServiceClientMock.Setup(x => x.Groups[groupId].Members.Request().GetAsync())
@@ -84,7 +84,7 @@ namespace DataCatalog.Api.UnitTests.Services.AD
             string groupId,
             Exception e,
             [Frozen] Mock<IGraphServiceClient> graphServiceClientMock,
-            AzureActiveDirectoryGroupService sut)
+            AzureGroupService sut)
         {
             // Arrange
             graphServiceClientMock.Setup(x => x.Groups[groupId].Members.Request().GetAsync())
@@ -103,7 +103,7 @@ namespace DataCatalog.Api.UnitTests.Services.AD
             string memberId,
             User user,
             [Frozen] Mock<IGraphServiceClient> graphServiceClientMock,
-            AzureActiveDirectoryGroupService sut)
+            AzureGroupService sut)
         {
             // Arrange
             graphServiceClientMock.Setup(x => x.DirectoryObjects[memberId].Request().GetAsync())
@@ -124,7 +124,7 @@ namespace DataCatalog.Api.UnitTests.Services.AD
             string memberId,
             ServiceException se,
             [Frozen] Mock<IGraphServiceClient> graphServiceClientMock,
-            AzureActiveDirectoryGroupService sut)
+            AzureGroupService sut)
         {
             // Arrange
             graphServiceClientMock.Setup(x => x.DirectoryObjects[memberId].Request().GetAsync())
@@ -143,7 +143,7 @@ namespace DataCatalog.Api.UnitTests.Services.AD
             string memberId,
             Exception e,
             [Frozen] Mock<IGraphServiceClient> graphServiceClientMock,
-            AzureActiveDirectoryGroupService sut)
+            AzureGroupService sut)
         {
             // Arrange
             graphServiceClientMock.Setup(x => x.DirectoryObjects[memberId].Request().GetAsync())
@@ -163,7 +163,7 @@ namespace DataCatalog.Api.UnitTests.Services.AD
             string groupId,
             string memberId,
             [Frozen] Mock<IGraphServiceClient> graphServiceClientMock,
-            AzureActiveDirectoryGroupService sut)
+            AzureGroupService sut)
         {
             // Arrange
             graphServiceClientMock.Setup(x => x.Groups[groupId].Members.Request().GetAsync())
@@ -186,7 +186,7 @@ namespace DataCatalog.Api.UnitTests.Services.AD
                 string groupId,
                 string memberId,
                 [Frozen] Mock<IGraphServiceClient> graphServiceClientMock,
-                AzureActiveDirectoryGroupService sut)
+                AzureGroupService sut)
         {
             // Arrange
             memberPage.Add(new DirectoryObject { Id = memberId });
@@ -210,7 +210,7 @@ namespace DataCatalog.Api.UnitTests.Services.AD
             string memberId,
             Exception e,
             [Frozen] Mock<IGraphServiceClient> graphServiceClientMock,
-            AzureActiveDirectoryGroupService sut)
+            AzureGroupService sut)
         {
             // Arrange
             graphServiceClientMock.Setup(x => x.Groups[groupId].Members.Request().GetAsync())
@@ -233,7 +233,7 @@ namespace DataCatalog.Api.UnitTests.Services.AD
             string memberId,
             ServiceException se,
             [Frozen] Mock<IGraphServiceClient> graphServiceClientMock,
-            AzureActiveDirectoryGroupService sut)
+            AzureGroupService sut)
         {
             // Arrange
             graphServiceClientMock.Setup(x => x.Groups[groupId].Members.Request().GetAsync())
@@ -252,7 +252,7 @@ namespace DataCatalog.Api.UnitTests.Services.AD
             string groupId,
             string memberId,
             [Frozen] Mock<IGraphServiceClient> graphServiceClientMock,
-            AzureActiveDirectoryGroupService sut)
+            AzureGroupService sut)
         {
             // Arrange
             graphServiceClientMock.Setup(x => x.Groups[groupId].Members[memberId].Reference.Request().DeleteAsync())
@@ -273,7 +273,7 @@ namespace DataCatalog.Api.UnitTests.Services.AD
             string memberId,
             ServiceException se,
             [Frozen] Mock<IGraphServiceClient> graphServiceClientMock,
-            AzureActiveDirectoryGroupService sut)
+            AzureGroupService sut)
         {
             // Arrange
             graphServiceClientMock.Setup(x => x.Groups[groupId].Members[memberId].Reference.Request().DeleteAsync())
@@ -290,7 +290,7 @@ namespace DataCatalog.Api.UnitTests.Services.AD
             string memberId,
             Exception e,
             [Frozen] Mock<IGraphServiceClient> graphServiceClientMock,
-            AzureActiveDirectoryGroupService sut)
+            AzureGroupService sut)
         {
             // Arrange
             graphServiceClientMock.Setup(x => x.Groups[groupId].Members[memberId].Reference.Request().DeleteAsync())
@@ -312,7 +312,7 @@ namespace DataCatalog.Api.UnitTests.Services.AD
             Group groupResult3,
             GraphServiceGroupsCollectionPage groupsCollectionPage,
             [Frozen] Mock<IGraphServiceClient> graphServiceClientMock,
-            AzureActiveDirectoryGroupService sut)
+            AzureGroupService sut)
         {
             // Arrange
             groupsCollectionPage.Add(groupResult1);
@@ -345,7 +345,7 @@ namespace DataCatalog.Api.UnitTests.Services.AD
             Group groupResult3,
             GraphServiceGroupsCollectionPage groupsCollectionPage,
             [Frozen] Mock<IGraphServiceClient> graphServiceClientMock,
-            AzureActiveDirectoryGroupService sut)
+            AzureGroupService sut)
         {
             // Arrange
             groupResult1.GroupTypes = new List<string> { "Unified" };
@@ -373,7 +373,7 @@ namespace DataCatalog.Api.UnitTests.Services.AD
             ServicePrincipal sp3,
             GraphServiceServicePrincipalsCollectionPage servicePrincipalsCollectionPage,
             [Frozen] Mock<IGraphServiceClient> graphServiceClientMock,
-            AzureActiveDirectoryGroupService sut)
+            AzureGroupService sut)
         {
             // Arrange
             servicePrincipalsCollectionPage.Add(sp1);
@@ -406,7 +406,7 @@ namespace DataCatalog.Api.UnitTests.Services.AD
             User user3,
             GraphServiceUsersCollectionPage usersCollectionPage,
             [Frozen] Mock<IGraphServiceClient> graphServiceClientMock,
-            AzureActiveDirectoryGroupService sut)
+            AzureGroupService sut)
         {
             // Arrange
             usersCollectionPage.Add(user1);

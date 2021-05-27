@@ -49,7 +49,7 @@ namespace DataCatalog.Api.UnitTests.Controllers
             IDictionary<string, string> metadata,
             string readerGroupId,
             string allUsersGroupId,
-            [Frozen] Mock<IActiveDirectoryGroupService> activeDirectoryGroupServiceMock,
+            [Frozen] Mock<IGroupService> activeDirectoryGroupServiceMock,
             [Frozen] Mock<IAllUsersGroupProvider> allUsersProviderMock,
             [Frozen] Mock<IStorageService> storageServiceMock,
             [Greedy] DatasetController sut)
@@ -82,7 +82,7 @@ namespace DataCatalog.Api.UnitTests.Controllers
             IDictionary<string, string> metadata,
             string readerGroupId,
             string allUsersGroupId,
-            [Frozen] Mock<IActiveDirectoryGroupService> activeDirectoryGroupServiceMock,
+            [Frozen] Mock<IGroupService> activeDirectoryGroupServiceMock,
             [Frozen] Mock<IAllUsersGroupProvider> allUsersProviderMock,
             [Frozen] Mock<IStorageService> storageServiceMock,
             [Greedy] DatasetController sut)

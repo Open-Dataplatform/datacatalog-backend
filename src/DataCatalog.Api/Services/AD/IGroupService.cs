@@ -4,7 +4,7 @@ using DataCatalog.Api.Data.Domain;
 
 namespace DataCatalog.Api.Services.AD
 {
-    public interface IActiveDirectoryGroupService
+    public interface IGroupService
     {
         Task<IEnumerable<AccessMember>> GetGroupMembersAsync(string id);
         Task<AccessMember> GetAccessMemberAsync(string id);

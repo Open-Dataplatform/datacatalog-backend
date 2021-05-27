@@ -1,6 +1,6 @@
 ﻿using System.Threading.Tasks;
 
-namespace DataCatalog.Api.Services
+namespace DataCatalog.Api.MessageBus
 {
     public interface IHandleMessageBusMessage
     {

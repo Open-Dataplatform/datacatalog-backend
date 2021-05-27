@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using DataCatalog.Api.Data.Dto;
 using DataCatalog.Api.Enums;
+using DataCatalog.Api.MessageBus;
 
 namespace DataCatalog.Api.Services
 {

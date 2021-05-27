@@ -57,15 +57,15 @@ namespace DataCatalog.Api.Infrastructure
             // Create or lookup this user
             var memberService = services.GetService<IMemberService>();
             var member = await memberService.GetOrCreateAsync(externalId, identityProvider.Id);
-            
+
             // Initialize the Current object
-            var settings = services.GetService<AzureAd>();
+            var settings = services.GetService<Roles>();
             InitializeCurrentObject(services, executingUser, settings, member);
 
             // Check user roles against endpoint requested roles
-            if ((_allowedRoles.Contains(Role.Admin) && executingUser.IsInRole(settings.Roles.Admin)) || 
-                (_allowedRoles.Contains(Role.DataSteward) && executingUser.IsInRole(settings.Roles.DataSteward)) ||
-                (_allowedRoles.Contains(Role.User) && executingUser.IsInRole(settings.Roles.User)))
+            if ((_allowedRoles.Contains(Role.Admin) && executingUser.IsInRole(settings.Admin)) || 
+                (_allowedRoles.Contains(Role.DataSteward) && executingUser.IsInRole(settings.DataSteward)) ||
+                (_allowedRoles.Contains(Role.User) && executingUser.IsInRole(settings.User)))
                 return;
 
             context.Result = new StatusCodeResult((int)System.Net.HttpStatusCode.Forbidden);
@@ -82,33 +82,37 @@ namespace DataCatalog.Api.Infrastructure
             var memberService = services.GetService<IMemberService>();
             if (memberService != null)
             {
-                var member = await memberService.GetOrCreateAsync(string.Empty, Guid.Empty);
+                var member = await memberService.GetOrCreateAsync(Guid.NewGuid().ToString(), Guid.Parse("75030760-f7f8-40d8-a1ab-718bcb7327b7"));
 
                 // Initialize the Current object
-                var settings = services.GetService<AzureAd>();
+                var settings = services.GetService<Roles>();
                 var claimsIdentity = new ClaimsIdentity(new List<Claim>
                 {
                     new(ClaimsUtility.ClaimName, "LocalTester"),
-                    new(ClaimTypes.Role, settings.Roles.Admin),
-                    new(ClaimTypes.Role, settings.Roles.User),
-                    new(ClaimTypes.Role, settings.Roles.DataSteward)
+                    new(ClaimTypes.Role, settings.Admin),
+                    new(ClaimTypes.Role, settings.User),
+                    new(ClaimTypes.Role, settings.DataSteward),
+                    new(ClaimsUtility.ClaimUserIdentity, Guid.NewGuid().ToString())
                 });
-                executingUser.AddIdentity(claimsIdentity);
+                if (ClaimsUtility.GetClaim(executingUser, ClaimsUtility.ClaimName) == null)
+                {
+                    executingUser.AddIdentity(claimsIdentity);
+                }
                 InitializeCurrentObject(services, executingUser, settings, member);
             }
         }
 
-        private void InitializeCurrentObject(IServiceProvider services, ClaimsPrincipal executingUser, AzureAd settings, Member member)
+        private void InitializeCurrentObject(IServiceProvider services, ClaimsPrincipal executingUser, Roles settings, Member member)
         {
             var current = services.GetService<Current>();
             current.MemberId = member.Id;
             current.Name = ClaimsUtility.GetClaim(executingUser, ClaimsUtility.ClaimName);
             current.Email = executingUser.Identity.Name;
-            if (executingUser.IsInRole(settings.Roles.Admin))
+            if (executingUser.IsInRole(settings.Admin))
                 current.Roles.Add(Role.Admin);
-            if (executingUser.IsInRole(settings.Roles.DataSteward))
+            if (executingUser.IsInRole(settings.DataSteward))
                 current.Roles.Add(Role.DataSteward);
-            if (executingUser.IsInRole(settings.Roles.User))
+            if (executingUser.IsInRole(settings.User))
                 current.Roles.Add(Role.User);
         }
     }

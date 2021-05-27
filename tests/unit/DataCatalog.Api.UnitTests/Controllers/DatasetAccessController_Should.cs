@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -31,7 +30,7 @@ namespace DataCatalog.Api.UnitTests.Controllers
             IList<AccessMember> readers,
             IList<AccessMember> writers,
             IDictionary<string, string> metadata,
-            [Frozen] Mock<IActiveDirectoryGroupService> activeDirectoryServiceMock,
+            [Frozen] Mock<IGroupService> activeDirectoryServiceMock,
             [Frozen] Mock<IStorageService> storageServiceMock,
             [Greedy] DatasetAccessController sut)
         {
@@ -90,7 +89,7 @@ namespace DataCatalog.Api.UnitTests.Controllers
             Guid memberId,
             string readerGroupId,
             IDictionary<string, string> metadata,
-            [Frozen] Mock<IActiveDirectoryGroupService> activeDirectoryServiceMock,
+            [Frozen] Mock<IGroupService> activeDirectoryServiceMock,
             [Frozen] Mock<IStorageService> storageServiceMock,
             [Greedy] DatasetAccessController sut)
         {
@@ -150,7 +149,7 @@ namespace DataCatalog.Api.UnitTests.Controllers
             Guid memberId,
             string writerGroupId,
             IDictionary<string, string> metadata,
-            [Frozen] Mock<IActiveDirectoryGroupService> activeDirectoryServiceMock,
+            [Frozen] Mock<IGroupService> activeDirectoryServiceMock,
             [Frozen] Mock<IStorageService> storageServiceMock,
             [Greedy] DatasetAccessController sut)
         {
@@ -211,7 +210,7 @@ namespace DataCatalog.Api.UnitTests.Controllers
             IDictionary<string, string> metadata,
             AccessMember accessMember,
             AddDatasetAccessMemberRequestDto addDatasetAccessMemberRequest,
-            [Frozen] Mock<IActiveDirectoryGroupService> activeDirectoryServiceMock,
+            [Frozen] Mock<IGroupService> activeDirectoryServiceMock,
             [Frozen] Mock<IStorageService> storageServiceMock,
             [Greedy] DatasetAccessController sut)
         {
@@ -245,7 +244,7 @@ namespace DataCatalog.Api.UnitTests.Controllers
             IDictionary<string, string> metadata,
             AccessMember accessMember,
             AddDatasetAccessMemberRequestDto addDatasetAccessMemberRequest,
-            [Frozen] Mock<IActiveDirectoryGroupService> activeDirectoryServiceMock,
+            [Frozen] Mock<IGroupService> activeDirectoryServiceMock,
             [Frozen] Mock<IStorageService> storageServiceMock,
             [Greedy] DatasetAccessController sut)
         {
@@ -352,7 +351,7 @@ namespace DataCatalog.Api.UnitTests.Controllers
         public async Task Correctly_Return_Results_On_Search(
             string searchString,
             IList<AdSearchResult> adSearchResults,
-            [Frozen] Mock<IActiveDirectoryGroupService> activeDirectoryServiceMock,
+            [Frozen] Mock<IGroupService> activeDirectoryServiceMock,
             [Greedy] DatasetAccessController sut)
         {
             // Arrange

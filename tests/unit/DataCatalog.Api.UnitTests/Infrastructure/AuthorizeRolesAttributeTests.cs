@@ -13,12 +13,13 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using DataCatalog.Api.Data.Domain;
 using Xunit;
+using Roles = DataCatalog.Api.Infrastructure.Roles;
 
 namespace DataCatalog.Api.UnitTests.Infrastructure
 {
     public class AuthorizeRolesAttributeTests
     {
-        private TestPrincipal CreateUser(AzureAd settings, string tenantId, string userId, bool isAuthenticated, List<Role> roles)
+        private TestPrincipal CreateUser(Roles settings, string tenantId, string userId, bool isAuthenticated, List<Role> roles)
         {
             var claims = new List<Claim>
             { 
@@ -28,11 +29,11 @@ namespace DataCatalog.Api.UnitTests.Infrastructure
             foreach (var role in roles)
             {
                 if (role == Role.Admin)
-                    claims.Add(new Claim(ClaimTypes.Role, settings.Roles.Admin));
+                    claims.Add(new Claim(ClaimTypes.Role, settings.Admin));
                 if (role == Role.DataSteward)
-                    claims.Add(new Claim(ClaimTypes.Role, settings.Roles.DataSteward));
+                    claims.Add(new Claim(ClaimTypes.Role, settings.DataSteward));
                 if (role == Role.User)
-                    claims.Add(new Claim(ClaimTypes.Role, settings.Roles.User));
+                    claims.Add(new Claim(ClaimTypes.Role, settings.User));
             }
 
             return isAuthenticated ?
@@ -40,7 +41,7 @@ namespace DataCatalog.Api.UnitTests.Infrastructure
                 new TestPrincipal(claims);
         }
 
-        private Mock<IServiceProvider> CreateMockedServiceProvider(Mock<IIdentityProviderService> identityProviderServiceMock, Mock<IMemberService> memberServiceMock, AzureAd settings, Current current)
+        private Mock<IServiceProvider> CreateMockedServiceProvider(Mock<IIdentityProviderService> identityProviderServiceMock, Mock<IMemberService> memberServiceMock, Roles settings, Current current)
         {
             var serviceProviderMock = new Mock<IServiceProvider>();
 
@@ -56,7 +57,7 @@ namespace DataCatalog.Api.UnitTests.Infrastructure
 
             if (settings != null)
                 serviceProviderMock
-                    .Setup(provider => provider.GetService(typeof(AzureAd)))
+                    .Setup(provider => provider.GetService(typeof(Roles)))
                 .Returns(settings);
 
             if (current != null)
@@ -153,14 +154,11 @@ namespace DataCatalog.Api.UnitTests.Infrastructure
             memberServiceMock
                 .Setup(a => a.GetOrCreateAsync(member.ExternalId, identityProvider.Id))
                 .Returns(Task.FromResult(member));
-            AzureAd settings = new AzureAd
+            Roles settings = new Roles
             {
-                Roles = new AllRoles
-                {
-                    Admin = Guid.NewGuid().ToString(),
-                    DataSteward = Guid.NewGuid().ToString(),
-                    User = Guid.NewGuid().ToString()
-                }
+                Admin = Guid.NewGuid().ToString(),
+                DataSteward = Guid.NewGuid().ToString(),
+                User = Guid.NewGuid().ToString()
             };
             var current = new Current
             {
@@ -199,14 +197,11 @@ namespace DataCatalog.Api.UnitTests.Infrastructure
             memberServiceMock
                 .Setup(a => a.GetOrCreateAsync(member.ExternalId, identityProvider.Id))
                 .Returns(Task.FromResult(member));
-            var settings = new AzureAd
+            var settings = new Roles
             {
-                Roles = new AllRoles
-                {
-                    Admin = Guid.NewGuid().ToString(),
-                    DataSteward = Guid.NewGuid().ToString(),
-                    User = Guid.NewGuid().ToString()
-                }
+                Admin = Guid.NewGuid().ToString(),
+                DataSteward = Guid.NewGuid().ToString(),
+                User = Guid.NewGuid().ToString()
             };
             var current = new Current
             {
