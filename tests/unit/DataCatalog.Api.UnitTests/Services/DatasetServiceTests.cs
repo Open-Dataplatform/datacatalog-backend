@@ -5,10 +5,10 @@ using System.Threading.Tasks;
 using AutoFixture;
 using AutoFixture.AutoMoq;
 using AutoMapper;
-using DataCatalog.Api.Data;
+
 using DataCatalog.Api.Data.Domain;
 using DataCatalog.Api.Data.Dto;
-using DataCatalog.Api.Enums;
+using DataCatalog.Common.Enums;
 using DataCatalog.Api.Exceptions;
 using DataCatalog.Api.MessageBus;
 using DataCatalog.Api.Repositories;
@@ -16,12 +16,13 @@ using DataCatalog.Api.Services;
 using FluentAssertions;
 using Moq;
 using Xunit;
-using Dataset = DataCatalog.Api.Data.Model.Dataset;
-using DatasetDuration = DataCatalog.Api.Data.Model.DatasetDuration;
-using Duration = DataCatalog.Api.Data.Model.Duration;
-using Hierarchy = DataCatalog.Api.Data.Model.Hierarchy;
-using Transformation = DataCatalog.Api.Data.Model.Transformation;
-using TransformationDataset = DataCatalog.Api.Data.Model.TransformationDataset;
+using Dataset = DataCatalog.Data.Model.Dataset;
+using DatasetDuration = DataCatalog.Data.Model.DatasetDuration;
+using Duration = DataCatalog.Data.Model.Duration;
+using Hierarchy = DataCatalog.Data.Model.Hierarchy;
+using Transformation = DataCatalog.Data.Model.Transformation;
+using TransformationDataset = DataCatalog.Data.Model.TransformationDataset;
+using DataCatalog.Api.Data;
 
 namespace DataCatalog.Api.UnitTests.Services
 {

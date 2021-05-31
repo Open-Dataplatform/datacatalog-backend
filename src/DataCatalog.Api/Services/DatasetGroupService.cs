@@ -1,12 +1,12 @@
 ﻿using AutoMapper;
-using DataCatalog.Api.Data.Model;
+using DataCatalog.Data.Model;
 using DataCatalog.Api.Repositories;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Linq;
-using DataCatalog.Api.Data.Common;
-using DataCatalog.Api.Enums;
+using DataCatalog.Common.Data;
+using DataCatalog.Common.Enums;
 using DataCatalog.Api.Exceptions;
 
 namespace DataCatalog.Api.Services

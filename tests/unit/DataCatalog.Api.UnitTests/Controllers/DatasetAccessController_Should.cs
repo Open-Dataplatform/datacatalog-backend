@@ -11,6 +11,7 @@ using DataCatalog.Api.Extensions;
 using DataCatalog.Api.Services.AD;
 using DataCatalog.Api.Services.Storage;
 using DataCatalog.Api.UnitTests.AutoMoqAttribute;
+using DataCatalog.Common.Extensions;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 using Shouldly;

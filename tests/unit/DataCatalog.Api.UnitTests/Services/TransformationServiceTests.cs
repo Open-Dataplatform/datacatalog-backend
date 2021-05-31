@@ -5,13 +5,14 @@ using System.Threading.Tasks;
 using AutoFixture;
 using AutoFixture.AutoMoq;
 using AutoMapper;
-using DataCatalog.Api.Data;
-using DataCatalog.Api.Data.Model;
+
+using DataCatalog.Data.Model;
 using DataCatalog.Api.Repositories;
 using DataCatalog.Api.Services;
 using FluentAssertions;
 using Moq;
 using Xunit;
+using DataCatalog.Api.Data;
 
 namespace DataCatalog.Api.UnitTests.Services
 {

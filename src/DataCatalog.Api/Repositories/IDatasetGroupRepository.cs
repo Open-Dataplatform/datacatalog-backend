@@ -1,5 +1,5 @@
 ﻿using System;
-using DataCatalog.Api.Data.Model;
+using DataCatalog.Data.Model;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 

@@ -1,5 +1,6 @@
-﻿using DataCatalog.Api.Data;
-using DataCatalog.Api.Data.Common;
+﻿
+using DataCatalog.Common.Data;
+using DataCatalog.Data;
 
 namespace DataCatalog.Api.Repositories
 {

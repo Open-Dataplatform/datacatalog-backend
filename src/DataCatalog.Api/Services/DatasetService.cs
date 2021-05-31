@@ -4,10 +4,10 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using AutoMapper;
-using DataCatalog.Api.Data.Common;
+using DataCatalog.Common.Data;
 using DataCatalog.Api.Data.Domain;
 using DataCatalog.Api.Data.Dto;
-using DataCatalog.Api.Enums;
+using DataCatalog.Common.Enums;
 using DataCatalog.Api.Exceptions;
 using DataCatalog.Api.MessageBus;
 using DataCatalog.Api.Repositories;
@@ -77,7 +77,7 @@ namespace DataCatalog.Api.Services
         {
             await ValidateAsync(request);
 
-            var dbDataset = _mapper.Map<Data.Model.Dataset>(request);
+            var dbDataset = _mapper.Map<DataCatalog.Data.Model.Dataset>(request);
 
             if (string.IsNullOrWhiteSpace(dbDataset.Location))
                 dbDataset.Location = await GetDatasetLocation(request.Hierarchy.Id, request.Name);
@@ -210,7 +210,7 @@ namespace DataCatalog.Api.Services
             var newLocation = promotedName.ToLower().Replace(' ', '-');
             dataset.Location = dataset.Location.Replace(currentLocation, newLocation);
             dataset.Name = promotedName;
-            dataset.DatasetChangeLogs = new List<Data.Model.DatasetChangeLog>();
+            dataset.DatasetChangeLogs = new List<DataCatalog.Data.Model.DatasetChangeLog>();
             dataset.RefinementLevel++;
             dataset.DataContracts = null;
             dataset.DataFields.ForEach(f =>
@@ -260,7 +260,7 @@ namespace DataCatalog.Api.Services
             return name;
         }
 
-        private async Task InsertOrUpdateSourceTransformation(SourceTransformationUpsertRequest request, Data.Model.Dataset dataset)
+        private async Task InsertOrUpdateSourceTransformation(SourceTransformationUpsertRequest request, DataCatalog.Data.Model.Dataset dataset)
         {
             if (request.Id.HasValue)
             {
@@ -276,33 +276,33 @@ namespace DataCatalog.Api.Services
             else
             {
                 // Add new transformation and transformation relations
-                var sourceTransformation = _mapper.Map<Data.Model.Transformation>(request);
+                var sourceTransformation = _mapper.Map<DataCatalog.Data.Model.Transformation>(request);
                 AddTransformationDataset(sourceTransformation, dataset, TransformationDirection.Sink);
                 foreach (var id in request.SourceDatasets)
                     AddTransformationDataset(sourceTransformation, id.Id, TransformationDirection.Source);
-                await _transformationRepository.AddAsync(_mapper.Map<Data.Model.Transformation>(sourceTransformation));
+                await _transformationRepository.AddAsync(_mapper.Map<DataCatalog.Data.Model.Transformation>(sourceTransformation));
             }
         }
 
-        private void AddTransformationDataset(Data.Model.Transformation transformation, Guid datasetId, TransformationDirection transformationDirection)
+        private void AddTransformationDataset(DataCatalog.Data.Model.Transformation transformation, Guid datasetId, TransformationDirection transformationDirection)
         {
-            transformation.TransformationDatasets.Add(new Data.Model.TransformationDataset
+            transformation.TransformationDatasets.Add(new DataCatalog.Data.Model.TransformationDataset
             {
                 DatasetId = datasetId,
                 TransformationDirection = transformationDirection
             });
         }
 
-        private void AddTransformationDataset(Data.Model.Transformation transformation, Data.Model.Dataset dataset, TransformationDirection transformationDirection)
+        private void AddTransformationDataset(DataCatalog.Data.Model.Transformation transformation, DataCatalog.Data.Model.Dataset dataset, TransformationDirection transformationDirection)
         {
-            transformation.TransformationDatasets.Add(new Data.Model.TransformationDataset
+            transformation.TransformationDatasets.Add(new DataCatalog.Data.Model.TransformationDataset
             {
                 Dataset = dataset,
                 TransformationDirection = transformationDirection
             });
         }
 
-        private async Task InsertOrUpdateDuration(DurationUpsertRequest request, Data.Model.Dataset dataset, DurationType durationType)
+        private async Task InsertOrUpdateDuration(DurationUpsertRequest request, DataCatalog.Data.Model.Dataset dataset, DurationType durationType)
         {
             //Get existing relation for the given duration type
             var datasetDuration = await _datasetDurationRepository.FindByDatasetAndTypeAsync(dataset.Id, durationType);
@@ -324,10 +324,10 @@ namespace DataCatalog.Api.Services
                     duration ??= dataset.DatasetDurations.Where(a => a.Duration != null).Select(a => a.Duration).FirstOrDefault(a => a.Code == requestedCode);
 
                     // If no existing duration is found, map the request and create new
-                    duration ??= _mapper.Map<Data.Model.Duration>(request);
+                    duration ??= _mapper.Map<DataCatalog.Data.Model.Duration>(request);
 
                     // Create new duration relation
-                    dataset.DatasetDurations.Add(new Data.Model.DatasetDuration
+                    dataset.DatasetDurations.Add(new DataCatalog.Data.Model.DatasetDuration
                     {
                         Dataset = dataset,
                         DurationType = durationType,
@@ -337,7 +337,7 @@ namespace DataCatalog.Api.Services
             }
         }
 
-        private void InsertOrUpdateDataContracts(Data.Model.Dataset dataset, GuidId[] requests)
+        private void InsertOrUpdateDataContracts(DataCatalog.Data.Model.Dataset dataset, GuidId[] requests)
         {
             if (requests != null)
             {
@@ -345,7 +345,7 @@ namespace DataCatalog.Api.Services
 
                 foreach (var r in requests)
                     if (existing.All(a => a.DataSourceId != r.Id))
-                        dataset.DataContracts.Add(new Data.Model.DataContract { DataSourceId = r.Id });
+                        dataset.DataContracts.Add(new DataCatalog.Data.Model.DataContract { DataSourceId = r.Id });
 
                 foreach (var e in existing)
                     if (requests.All(a => a.Id != e.DataSourceId))
@@ -353,12 +353,12 @@ namespace DataCatalog.Api.Services
             }
         }
 
-        private async Task AddChangeLog(Data.Model.Dataset dataset)
+        private async Task AddChangeLog(DataCatalog.Data.Model.Dataset dataset)
         {
             await _datasetChangeLogRepository.AddAsync(
-                new Data.Model.DatasetChangeLog
+                new DataCatalog.Data.Model.DatasetChangeLog
                 {
-                    Dataset = _mapper.Map<Data.Model.Dataset>(dataset),
+                    Dataset = _mapper.Map<DataCatalog.Data.Model.Dataset>(dataset),
                     MemberId = _current.MemberId,
                     Name = _current.Name,
                     Email = _current.Email
@@ -366,12 +366,12 @@ namespace DataCatalog.Api.Services
             );
         }
 
-        private async Task<Data.Model.TransformationDataset> GetSinkTransformationDataset(Data.Model.Dataset dataset)
+        private async Task<DataCatalog.Data.Model.TransformationDataset> GetSinkTransformationDataset(DataCatalog.Data.Model.Dataset dataset)
         {
             return await _transformationDatasetRepository.FindByDatasetIdAndDirectionAsync(dataset.Id, TransformationDirection.Sink);
         }
 
-        private async Task DeleteSourceTransformationAsync(Data.Model.Transformation sourceTransformation)
+        private async Task DeleteSourceTransformationAsync(DataCatalog.Data.Model.Transformation sourceTransformation)
         {
             _transformationDatasetRepository.Remove(sourceTransformation.TransformationDatasets);
             await _transformationRepository.RemoveAsync(sourceTransformation);
@@ -456,7 +456,7 @@ namespace DataCatalog.Api.Services
             return !await _dataSourceRepository.AnyAsync(dsIds, new List<SourceType> { SourceType.External, SourceType.Internal });
         }
 
-        private string GetHierarchyName(Data.Model.Hierarchy hierarchy)
+        private string GetHierarchyName(DataCatalog.Data.Model.Hierarchy hierarchy)
         {
             var name = hierarchy.Name;
             while (hierarchy.ParentHierarchy != null)

@@ -3,7 +3,7 @@ using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
 using DataCatalog.Api.Data.Dto;
-using DataCatalog.Api.Utils;
+using DataCatalog.Common.Utils;
 using Microsoft.Azure.ServiceBus;
 
 namespace DataCatalog.Api.MessageBus

@@ -1,10 +1,10 @@
 ﻿using AutoMapper;
-using DataCatalog.Api.Data.Model;
+using DataCatalog.Data.Model;
 using DataCatalog.Api.Data.Dto;
 using System.Linq;
-using DataCatalog.Api.Enums;
-using DataCatalog.Api.Extensions;
-using DataCatalog.Api.Data.Common;
+using DataCatalog.Common.Enums;
+using DataCatalog.Common.Extensions;
+using DataCatalog.Common.Data;
 using System;
 
 namespace DataCatalog.Api.Data

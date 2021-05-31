@@ -1,4 +1,4 @@
-﻿using DataCatalog.Api.Enums;
+﻿using DataCatalog.Common.Enums;
 using System;
 
 namespace DataCatalog.Api.Data.Dto

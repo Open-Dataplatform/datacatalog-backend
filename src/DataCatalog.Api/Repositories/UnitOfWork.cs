@@ -1,5 +1,6 @@
-﻿using DataCatalog.Api.Data;
+﻿
 using System.Threading.Tasks;
+using DataCatalog.Data;
 
 namespace DataCatalog.Api.Repositories
 {
