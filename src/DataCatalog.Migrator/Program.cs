@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Linq;
-
-using DataCatalog.Api.Extensions;
+using DataCatalog.Common.Extensions;
 using DataCatalog.Common.Utils;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -11,9 +10,9 @@ using src.DataCatalog.Migrations;
 
 namespace DataCatalog.Migrations
 {
-    class Program
+    public class Program
     {
-        static void Main(string[] args)
+        public static void Main(string[] args)
         {
             var environmentName = EnvironmentUtil.GetCurrentEnvironment();
 
