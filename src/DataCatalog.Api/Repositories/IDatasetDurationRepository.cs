@@ -1,8 +1,8 @@
 ﻿using System;
-using DataCatalog.Api.Data.Model;
+using DataCatalog.Data.Model;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using DataCatalog.Api.Enums;
+using DataCatalog.Common.Enums;
 
 namespace DataCatalog.Api.Repositories
 {

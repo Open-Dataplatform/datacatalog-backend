@@ -2,7 +2,7 @@
 using System.Text.Json;
 using DataCatalog.Api.Data.Domain;
 using DataCatalog.Api.Data.Dto;
-using DataCatalog.Api.Enums;
+using DataCatalog.Common.Enums;
 
 namespace DataCatalog.Api.MessageBus
 {

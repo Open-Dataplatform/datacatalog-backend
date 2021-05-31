@@ -1,5 +1,5 @@
-﻿using DataCatalog.Api.Data;
-using DataCatalog.Api.Data.Model;
+﻿using DataCatalog.Data;
+using DataCatalog.Data.Model;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;

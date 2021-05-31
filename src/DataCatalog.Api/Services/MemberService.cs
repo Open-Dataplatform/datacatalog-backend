@@ -1,5 +1,5 @@
 ﻿using AutoMapper;
-using DataCatalog.Api.Data.Model;
+using DataCatalog.Data.Model;
 using DataCatalog.Api.Repositories;
 using System;
 using System.Threading.Tasks;

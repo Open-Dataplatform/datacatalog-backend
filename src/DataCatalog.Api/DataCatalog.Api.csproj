@@ -58,5 +58,10 @@
     <PackageReference Include="Microsoft.Graph.Beta" Version="0.35.0-preview" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\DataCatalog.Data\DataCatalog.Data.csproj" />
+    <ProjectReference Include="..\DataCatalog.Common\DataCatalog.Common.csproj" />
+  </ItemGroup>
+
 
 </Project>

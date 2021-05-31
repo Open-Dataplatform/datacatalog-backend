@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using AutoMapper;
 using DataCatalog.Api.Data.Domain;
 using DataCatalog.Api.Repositories;
-using DataCatalog.Api.Utils;
+using DataCatalog.Common.Utils;
 
 namespace DataCatalog.Api.Services
 {
@@ -52,7 +52,7 @@ namespace DataCatalog.Api.Services
 
         public async Task SaveAsync(Category category)
         {
-            var categoryEntity = new Data.Model.Category 
+            var categoryEntity = new DataCatalog.Data.Model.Category 
                                     { 
                                         Colour = category.Colour, 
                                         CreatedDate = category.CreatedDate, 

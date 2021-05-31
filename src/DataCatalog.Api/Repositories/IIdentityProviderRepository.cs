@@ -1,4 +1,4 @@
-﻿using DataCatalog.Api.Data.Model;
+﻿using DataCatalog.Data.Model;
 using System.Threading.Tasks;
 
 namespace DataCatalog.Api.Repositories
