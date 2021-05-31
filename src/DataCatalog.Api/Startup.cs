@@ -246,7 +246,6 @@ namespace DataCatalog.Api
             // Db Context
             var conn = Configuration.GetConnectionString("DataCatalog");
             conn.ValidateConfiguration("ConnectionStrings:DataCatalog");
-            conn = string.Format(conn, EnvironmentUtil.GetCurrentEnvironment().ToLower(), Configuration.GetValidatedStringValue("SqlPassword"));
             services.AddDbContext<DataCatalogContext>(o => o.UseSqlServer(conn));
 
             //HttpContext
