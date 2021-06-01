@@ -1,11 +1,7 @@
 ﻿# Build image from this Dockerfile using the command
-# docker build -t <image name>:<image version> --no-cache  . --build-arg source_folder=<source folder> --build-arg project=<project>
+# docker build -t <image name>:<image version> --no-cache  .
 # ex
-# docker build -t sweetimage:1.3 --no-cache  . --build-arg source_folder=src/DataCatalog.Api/ --build-arg project=DataCatalog.Api
-#
-# This file assumes the following:
-# 1) Only one project needs building
-# 2) The assembly name is project name appended with .dll
+# docker build -t sweetimage:1.3 --no-cache  .
 
 FROM mcr.microsoft.com/dotnet/aspnet:5.0 AS base
 WORKDIR /app
@@ -14,16 +10,12 @@ EXPOSE 443
 
 FROM mcr.microsoft.com/dotnet/sdk:5.0 AS publish
 
-ARG source_folder
-ARG project
-
 WORKDIR /src
-COPY ["$source_folder", ""]
+COPY ["src/", ""]
 
-RUN dotnet publish "$project.csproj" -c Release -o /app/publish
+RUN dotnet publish "DataCatalog.Api/DataCatalog.Api.csproj" -c Release -o /app/publish
 
 FROM base
-ARG project
 COPY --from=publish /app/publish .
-ENV project=$project
-ENTRYPOINT /app/$project
+ENV project="DataCatalog.Api"
+ENTRYPOINT /app/DataCatalog.Api
