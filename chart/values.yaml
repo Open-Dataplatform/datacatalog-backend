@@ -25,24 +25,7 @@ deployment:
 
   securityContext: {}
 
-  annotations:
-    vault.hashicorp.com/agent-inject: "true"
-    vault.hashicorp.com/role: "{{ .Values.secretName }}-reader"
-    vault.hashicorp.com/auth-path: "auth/kubernetes-{{ .Values.environment }}"
-    vault.hashicorp.com/agent-inject-secret-appsettings.Secrets.json: "{{ .Values.secretName }}/data/credentials"
-    vault.hashicorp.com/agent-inject-template-appsettings.Secrets.json: |
-      {{`{{-`}} with secret "{{ .Values.secretName }}/data/credentials" {{`-}}`}}
-      {{`{
-        "GroupManagementClientId": "{{ .Data.data.client_id }}",
-        "GroupManagementClientSecret": "{{ .Data.data.secret }}",
-        "ConnectionStrings": {
-          "DataCatalog": {{ .Data.data.connection_string }}
-        }
-        "AzureAd": {
-          "TenantId": "{{ .Data.data.tenant_id }}"
-        }
-      }
-      {{- end -}}`}}
+  annotations: {}
 
   autoscaling:
     enabled: false
