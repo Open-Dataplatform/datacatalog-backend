@@ -1,4 +1,4 @@
-﻿using DataCatalog.Api.Enums;
+﻿using DataCatalog.Common.Enums;
 using DataCatalog.Api.Infrastructure;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;

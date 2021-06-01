@@ -1,4 +1,4 @@
-﻿using DataCatalog.Api.Data.Common;
+﻿using DataCatalog.Common.Data;
 using System.Collections.Generic;
 
 namespace DataCatalog.Api.Data.Dto

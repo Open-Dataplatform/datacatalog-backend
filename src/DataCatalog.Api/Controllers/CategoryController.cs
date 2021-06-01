@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
 using DataCatalog.Api.Data.Dto;
-using DataCatalog.Api.Enums;
+using DataCatalog.Common.Enums;
 using DataCatalog.Api.Infrastructure;
 using DataCatalog.Api.Services;
 using Microsoft.AspNetCore.Mvc;

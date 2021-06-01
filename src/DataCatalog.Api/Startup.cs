@@ -1,6 +1,6 @@
 using System;
-using DataCatalog.Api.Data;
-using DataCatalog.Api.Data.Common;
+
+using DataCatalog.Common.Data;
 using DataCatalog.Api.Extensions;
 using DataCatalog.Api.Infrastructure;
 using DataCatalog.Api.Repositories;
@@ -11,7 +11,6 @@ using Microsoft.AspNetCore.Mvc.Versioning;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using System.Linq;
 using Serilog;
 using System.Runtime.CompilerServices;
 using Azure.Identity;
@@ -20,12 +19,12 @@ using Azure.Storage.Files.DataLake;
 using DataCatalog.Api.Data.Domain;
 using DataCatalog.Api.Data.Messages;
 using DataCatalog.Api.Implementations;
-using DataCatalog.Api.Interfaces;
+using DataCatalog.Common.Interfaces;
 using DataCatalog.Api.MessageBus;
 using DataCatalog.Api.Services.AD;
 using DataCatalog.Api.Services.Local;
 using DataCatalog.Api.Services.Storage;
-using DataCatalog.Api.Utils;
+using DataCatalog.Common.Utils;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -33,6 +32,8 @@ using Microsoft.Graph;
 using Microsoft.Graph.Auth;
 using Microsoft.Identity.Client;
 using Serilog.Context;
+using DataCatalog.Data;
+using DataCatalog.Common.Extensions;
 
 [assembly: ApiConventionType(typeof(ApiConventions))]
 [assembly: InternalsVisibleTo("DynamicProxyGenAssembly2")]
@@ -146,42 +147,14 @@ namespace DataCatalog.Api
             {
                 ConfigureAzureServices(services);
             }
+            
+            services.AddHealthChecks();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
 
         public void Configure(IApplicationBuilder app, DataCatalogContext db)
         {
-            db.Database.Migrate();
-
-            //One-time update of OriginEnvironment
-            var originEnvironment = EnvironmentUtil.GetCurrentEnvironment().ToLower();
-            var datasets = db.Datasets.Where(a => a.OriginEnvironment == null).ToArray();
-            foreach (var a in datasets)
-            {
-                a.OriginEnvironment = originEnvironment;
-            }
-
-            var dataContracts = db.DataContracts.Where(a => a.OriginEnvironment == null).ToArray();
-            foreach (var a in dataContracts)
-            {
-                a.OriginEnvironment = originEnvironment;
-            }
-
-            var categories = db.Categories.Where(a => a.OriginEnvironment == null).ToArray();
-            foreach (var a in categories)
-            { 
-                a.OriginEnvironment = originEnvironment;
-            } 
-            
-            var dataSources = db.DataSources.Where(a => a.OriginEnvironment == null).ToArray();
-            foreach (var a in dataSources)
-            {
-                a.OriginEnvironment = originEnvironment;
-            }
-
-            db.SaveChanges();
-
             // Use IEnvironment to check what environment the web app is running in
             if (EnvironmentUtil.IsDevelopment())
             {
@@ -218,6 +191,7 @@ namespace DataCatalog.Api
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
+                endpoints.MapHealthChecks("/health");
             });
         }
 
@@ -323,7 +297,6 @@ namespace DataCatalog.Api
             // Db Context
             var conn = Configuration.GetConnectionString("DataCatalog");
             conn.ValidateConfiguration("ConnectionStrings:DataCatalog");
-            conn = string.Format(conn, EnvironmentUtil.GetCurrentEnvironment().ToLower(), Configuration.GetValidatedStringValue("SqlPassword"));
             services.AddDbContext<DataCatalogContext>(o => o.UseSqlServer(conn));
 
             //HttpContext

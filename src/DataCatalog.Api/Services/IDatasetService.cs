@@ -3,8 +3,8 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using DataCatalog.Api.Data.Dto;
-using DataCatalog.Api.Enums;
 using DataCatalog.Api.MessageBus;
+using DataCatalog.Common.Enums;
 
 namespace DataCatalog.Api.Services
 {

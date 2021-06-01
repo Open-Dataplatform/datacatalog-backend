@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Text.Json;
-using DataCatalog.Api.Data.Domain;
 using DataCatalog.Api.Data.Dto;
+using DataCatalog.Common.Enums;
 using DataCatalog.Api.Data.Messages;
-using DataCatalog.Api.Enums;
 
 namespace DataCatalog.Api.MessageBus
 {

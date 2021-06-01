@@ -1,6 +1,6 @@
 ﻿using System;
-using DataCatalog.Api.Data.Common;
-using DataCatalog.Api.Interfaces;
+using DataCatalog.Common.Data;
+using DataCatalog.Common.Interfaces;
 
 namespace DataCatalog.Api.Data.Dto
 {

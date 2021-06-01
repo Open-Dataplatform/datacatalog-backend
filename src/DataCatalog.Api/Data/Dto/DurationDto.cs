@@ -1,5 +1,5 @@
 ﻿using System;
-using DataCatalog.Api.Data.Common;
+using DataCatalog.Common.Data;
 
 namespace DataCatalog.Api.Data.Dto
 {

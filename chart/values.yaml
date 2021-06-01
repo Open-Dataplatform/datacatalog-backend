@@ -1,0 +1,77 @@
+# Default values for datacatalog-backend.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+secretName: datacatalog-api-test
+environment: test
+appName: datacatalog-backend
+
+deployment:
+  replicaCount: 1
+
+  image:
+    repository: <IMAGENAME>
+    pullPolicy: IfNotPresent
+    # Overrides the image tag whose default is the chart appVersion.
+    tag: "latest"
+
+  livenessProbe:
+    path: /health
+    initialDelaySeconds: 30
+    timeoutSeconds: 2
+    periodSeconds: 60
+
+  podSecurityContext: {}
+
+  securityContext: {}
+
+  annotations:
+    vault.hashicorp.com/agent-inject: "true"
+    vault.hashicorp.com/role: "{{ .Values.secretName }}-reader"
+    vault.hashicorp.com/auth-path: "auth/kubernetes-{{ .Values.environment }}"
+    vault.hashicorp.com/agent-inject-secret-appsettings.Secrets.json: "{{ .Values.secretName }}/data/credentials"
+    vault.hashicorp.com/agent-inject-template-appsettings.Secrets.json: |
+      {{`{{-`}} with secret "{{ .Values.secretName }}/data/credentials" {{`-}}`}}
+      {{`{
+        "GroupManagementClientId": "{{ .Data.data.client_id }}",
+        "GroupManagementClientSecret": "{{ .Data.data.secret }}",
+        "ConnectionStrings": {
+          "DataCatalog": {{ .Data.data.connection_string }}
+        }
+        "AzureAd": {
+          "TenantId": "{{ .Data.data.tenant_id }}"
+        }
+      }
+      {{- end -}}`}}
+
+  autoscaling:
+    enabled: false
+
+  resources: {}
+  # We usually recommend not to specify default resources and to leave this as a conscious
+  # choice for the user. This also increases chances charts run on environments with little
+  # resources, such as Minikube. If you do want to specify resources, uncomment the following
+  # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+  # limits:
+  #   cpu: 100m
+  #   memory: 128Mi
+  # requests:
+  #   cpu: 100m
+  #   memory: 128Mi
+
+  env: 
+    "ASPNETCORE_ENVIRONMENT": "{{ .Values.environment }}"
+    "ASPNETCORE_FORWARDEDHEADERS_ENABLED": "true"
+
+service:
+  type: ClusterIP
+  port: 80
+
+ingress:
+  enabled: true
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /$2
+    kubernetes.io/ingress.class: nginx
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+  host: 
+  path: /

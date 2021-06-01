@@ -2,7 +2,7 @@
 using System.Net;
 using System.Text;
 
-using DataCatalog.Api.Data.Model;
+using DataCatalog.Data.Model;
 using System;
 using System.Drawing;
 

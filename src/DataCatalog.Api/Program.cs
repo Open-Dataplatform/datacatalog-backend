@@ -1,6 +1,7 @@
 using System;
 using DataCatalog.Api.Extensions;
-using DataCatalog.Api.Utils;
+using DataCatalog.Common.Extensions;
+using DataCatalog.Common.Utils;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Azure.KeyVault;
 using Microsoft.Azure.Services.AppAuthentication;

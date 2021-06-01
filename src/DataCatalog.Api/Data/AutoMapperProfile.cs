@@ -1,10 +1,10 @@
 ﻿using AutoMapper;
-using DataCatalog.Api.Data.Model;
+using DataCatalog.Data.Model;
 using DataCatalog.Api.Data.Dto;
 using System.Linq;
-using DataCatalog.Api.Enums;
-using DataCatalog.Api.Extensions;
-using DataCatalog.Api.Data.Common;
+using DataCatalog.Common.Enums;
+using DataCatalog.Common.Extensions;
+using DataCatalog.Common.Data;
 using System;
 
 namespace DataCatalog.Api.Data
@@ -22,8 +22,8 @@ namespace DataCatalog.Api.Data
             CreateMap<Category, CategoryColourResponse>();
             CreateMap<Category, Domain.Category>();
             CreateMap<CategoryResponse, GuidId>();
-            CreateMap<CategoryCreateRequest, Category>();
-            CreateMap<CategoryUpdateRequest, Category>();
+            CreateMap<CategoryCreateRequest, Domain.Category>();
+            CreateMap<CategoryUpdateRequest, Domain.Category>();
 
             //Confidentiality
             CreateMap<Confidentiality, ConfidentialityResponse>();

@@ -3,10 +3,10 @@ using System.Threading;
 using System.Threading.Tasks;
 using DataCatalog.Api.Data.Domain;
 using DataCatalog.Api.Data.Dto;
-using DataCatalog.Api.Enums;
 using DataCatalog.Api.MessageBus;
 using DataCatalog.Api.Repositories;
-using DataCatalog.Api.Utils;
+using DataCatalog.Common.Enums;
+using DataCatalog.Common.Utils;
 using Microsoft.Extensions.Hosting;
 
 namespace DataCatalog.Api.Services.Local

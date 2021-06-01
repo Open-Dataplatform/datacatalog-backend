@@ -4,12 +4,13 @@ using System.Linq;
 using System.Threading.Tasks;
 using AutoFixture;
 using AutoFixture.AutoMoq;
-using DataCatalog.Api.Data;
-using DataCatalog.Api.Data.Model;
+
+using DataCatalog.Data.Model;
 using DataCatalog.Api.Repositories;
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
 using Xunit;
+using DataCatalog.Data;
 
 namespace DataCatalog.Api.IntegrationTests.Repositories
 {

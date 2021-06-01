@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Threading.Tasks;
 using DataCatalog.Api.Data.Domain;
-using DataCatalog.Api.Enums;
-using DataCatalog.Api.Utils;
+using DataCatalog.Common.Enums;
+using DataCatalog.Common.Utils;
 
 namespace DataCatalog.Api.Services.Local
 {

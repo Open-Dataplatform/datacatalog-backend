@@ -1,12 +1,13 @@
-﻿using DataCatalog.Api.Data;
-using DataCatalog.Api.Data.Common;
-using DataCatalog.Api.Data.Model;
-using DataCatalog.Api.Enums;
+﻿
+using DataCatalog.Common.Data;
+using DataCatalog.Data.Model;
+using DataCatalog.Common.Enums;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using DataCatalog.Data;
 
 namespace DataCatalog.Api.Repositories
 {

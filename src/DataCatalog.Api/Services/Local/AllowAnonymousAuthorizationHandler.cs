@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
-using DataCatalog.Api.Utils;
+using DataCatalog.Common.Utils;
 using Microsoft.AspNetCore.Authorization;
 
 namespace DataCatalog.Api.Services.Local
