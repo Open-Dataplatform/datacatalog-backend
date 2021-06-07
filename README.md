@@ -2,6 +2,11 @@
 For documentation of API endpoints go to http://[DOMAIN]/swagger
 OpenAPI json can be found at http://[DOMAIN]/swagger/v[API-VERSION]/swagger.json
 
+# Purpose
+The DataCatalog is a backend service which knows about datasets. It can be used to define new datasets and categories 
+of datasets along with multiple other metadata. Furthermore it is responsible for controlling access to those datasets. 
+The only current implementation of this is using Azure as both Identity Provider and storage provider for the actual data.    
+
 # Build, Test and Run
 Build command:
 ```powershell
@@ -12,12 +17,12 @@ Run command
 ```powershell
 dotnet run --project .\DataCatalog.Api\DataCatalog.Api.csproj
 ```
-The solution will start the api and show the swagger documentation in a browser instanse.
+The solution will start the api and show the swagger documentation in a browser instance.
 
 # Http Status Codes
-The API is intented to be RESTfull and statuscodes should fullfill the following diagram:
+The API is intended to be RESTfull and status codes should fulfill the following diagram:
 
-![HttpStausCodes](https://dev.azure.com/energinet/716a4329-d8fc-4ed1-aa6a-b131bfeb639f/_apis/git/repositories/a0d4dc27-c2a1-4cbb-9f3f-129414a2b2dd/items?path=%2FStatusCodeStateDiagram.png&versionDescriptor%5BversionOptions%5D=0&versionDescriptor%5BversionType%5D=0&versionDescriptor%5Bversion%5D=master&resolveLfs=true&%24format=octetStream&api-version=5.0 "HttpStausCodes")
+![HttpStatusCodes](https://camo.githubusercontent.com/d09839bf7ae593fa403793326a9af335e9392d622f89ea3ee13b889c02ece2fc/68747470733a2f2f7261776769746875622e636f6d2f666f722d4745542f687474702d6465636973696f6e2d6469616772616d2f6d61737465722f6874747064642e706e67 "HttpStausCodes")
 
 
 # API Versioning
@@ -71,9 +76,7 @@ public class HelloWorldController : ControllerBase
 }
 ```
 
-Resulting in:
-
-![deprecated-versions](https://dev.azure.com/energinet/716a4329-d8fc-4ed1-aa6a-b131bfeb639f/_apis/git/repositories/a0d4dc27-c2a1-4cbb-9f3f-129414a2b2dd/items?path=%2Fapi-deprecated-versions.png&versionDescriptor%5BversionOptions%5D=0&versionDescriptor%5BversionType%5D=0&versionDescriptor%5Bversion%5D=master&resolveLfs=true&%24format=octetStream&api-version=5.0 "deprecated-versions")
+Resulting in a header named "api-deprecated-versions: 1.0" being sent in the response.
 
 # API documentation by swagger 
 Appending Swagger and openApi with new version is done by adding a new SwaggerDoc to options in the SwaggerExtensions class.
