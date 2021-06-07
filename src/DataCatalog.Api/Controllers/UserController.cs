@@ -2,6 +2,7 @@
 using DataCatalog.Api.Infrastructure;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
+using Roles = DataCatalog.Api.Infrastructure.Roles;
 
 namespace DataCatalog.Api.Controllers
 {
@@ -10,11 +11,11 @@ namespace DataCatalog.Api.Controllers
     [Route("api/[controller]")]
     public class UserController : ControllerBase
     {
-        private AzureAd _azureAd;
+        private Roles _roles;
 
-        public UserController(AzureAd azureAd)
+        public UserController(Roles roles)
         {
-            _azureAd = azureAd;
+            _roles = roles;
         }
 
         /// <summary>
@@ -26,11 +27,11 @@ namespace DataCatalog.Api.Controllers
         {
             var roles = new List<string>();
 
-            if (User.IsInRole(_azureAd.Roles.Admin))
+            if (User.IsInRole(_roles.Admin))
                 roles.Add(Role.Admin.ToString());
-            if (User.IsInRole(_azureAd.Roles.DataSteward))
+            if (User.IsInRole(_roles.DataSteward))
                 roles.Add(Role.DataSteward.ToString());
-            if (User.IsInRole(_azureAd.Roles.User))
+            if (User.IsInRole(_roles.User))
                 roles.Add(Role.User.ToString());
 
             var result = new Data.Domain.User

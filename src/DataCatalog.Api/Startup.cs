@@ -11,19 +11,22 @@ using Microsoft.AspNetCore.Mvc.Versioning;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using System.Linq;
 using Serilog;
 using System.Runtime.CompilerServices;
 using Azure.Identity;
-using Azure.Security.KeyVault.Secrets;
 using Azure.Storage.Files.DataLake;
 using DataCatalog.Api.Data.Domain;
+using DataCatalog.Api.Data.Messages;
 using DataCatalog.Api.Implementations;
 using DataCatalog.Common.Interfaces;
 using DataCatalog.Api.MessageBus;
 using DataCatalog.Api.Services.AD;
+using DataCatalog.Api.Services.Local;
 using DataCatalog.Api.Services.Storage;
 using DataCatalog.Common.Utils;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Graph;
 using Microsoft.Graph.Auth;
 using Microsoft.Identity.Client;
@@ -56,15 +59,21 @@ namespace DataCatalog.Api
 
             AddServicesAndDbContext(services);
 
-            var azureAdConfiguration = Configuration.GetSection("AzureAd").Get<AzureAd>();
-            ValidateAzureAdConfiguration(azureAdConfiguration);
             // Groups and roles
-            services.AddSingleton(azureAdConfiguration);
+            var roles = Configuration.GetSection("Roles").Get<Roles>();
+            ValidateRolesConfiguration(roles);
+            services.AddSingleton(roles);
 
+            var oAuthConfiguration = Configuration.GetSection("OAuth").Get<OAuth>();
+            ValidateOAuthConfiguration(oAuthConfiguration);
             services.AddAuthentication(options =>
             {
-                options.DefaultScheme = "Bearer";
-            }).AddJwtBearer(options => Configuration.Bind("AzureAd", options));
+                options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+            }).AddJwtBearer(options =>
+            {
+                options.Audience = oAuthConfiguration.Audience;
+                options.Authority = oAuthConfiguration.Authority;
+            });
 
             // Controllers
             services.AddControllers();
@@ -124,61 +133,23 @@ namespace DataCatalog.Api
                 options.AddPolicy(DataCatalogAllowSpecificOrigins,
                     builder => builder.WithOrigins(dataCatalogUrl, dataCatalogProdUrl, ingressApiUrl, egressApiUrl).AllowAnyHeader().AllowAnyMethod());
             });
-            
-            // Graph client registration
-            var groupManagementClientId = Configuration.GetValidatedStringValue("GroupManagementClientId");
-            Log.Information("GroupManagementClientId = {GroupManagementClientId}", groupManagementClientId);
-            var groupManagementClientSecret = Configuration.GetValidatedStringValue("GroupManagementClientSecret");
-            
-            var confidentialGroupClient = ConfidentialClientApplicationBuilder
-                .Create(groupManagementClientId)
-                .WithClientSecret(groupManagementClientSecret)
-                .WithTenantId(azureAdConfiguration.TenantId)
-                .Build();
-            
-            services.AddSingleton<IGraphServiceClient>(
-                new GraphServiceClient(new ClientCredentialProvider(confidentialGroupClient)));
-            
-            services.AddTransient<IActiveDirectoryGroupService, AzureActiveDirectoryGroupService>();
 
-            var dataCatalogBlobStorageUrl = Configuration.GetValidatedStringValue("DataCatalogBlobStorageUrl");
-            Log.Information("DataCatalogBlobStorageUrl = {DataCatalogBlobStorageUrl}", dataCatalogBlobStorageUrl);
-            var serviceEndpoint = new Uri(dataCatalogBlobStorageUrl);
-            services.AddSingleton(x => new DataLakeServiceClient(serviceEndpoint, new DefaultAzureCredential()));
-            services.AddTransient<IStorageService, AzureStorageService>();
+            if (EnvironmentUtil.IsLocal())
+            {
+                services.RemoveAll(typeof(IAuthorizationHandler));
+                services.AddSingleton<IAuthorizationHandler, AllowAnonymousAuthorizationHandler>();
+            }
 
+            if (Configuration.GetValue<bool>("AzureAd:Enabled"))
+            {
+                ConfigureAzureServices(services);
+            }
+            
             services.AddHealthChecks();
         }
 
-        private void ValidateAzureAdConfiguration(AzureAd azureAdConfiguration)
-        {
-            if (azureAdConfiguration == null)
-            {
-                throw new ArgumentException("'AzureAd' must have a value");
-            }
-
-            azureAdConfiguration.Audience.ValidateConfiguration("AzureAd:Audience");
-            azureAdConfiguration.Authority.ValidateConfiguration("AzureAd:Authority");
-            azureAdConfiguration.TenantId.ValidateConfiguration("AzureAd:TenantId");
-            if (azureAdConfiguration.Roles == null)
-            {
-                throw new ArgumentException("'AzureAd:Roles' must have a value");
-            }
-
-            azureAdConfiguration.Roles.Admin.ValidateConfiguration("AzureAd:Roles:Admin");
-            azureAdConfiguration.Roles.User.ValidateConfiguration("AzureAd:Roles:User");
-            azureAdConfiguration.Roles.DataSteward.ValidateConfiguration("AzureAd:Roles:DataSteward");
-            Log.Information("Logging Configuration - start AzureAd");
-            Log.Information("AzureAd:Audience = {Audience}", azureAdConfiguration.Audience);
-            Log.Information("AzureAd:Authority = {Authority}", azureAdConfiguration.Authority);
-            Log.Information("AzureAd:TenantId = {TenantId}", azureAdConfiguration.TenantId);
-            Log.Information("AzureAd:Roles:Admin = {AdminRole}", azureAdConfiguration.Roles.Admin);
-            Log.Information("AzureAd:Roles:User = {UserRole}", azureAdConfiguration.Roles.User);
-            Log.Information("AzureAd:Roles:DataSteward = {DataStewardRole}", azureAdConfiguration.Roles.DataSteward);
-            Log.Information("Logging Configuration - end AzureAd");
-        }
-
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
+
         public void Configure(IApplicationBuilder app, DataCatalogContext db)
         {
             // Use IEnvironment to check what environment the web app is running in
@@ -203,7 +174,6 @@ namespace DataCatalog.Api
                 app.UseCors(DataCatalogAllowSpecificOrigins);
 
             app.UseAuthentication();
-
             app.UseAuthorization();
 
             // Push properties to the log context
@@ -222,6 +192,66 @@ namespace DataCatalog.Api
             });
         }
 
+        private void ConfigureAzureServices(IServiceCollection services)
+        {
+            // Graph client registration
+            var groupManagementClientId = Configuration.GetValidatedStringValue("GroupManagementClientId");
+            Log.Information("GroupManagementClientId = {GroupManagementClientId}", groupManagementClientId);
+            var tenantId = Configuration.GetValidatedStringValue("AzureAd:TenantId");
+            Log.Information("AzureAd:TenantId = {TenantId}", tenantId);
+            var groupManagementClientSecret = Configuration.GetValidatedStringValue("GroupManagementClientSecret");
+            
+            var confidentialGroupClient = ConfidentialClientApplicationBuilder
+                .Create(groupManagementClientId)
+                .WithClientSecret(groupManagementClientSecret)
+                .WithTenantId(tenantId)
+                .Build();
+
+            services.AddSingleton<IGraphServiceClient>(
+                new GraphServiceClient(new ClientCredentialProvider(confidentialGroupClient)));
+
+            services.AddTransient<IGroupService, AzureGroupService>();
+
+            var dataCatalogBlobStorageUrl = Configuration.GetValidatedStringValue("DataCatalogBlobStorageUrl");
+            Log.Information("DataCatalogBlobStorageUrl = {DataCatalogBlobStorageUrl}", dataCatalogBlobStorageUrl);
+            var serviceEndpoint = new Uri(dataCatalogBlobStorageUrl);
+            services.AddSingleton(x => new DataLakeServiceClient(serviceEndpoint, new DefaultAzureCredential()));
+            services.AddTransient<IStorageService, AzureStorageService>();
+        }
+
+        private static void ValidateRolesConfiguration(Roles rolesConfiguration)
+        {
+            if (rolesConfiguration == null)
+            {
+                throw new ArgumentException("'Roles' must have a value");
+            }
+
+            rolesConfiguration.Admin.ValidateConfiguration("Roles:Admin");
+            rolesConfiguration.User.ValidateConfiguration("Roles:User");
+            rolesConfiguration.DataSteward.ValidateConfiguration("Roles:DataSteward");
+            Log.Information("Logging Configuration - start Roles");
+            Log.Information("Roles:Admin = {AdminRole}", rolesConfiguration.Admin);
+            Log.Information("Roles:User = {UserRole}", rolesConfiguration.User);
+            Log.Information("Roles:DataSteward = {DataStewardRole}", rolesConfiguration.DataSteward);
+            Log.Information("Logging Configuration - end Roles");
+        }
+
+        private static void ValidateOAuthConfiguration(OAuth oAuthConfiguration)
+        {
+            if (oAuthConfiguration == null)
+            {
+                throw new ArgumentException("'OAuth' must have a value");
+            }
+
+            oAuthConfiguration.Audience.ValidateConfiguration("OAuth:Audience");
+            oAuthConfiguration.Authority.ValidateConfiguration("OAuth:Authority");
+
+            Log.Information("Logging Configuration - start OAuth");
+            Log.Information("OAuth:Audience = {Audience}", oAuthConfiguration.Audience);
+            Log.Information("OAuth:Authority = {Authority}", oAuthConfiguration.Authority);
+            Log.Information("Logging Configuration - end OAuth");
+        }
+
         private void AddServicesAndDbContext(IServiceCollection services)
         {
             services.AddAutoMapper(typeof(Startup));
@@ -237,11 +267,28 @@ namespace DataCatalog.Api
             services.AddTransient<IIdentityProviderService, IdentityProviderService>();
             services.AddTransient<IMemberGroupService, MemberGroupService>();
             services.AddTransient<IMemberService, MemberService>();
+
             services.AddTransient<ITransformationService, TransformationService>();
             services.AddTransient(typeof(IMessageBusSender<>), typeof(MessageBusSender<>));
-
-            // Hosted services
-            services.AddHostedService<MessageBusReceiver<DatasetProvisioned, IDatasetService>>();
+            services.AddTransient<IDataCatalogAuthorizationService, DataCatalogAuthorizationService>();
+            
+            if (!EnvironmentUtil.IsLocal())
+            {
+                
+                // Hosted services
+                services.AddHostedService<MessageBusReceiver<DatasetProvisioned, IDatasetService>>();
+            }
+            else
+            {
+                services.RemoveAll(typeof(IMessageBusSender<>));
+                services.AddTransient(typeof(IMessageBusSender<>), typeof(LocalMessageHandler<>));
+                services.AddHostedService<LocalMessageHandler<DatasetCreated>>();
+                
+                services.AddTransient<IGroupService, LocalGroupService>();
+                services.AddTransient<IStorageService, LocalStorageService>();
+                services.RemoveAll(typeof(IDataCatalogAuthorizationService));
+                services.AddTransient<IDataCatalogAuthorizationService, LocalDataCatalogAuthorizationService>();
+            }
 
             // Db Context
             var conn = Configuration.GetConnectionString("DataCatalog");

@@ -17,16 +17,16 @@ namespace DataCatalog.Api.Controllers
     [ApiController]
     public class DatasetAccessController : ControllerBase
     {
-        private readonly IActiveDirectoryGroupService _activeDirectoryGroupService;
+        private readonly IGroupService _groupService;
         private readonly IStorageService _storageService;
         private readonly IMapper _mapper;
 
         public DatasetAccessController(
-            IActiveDirectoryGroupService activeDirectoryGroupService, 
+            IGroupService groupService, 
             IStorageService storageService, 
             IMapper mapper)
         {
-            _activeDirectoryGroupService = activeDirectoryGroupService;
+            _groupService = groupService;
             _storageService = storageService;
             _mapper = mapper;
         }
@@ -50,11 +50,11 @@ namespace DataCatalog.Api.Controllers
             
             var readerMembers = readerGroupId == null
                 ? null
-                : await _activeDirectoryGroupService.GetGroupMembersAsync(readerGroupId);
+                : await _groupService.GetGroupMembersAsync(readerGroupId);
 
             var writerMembers = writerGroupId == null
                 ? null
-                : await _activeDirectoryGroupService.GetGroupMembersAsync(writerGroupId);
+                : await _groupService.GetGroupMembersAsync(writerGroupId);
             
             var result = new DatasetAccessListResponse
             {
@@ -97,7 +97,7 @@ namespace DataCatalog.Api.Controllers
         [Route("access")]
         public async Task<ActionResult<IEnumerable<AdSearchResultResponse>>> Search(string search)
         {
-            var searchResults = await _activeDirectoryGroupService.SearchAsync(search);
+            var searchResults = await _groupService.SearchAsync(search);
             
             return Ok(searchResults.Select(x => _mapper.Map<Data.Domain.AdSearchResult, AdSearchResultResponse>(x)));
         }
@@ -114,7 +114,7 @@ namespace DataCatalog.Api.Controllers
             if (groupId == null)
                 return NotFound();
 
-            await _activeDirectoryGroupService.RemoveGroupMemberAsync(groupId, memberId.ToString());
+            await _groupService.RemoveGroupMemberAsync(groupId, memberId.ToString());
 
             return Ok();
         }
@@ -131,8 +131,8 @@ namespace DataCatalog.Api.Controllers
             if (groupId == null)
                 return NotFound();
 
-            await _activeDirectoryGroupService.AddGroupMemberAsync(groupId, memberId.ToString());
-            var addedMember = await _activeDirectoryGroupService.GetAccessMemberAsync(memberId.ToString());
+            await _groupService.AddGroupMemberAsync(groupId, memberId.ToString());
+            var addedMember = await _groupService.GetAccessMemberAsync(memberId.ToString());
             
             return Ok(_mapper.Map<Data.Domain.AccessMember, DataAccessEntry>(addedMember));
         }

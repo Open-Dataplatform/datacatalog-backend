@@ -22,8 +22,8 @@ namespace DataCatalog.Api.Data
             CreateMap<Category, CategoryColourResponse>();
             CreateMap<Category, Domain.Category>();
             CreateMap<CategoryResponse, GuidId>();
-            CreateMap<CategoryCreateRequest, Category>();
-            CreateMap<CategoryUpdateRequest, Category>();
+            CreateMap<CategoryCreateRequest, Domain.Category>();
+            CreateMap<CategoryUpdateRequest, Domain.Category>();
 
             //Confidentiality
             CreateMap<Confidentiality, ConfidentialityResponse>();

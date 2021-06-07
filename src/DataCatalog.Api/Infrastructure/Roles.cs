@@ -1,6 +1,6 @@
 ﻿namespace DataCatalog.Api.Infrastructure
 {
-    public class AllRoles
+    public class Roles
     {
         public string Admin { get; set; }
         public string DataSteward { get; set; }

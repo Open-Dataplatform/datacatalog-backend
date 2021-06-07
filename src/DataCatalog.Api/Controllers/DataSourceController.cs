@@ -1,12 +1,13 @@
 ﻿using DataCatalog.Api.Data.Dto;
 using DataCatalog.Common.Enums;
 using DataCatalog.Api.Infrastructure;
-using DataCatalog.Api.Services;
+using DataCatalog.Api.MessageBus;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using AutoMapper;
+using DataCatalog.Api.Services;
 
 namespace DataCatalog.Api.Controllers
 {

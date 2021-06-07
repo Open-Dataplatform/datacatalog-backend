@@ -22,7 +22,7 @@ namespace DataCatalog.Api.Controllers
         private readonly IDatasetService _datasetService;
         private readonly IMapper _mapper;
         private readonly Current _current;
-        private readonly IActiveDirectoryGroupService _activeDirectoryGroupService;
+        private readonly IGroupService _groupService;
         private readonly IStorageService _storageService;
         private readonly IAllUsersGroupProvider _allUsersGroupProvider;
 
@@ -30,14 +30,14 @@ namespace DataCatalog.Api.Controllers
             IDatasetService datasetService, 
             IMapper mapper, 
             Current current, 
-            IActiveDirectoryGroupService activeDirectoryGroupService, 
+            IGroupService groupService, 
             IStorageService storageService, 
             IAllUsersGroupProvider allUsersGroupProvider)
         {
             _datasetService = datasetService;
             _mapper = mapper;
             _current = current;
-            _activeDirectoryGroupService = activeDirectoryGroupService;
+            _groupService = groupService;
             _storageService = storageService;
             _allUsersGroupProvider = allUsersGroupProvider;
         }
@@ -109,9 +109,9 @@ namespace DataCatalog.Api.Controllers
                 if (readerGroupId != null)
                 {
                     var memberOperationTask = request.Confidentiality == Confidentiality.Public
-                        ? _activeDirectoryGroupService.AddGroupMemberAsync(readerGroupId,
+                        ? _groupService.AddGroupMemberAsync(readerGroupId,
                             _allUsersGroupProvider.GetAllUsersGroup())
-                        : _activeDirectoryGroupService.RemoveGroupMemberAsync(readerGroupId,
+                        : _groupService.RemoveGroupMemberAsync(readerGroupId,
                             _allUsersGroupProvider.GetAllUsersGroup());
 
                     await memberOperationTask;

@@ -10,6 +10,12 @@ namespace DataCatalog.Common.Utils
         {
             return Environment.GetEnvironmentVariable(EnvironmentVariableKey);
         }
+
+        /// <summary>
+        /// Returns whether or not the environment is a Local environment (e.g. without security)
+        /// </summary>
+        /// <returns><c>True</c>, to indicate the environment is a Local environment, otherwise <c>false</c>.</returns>
+        public static bool IsLocal() => IsEnvironment("Local");
         
         /// <summary>
         /// Returns whether or not the environment is a development environment.

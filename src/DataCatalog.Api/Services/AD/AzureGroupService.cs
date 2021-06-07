@@ -8,14 +8,14 @@ using Microsoft.Graph;
 
 namespace DataCatalog.Api.Services.AD
 {
-    public class AzureActiveDirectoryGroupService : IActiveDirectoryGroupService
+    public class AzureGroupService : IGroupService
     {
         private readonly IGraphServiceClient _graphServiceClient;
-        private readonly ILogger<AzureActiveDirectoryGroupService> _logger;
+        private readonly ILogger<AzureGroupService> _logger;
 
-        public AzureActiveDirectoryGroupService(
+        public AzureGroupService(
             IGraphServiceClient graphServiceClient, 
-            ILogger<AzureActiveDirectoryGroupService> logger)
+            ILogger<AzureGroupService> logger)
         {
             _graphServiceClient = graphServiceClient;
             _logger = logger;
@@ -68,7 +68,7 @@ namespace DataCatalog.Api.Services.AD
             }
             catch (ServiceException se)
             {
-                _logger.LogInformation(se, $"Service exception caught from the graph api when trying to remove member {memberId} from group {groupId}");
+                _logger.LogWarning(se, $"Service exception caught from the graph api when trying to remove member {memberId} from group {groupId}");
             }
             catch (Exception e)
             {
@@ -90,7 +90,7 @@ namespace DataCatalog.Api.Services.AD
             }
             catch (ServiceException se)
             {
-                _logger.LogInformation(se, $"Service exception caught from the graph api when trying to add member {memberId} from group {groupId}");
+                _logger.LogWarning(se, $"Service exception caught from the graph api when trying to add member {memberId} from group {groupId}");
             }
             catch (Exception e)
             {

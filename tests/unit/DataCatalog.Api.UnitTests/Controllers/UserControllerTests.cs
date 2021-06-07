@@ -16,14 +16,11 @@ namespace DataCatalog.Api.UnitTests.Controllers
         public void GetUserInfo_ShouldReturnNameAndRole()
         {
             // ARRANGE
-            AzureAd settings = new AzureAd
+            var settings = new Roles
             {
-                Roles = new AllRoles
-                {
-                    Admin = Guid.NewGuid().ToString(),
-                    DataSteward = Guid.NewGuid().ToString(),
-                    User = Guid.NewGuid().ToString()
-                }
+                Admin = Guid.NewGuid().ToString(),
+                DataSteward = Guid.NewGuid().ToString(),
+                User = Guid.NewGuid().ToString()
             };
             var name = Guid.NewGuid().ToString();
             var userController = new UserController(settings)
@@ -36,7 +33,7 @@ namespace DataCatalog.Api.UnitTests.Controllers
                             new[]
                             {
                                 new Claim(ClaimsUtility.ClaimName, name),
-                                new Claim(ClaimTypes.Role, settings.Roles.DataSteward)
+                                new Claim(ClaimTypes.Role, settings.DataSteward)
                             }, "auth"))
                     }
                 }

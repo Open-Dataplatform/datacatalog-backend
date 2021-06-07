@@ -1,7 +1,7 @@
 ﻿using System;
 using DataCatalog.Common.Enums;
 
-namespace DataCatalog.Api.Data.Domain
+namespace DataCatalog.Api.Data.Messages
 {
     public class DatasetProvisioned
     {

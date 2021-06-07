@@ -2,7 +2,6 @@
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using DataCatalog.Api.Services;
 using DataCatalog.Common.Utils;
 using Microsoft.Azure.ServiceBus;
 using Microsoft.Extensions.DependencyInjection;
