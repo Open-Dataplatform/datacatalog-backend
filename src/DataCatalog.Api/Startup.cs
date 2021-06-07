@@ -14,7 +14,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Serilog;
 using System.Runtime.CompilerServices;
 using Azure.Identity;
-using Azure.Security.KeyVault.Secrets;
 using Azure.Storage.Files.DataLake;
 using DataCatalog.Api.Data.Domain;
 using DataCatalog.Api.Data.Messages;
@@ -62,7 +61,7 @@ namespace DataCatalog.Api
 
             // Groups and roles
             var roles = Configuration.GetSection("Roles").Get<Roles>();
-            ValidateAzureAdConfiguration(roles);
+            ValidateRolesConfiguration(roles);
             services.AddSingleton(roles);
 
             var oAuthConfiguration = Configuration.GetSection("OAuth").Get<OAuth>();
@@ -139,8 +138,6 @@ namespace DataCatalog.Api
             {
                 services.RemoveAll(typeof(IAuthorizationHandler));
                 services.AddSingleton<IAuthorizationHandler, AllowAnonymousAuthorizationHandler>();
-                services.AddTransient<IGroupService, LocalGroupService>();
-                services.AddTransient<IStorageService, LocalStorageService>();
             }
 
             if (Configuration.GetValue<bool>("AzureAd:Enabled"))
@@ -197,24 +194,16 @@ namespace DataCatalog.Api
 
         private void ConfigureAzureServices(IServiceCollection services)
         {
-            // Azure KeyVault
-            var dataCatalogKeyVaultUrl = Configuration.GetValidatedStringValue("DataCatalogKeyVaultUrl");
-            var groupManagementClientSecretName = Configuration.GetValidatedStringValue("GroupManagementClientSecretName");
-            Log.Information("DataCatalogKeyVaultUrl = {DataCatalogKeyVaultUrl}", dataCatalogKeyVaultUrl);
-            Log.Information("GroupManagementClientSecretName = {GroupManagementClientSecretName}",
-                groupManagementClientSecretName);
-            var client = new SecretClient(new Uri(dataCatalogKeyVaultUrl), new DefaultAzureCredential());
-            var groupManagementClientSecret = client.GetSecret(groupManagementClientSecretName);
-
             // Graph client registration
             var groupManagementClientId = Configuration.GetValidatedStringValue("GroupManagementClientId");
             Log.Information("GroupManagementClientId = {GroupManagementClientId}", groupManagementClientId);
             var tenantId = Configuration.GetValidatedStringValue("AzureAd:TenantId");
             Log.Information("AzureAd:TenantId = {TenantId}", tenantId);
+            var groupManagementClientSecret = Configuration.GetValidatedStringValue("GroupManagementClientSecret");
             
             var confidentialGroupClient = ConfidentialClientApplicationBuilder
                 .Create(groupManagementClientId)
-                .WithClientSecret(groupManagementClientSecret.Value.Value)
+                .WithClientSecret(groupManagementClientSecret)
                 .WithTenantId(tenantId)
                 .Build();
 
@@ -230,7 +219,7 @@ namespace DataCatalog.Api
             services.AddTransient<IStorageService, AzureStorageService>();
         }
 
-        private static void ValidateAzureAdConfiguration(Roles rolesConfiguration)
+        private static void ValidateRolesConfiguration(Roles rolesConfiguration)
         {
             if (rolesConfiguration == null)
             {
@@ -281,9 +270,11 @@ namespace DataCatalog.Api
 
             services.AddTransient<ITransformationService, TransformationService>();
             services.AddTransient(typeof(IMessageBusSender<>), typeof(MessageBusSender<>));
-
+            services.AddTransient<IDataCatalogAuthorizationService, DataCatalogAuthorizationService>();
+            
             if (!EnvironmentUtil.IsLocal())
             {
+                
                 // Hosted services
                 services.AddHostedService<MessageBusReceiver<DatasetProvisioned, IDatasetService>>();
             }
@@ -292,6 +283,11 @@ namespace DataCatalog.Api
                 services.RemoveAll(typeof(IMessageBusSender<>));
                 services.AddTransient(typeof(IMessageBusSender<>), typeof(LocalMessageHandler<>));
                 services.AddHostedService<LocalMessageHandler<DatasetCreated>>();
+                
+                services.AddTransient<IGroupService, LocalGroupService>();
+                services.AddTransient<IStorageService, LocalStorageService>();
+                services.RemoveAll(typeof(IDataCatalogAuthorizationService));
+                services.AddTransient<IDataCatalogAuthorizationService, LocalDataCatalogAuthorizationService>();
             }
 
             // Db Context

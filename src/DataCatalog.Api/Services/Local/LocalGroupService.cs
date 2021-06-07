@@ -19,6 +19,11 @@ namespace DataCatalog.Api.Services.Local
 
         public LocalGroupService()
         {
+            if (!EnvironmentUtil.IsLocal())
+            {
+                throw new InvalidOperationException("This class cannot be used unless the environment is local");
+            }
+            
             _localAccessMember = new AccessMember()
             {
                 Id = Guid.NewGuid().ToString(),
@@ -35,40 +40,27 @@ namespace DataCatalog.Api.Services.Local
 
         public Task<IEnumerable<AccessMember>> GetGroupMembersAsync(string id)
         {
-            EnsureLocalEnvironment();
             return Task.FromResult(new List<AccessMember> {_localAccessMember}.AsEnumerable());
         }
 
         public Task<AccessMember> GetAccessMemberAsync(string id)
         {
-            EnsureLocalEnvironment();
             return Task.FromResult(_localAccessMember);
         }
 
         public Task RemoveGroupMemberAsync(string groupId, string memberId)
         {
-            EnsureLocalEnvironment();
             return Task.CompletedTask;
         }
 
         public Task AddGroupMemberAsync(string groupId, string memberId)
         {
-            EnsureLocalEnvironment();
             return Task.CompletedTask;
         }
 
         public Task<IEnumerable<AdSearchResult>> SearchAsync(string searchString)
         {
-            EnsureLocalEnvironment();
             return Task.FromResult(new List<AdSearchResult> {_localSearchResult}.AsEnumerable());
-        }
-
-        private static void EnsureLocalEnvironment()
-        {
-            if (!EnvironmentUtil.IsLocal())
-            {
-                throw new InvalidOperationException("This class cannot be used unless the environment is local");
-            }
         }
     }
 }

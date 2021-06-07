@@ -1,12 +1,22 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using DataCatalog.Api.Services.AD;
 using DataCatalog.Api.Services.Storage;
+using DataCatalog.Common.Utils;
 
 namespace DataCatalog.Api.Services.Local
 {
     public class LocalStorageService : IStorageService
     {
+        public LocalStorageService()
+        {
+            if (!EnvironmentUtil.IsLocal())
+            {
+                throw new InvalidOperationException("This class cannot be used unless the environment is local");
+            }
+        }
+        
         public Task<IDictionary<string, string>> GetDirectoryMetadataAsync(string path)
         {
             IDictionary<string, string> directory = new Dictionary<string, string>();

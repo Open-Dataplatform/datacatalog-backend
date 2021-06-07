@@ -12,12 +12,16 @@ namespace DataCatalog.Api.Services.Local
     /// </summary>
     public class AllowAnonymousAuthorizationHandler : IAuthorizationHandler
     {
-        public Task HandleAsync(AuthorizationHandlerContext context)
+        public AllowAnonymousAuthorizationHandler()
         {
             if (!EnvironmentUtil.IsLocal())
             {
                 throw new InvalidOperationException("This class cannot be used unless the environment is local");
             }
+        }
+        
+        public Task HandleAsync(AuthorizationHandlerContext context)
+        {
             foreach (var requirement in context.PendingRequirements.ToList())
                 context.Succeed(requirement);
         
