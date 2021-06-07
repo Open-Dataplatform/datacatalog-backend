@@ -54,6 +54,10 @@ namespace DataCatalog.Api
                         .Enrich.FromLogContext()
                         .Enrich.WithEnvironment();
                 })
+                .ConfigureAppConfiguration((_, builder) => 
+                {
+                    builder.BuildPlatformConfiguration(EnvironmentUtil.GetCurrentEnvironment(), args);
+                })
                 .ConfigureWebHostDefaults(webBuilder => { webBuilder.UseStartup<Startup>(); })
                 .Build();
         }
