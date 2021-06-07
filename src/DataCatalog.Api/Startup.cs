@@ -276,7 +276,7 @@ namespace DataCatalog.Api
             {
                 
                 // Hosted services
-                // services.AddHostedService<MessageBusReceiver<DatasetProvisioned, IDatasetService>>();
+                services.AddHostedService<MessageBusReceiver<DatasetProvisioned, IDatasetService>>();
             }
             else
             {
