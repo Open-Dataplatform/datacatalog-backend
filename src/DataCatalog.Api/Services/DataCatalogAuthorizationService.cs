@@ -5,7 +5,6 @@ using DataCatalog.Api.Data.Domain;
 using DataCatalog.Api.Infrastructure;
 using DataCatalog.Common.Data;
 using DataCatalog.Common.Enums;
-using Roles = DataCatalog.Common.Enums.Roles;
 
 namespace DataCatalog.Api.Services
 {
