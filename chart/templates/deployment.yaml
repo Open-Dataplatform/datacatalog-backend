@@ -24,7 +24,8 @@ spec:
             "GroupManagementClientId": "{{ .Data.data.client_id }}",
             "GroupManagementClientSecret": "{{ .Data.data.secret }}",
             "ConnectionStrings": {
-              "DataCatalog": "{{ .Data.data.connection_string }}"
+              "DataCatalog": "{{ .Data.data.connection_string }}",
+              "ServiceBus": "{{ .Data.data.service_bus_connection_string }}"
             },
             "AzureAd": {
               "TenantId": "{{ .Data.data.tenant_id }}"
