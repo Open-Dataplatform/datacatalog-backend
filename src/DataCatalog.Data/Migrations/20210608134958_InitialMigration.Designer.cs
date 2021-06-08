@@ -10,15 +10,15 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DataCatalog.Data.Migrations
 {
     [DbContext(typeof(DataCatalogContext))]
-    [Migration("20200401115146_Update")]
-    partial class Update
+    [Migration("20210608134958_InitialMigration")]
+    partial class InitialMigration
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "3.1.2")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
+                .HasAnnotation("ProductVersion", "5.0.5")
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
             modelBuilder.Entity("DataCatalog.Data.Model.Category", b =>
@@ -48,142 +48,21 @@ namespace DataCatalog.Data.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<bool>("OriginDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("OriginEnvironment")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("Version")
+                        .HasColumnType("int");
+
                     b.HasKey("Id");
 
                     b.ToTable("Category");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = new Guid("8713b259-0294-480a-960c-08a9c9983961"),
-                            Colour = "#2A939B",
-                            CreatedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            ModifiedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Name = "Ancillary Services"
-                        },
-                        new
-                        {
-                            Id = new Guid("b94863a9-685a-44d6-aae4-2cfb3a63c489"),
-                            Colour = "#389B88",
-                            CreatedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            ModifiedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Name = "Auctions, Transmission Capacity"
-                        },
-                        new
-                        {
-                            Id = new Guid("e5b2f760-e965-452f-b0ab-70ca506d4c20"),
-                            Colour = "#452A9B",
-                            CreatedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            ModifiedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Name = "Emissions"
-                        },
-                        new
-                        {
-                            Id = new Guid("08e58f12-51bf-4af9-af3a-02022cab77c7"),
-                            Colour = "#2A9B65",
-                            CreatedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            ModifiedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Name = "Day Ahead Market"
-                        },
-                        new
-                        {
-                            Id = new Guid("23ab1cd5-ae16-4aa4-bab7-25380c1634d5"),
-                            Colour = "#B27736",
-                            CreatedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            ModifiedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Name = "Electric Boilers"
-                        },
-                        new
-                        {
-                            Id = new Guid("8a95d290-417e-4a53-a807-a13293f3117d"),
-                            Colour = "#F8AE3C",
-                            CreatedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            ModifiedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Name = "Gas"
-                        },
-                        new
-                        {
-                            Id = new Guid("5873b2e5-5db1-42db-bf25-83fd9dded293"),
-                            Colour = "#663BCC",
-                            CreatedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            ModifiedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Name = "Production and Consumption"
-                        },
-                        new
-                        {
-                            Id = new Guid("084e6353-82a8-4f99-b9f3-b247081c34c8"),
-                            Colour = "#A0C1C2",
-                            CreatedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            ModifiedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Name = "Electricity Consumption"
-                        },
-                        new
-                        {
-                            Id = new Guid("5b39fbdd-76c5-44df-9f7d-d314db760fc1"),
-                            Colour = "#819B38",
-                            CreatedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            ModifiedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Name = "Intra Day Market"
-                        },
-                        new
-                        {
-                            Id = new Guid("a90abc39-c2de-4c29-a9f8-4e10f41a50f0"),
-                            Colour = "#293A4C",
-                            CreatedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            ModifiedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Name = "Electricity Production"
-                        },
-                        new
-                        {
-                            Id = new Guid("9ac5af8d-4165-448a-ace5-2edcf0c3e202"),
-                            Colour = "#548E80",
-                            CreatedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            ModifiedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Name = "Regulating Power"
-                        },
-                        new
-                        {
-                            Id = new Guid("7434d8a3-7ebb-4212-967c-061d5a2666d7"),
-                            Colour = "#7D8E1C",
-                            CreatedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            ModifiedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Name = "Whole Sale Market"
-                        },
-                        new
-                        {
-                            Id = new Guid("90909fcd-4a5a-455a-a543-9c2c8a45e453"),
-                            Colour = "#398C22",
-                            CreatedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            ModifiedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Name = "Reserves"
-                        },
-                        new
-                        {
-                            Id = new Guid("d6944781-c069-4c14-859f-07865164763f"),
-                            Colour = "#FFD424",
-                            CreatedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            ModifiedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Name = "Solar Power"
-                        },
-                        new
-                        {
-                            Id = new Guid("b4cef11a-d0f4-4c33-9796-b80ea6d2489a"),
-                            Colour = "#547B8E",
-                            CreatedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            ModifiedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Name = "Transmission Lines"
-                        },
-                        new
-                        {
-                            Id = new Guid("418e657d-3efb-4a30-ad3f-3f95a6ab8888"),
-                            Colour = "#C2E4F0",
-                            CreatedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            ModifiedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Name = "Wind Power"
-                        });
                 });
 
-            modelBuilder.Entity("DataCatalog.Data.Model.Confidentiality", b =>
+            modelBuilder.Entity("DataCatalog.Data.Model.DataContract", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -194,54 +73,33 @@ namespace DataCatalog.Data.Migrations
                         .HasColumnType("datetime2")
                         .HasDefaultValueSql("getutcdate()");
 
-                    b.Property<string>("Description")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<Guid>("DataSourceId")
+                        .HasColumnType("uniqueidentifier");
 
-                    b.Property<int>("Level")
-                        .HasColumnType("int");
+                    b.Property<Guid>("DatasetId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTime>("ModifiedDate")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("datetime2")
                         .HasDefaultValueSql("getutcdate()");
 
-                    b.Property<string>("Name")
-                        .IsRequired()
+                    b.Property<bool>("OriginDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("OriginEnvironment")
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("Version")
+                        .HasColumnType("int");
 
                     b.HasKey("Id");
 
-                    b.ToTable("Confidentiality");
+                    b.HasIndex("DataSourceId");
 
-                    b.HasData(
-                        new
-                        {
-                            Id = new Guid("62c544b2-ee11-4434-b9b7-39ffb1ab9616"),
-                            CreatedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Description = "Freely available",
-                            Level = 0,
-                            ModifiedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Name = "Nonconfidential"
-                        },
-                        new
-                        {
-                            Id = new Guid("5cf6fe55-13f4-4503-8ae0-394f6e09bf3d"),
-                            CreatedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Description = "Sensitive, but available for work-related tasks",
-                            Level = 1,
-                            ModifiedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Name = "Confidential"
-                        },
-                        new
-                        {
-                            Id = new Guid("568f7357-fce8-4733-b15d-2e0c4c3d8bd6"),
-                            CreatedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Description = "Only available with special clearance",
-                            Level = 2,
-                            ModifiedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Name = "Strictly confidential"
-                        });
+                    b.HasIndex("DatasetId");
+
+                    b.ToTable("DataContract");
                 });
 
             modelBuilder.Entity("DataCatalog.Data.Model.DataField", b =>
@@ -249,11 +107,6 @@ namespace DataCatalog.Data.Migrations
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("ConfidentialityId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier")
-                        .HasDefaultValue(new Guid("62c544b2-ee11-4434-b9b7-39ffb1ab9616"));
 
                     b.Property<DateTime>("CreatedDate")
                         .ValueGeneratedOnAdd()
@@ -287,11 +140,52 @@ namespace DataCatalog.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ConfidentialityId");
-
                     b.HasIndex("DatasetId");
 
                     b.ToTable("DataField");
+                });
+
+            modelBuilder.Entity("DataCatalog.Data.Model.DataSource", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("ContactInfo")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("CreatedDate")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("getutcdate()");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("ModifiedDate")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("getutcdate()");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("OriginDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("OriginEnvironment")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("SourceType")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Version")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("DataSource");
                 });
 
             modelBuilder.Entity("DataCatalog.Data.Model.Dataset", b =>
@@ -299,6 +193,11 @@ namespace DataCatalog.Data.Migrations
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("Confidentiality")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(0);
 
                     b.Property<Guid>("ContactId")
                         .HasColumnType("uniqueidentifier");
@@ -311,10 +210,13 @@ namespace DataCatalog.Data.Migrations
                     b.Property<string>("Description")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<bool>("IsArchived")
+                    b.Property<Guid>("HierarchyId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("bit")
-                        .HasDefaultValue(false);
+                        .HasColumnType("uniqueidentifier")
+                        .HasDefaultValue(new Guid("668f1737-5501-4db5-a072-c2fa37ef26d0"));
+
+                    b.Property<string>("Location")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("ModifiedDate")
                         .ValueGeneratedOnAdd()
@@ -324,6 +226,23 @@ namespace DataCatalog.Data.Migrations
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("OriginDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("OriginEnvironment")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Owner")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("ProvisionStatus")
+                        .HasColumnType("int");
+
+                    b.Property<int>("RefinementLevel")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(0);
 
                     b.Property<string>("SlaDescription")
                         .HasColumnType("nvarchar(max)");
@@ -336,9 +255,21 @@ namespace DataCatalog.Data.Migrations
                         .HasColumnType("uniqueidentifier")
                         .HasDefaultValue(new Guid("5777efb5-f55c-4f16-bb83-0125b810f995"));
 
+                    b.Property<int>("Status")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(0);
+
+                    b.Property<int>("Version")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(1);
+
                     b.HasKey("Id");
 
                     b.HasIndex("ContactId");
+
+                    b.HasIndex("HierarchyId");
 
                     b.ToTable("Dataset");
                 });
@@ -365,10 +296,8 @@ namespace DataCatalog.Data.Migrations
 
             modelBuilder.Entity("DataCatalog.Data.Model.DatasetChangeLog", b =>
                 {
-                    b.Property<Guid>("DatasetId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("MemberId")
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTime>("CreatedDate")
@@ -376,7 +305,21 @@ namespace DataCatalog.Data.Migrations
                         .HasColumnType("datetime2")
                         .HasDefaultValueSql("getutcdate()");
 
-                    b.HasKey("DatasetId", "MemberId");
+                    b.Property<Guid>("DatasetId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Email")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid>("MemberId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("DatasetId");
 
                     b.HasIndex("MemberId");
 
@@ -391,15 +334,15 @@ namespace DataCatalog.Data.Migrations
                     b.Property<Guid>("DurationId")
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<int>("DurationType")
+                        .HasColumnType("int");
+
                     b.Property<DateTime>("CreatedDate")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("datetime2")
                         .HasDefaultValueSql("getutcdate()");
 
-                    b.Property<int>("DurationType")
-                        .HasColumnType("int");
-
-                    b.HasKey("DatasetId", "DurationId");
+                    b.HasKey("DatasetId", "DurationId", "DurationType");
 
                     b.HasIndex("DurationId");
 
@@ -486,16 +429,56 @@ namespace DataCatalog.Data.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Duration");
+                });
 
-                    b.HasData(
-                        new
-                        {
-                            Id = new Guid("f745f308-1542-4a7a-975f-0cd6f1e73668"),
-                            Code = "P1H",
-                            CreatedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Description = "Every hour",
-                            ModifiedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
-                        });
+            modelBuilder.Entity("DataCatalog.Data.Model.Hierarchy", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreatedDate")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("getutcdate()");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("ModifiedDate")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("getutcdate()");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid?>("ParentHierarchyId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ParentHierarchyId");
+
+                    b.ToTable("Hierarchy");
+                });
+
+            modelBuilder.Entity("DataCatalog.Data.Model.IdentityProvider", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("TenantId")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("IdentityProvider");
                 });
 
             modelBuilder.Entity("DataCatalog.Data.Model.Member", b =>
@@ -509,40 +492,23 @@ namespace DataCatalog.Data.Migrations
                         .HasColumnType("datetime2")
                         .HasDefaultValueSql("getutcdate()");
 
-                    b.Property<string>("Email")
+                    b.Property<string>("ExternalId")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<Guid>("MemberRoleId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier")
-                        .HasDefaultValue(new Guid("f611f697-4deb-4cc6-901d-41dd76346359"));
+                    b.Property<Guid>("IdentityProviderId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTime>("ModifiedDate")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("datetime2")
                         .HasDefaultValueSql("getutcdate()");
 
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
                     b.HasKey("Id");
 
-                    b.HasIndex("MemberRoleId");
+                    b.HasIndex("IdentityProviderId");
 
                     b.ToTable("Member");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = new Guid("7704274c-1a92-4d39-bc56-35ddd0e3ea7f"),
-                            CreatedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Email = "dummy@fake.com",
-                            MemberRoleId = new Guid("2375e551-d07a-4417-8357-6d8784474273"),
-                            ModifiedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Name = "Dummy Steward"
-                        });
                 });
 
             modelBuilder.Entity("DataCatalog.Data.Model.MemberGroup", b =>
@@ -597,54 +563,6 @@ namespace DataCatalog.Data.Migrations
                     b.ToTable("MemberGroupMember");
                 });
 
-            modelBuilder.Entity("DataCatalog.Data.Model.MemberRole", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime>("CreatedDate")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("datetime2")
-                        .HasDefaultValueSql("getutcdate()");
-
-                    b.Property<DateTime>("ModifiedDate")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("datetime2")
-                        .HasDefaultValueSql("getutcdate()");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("MemberRole");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = new Guid("a32b86d0-1646-4ca7-b79e-e205b0d15868"),
-                            CreatedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            ModifiedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Name = "Admin"
-                        },
-                        new
-                        {
-                            Id = new Guid("2375e551-d07a-4417-8357-6d8784474273"),
-                            CreatedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            ModifiedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Name = "Data steward"
-                        },
-                        new
-                        {
-                            Id = new Guid("f611f697-4deb-4cc6-901d-41dd76346359"),
-                            CreatedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            ModifiedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Name = "User"
-                        });
-                });
-
             modelBuilder.Entity("DataCatalog.Data.Model.Transformation", b =>
                 {
                     b.Property<Guid>("Id")
@@ -696,19 +614,34 @@ namespace DataCatalog.Data.Migrations
                     b.ToTable("TransformationDataset");
                 });
 
-            modelBuilder.Entity("DataCatalog.Data.Model.DataField", b =>
+            modelBuilder.Entity("DataCatalog.Data.Model.DataContract", b =>
                 {
-                    b.HasOne("DataCatalog.Data.Model.Confidentiality", "Confidentiality")
-                        .WithMany("DataFields")
-                        .HasForeignKey("ConfidentialityId")
+                    b.HasOne("DataCatalog.Data.Model.DataSource", "DataSource")
+                        .WithMany("DataContracts")
+                        .HasForeignKey("DataSourceId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("DataCatalog.Data.Model.Dataset", "Dataset")
+                        .WithMany("DataContracts")
+                        .HasForeignKey("DatasetId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Dataset");
+
+                    b.Navigation("DataSource");
+                });
+
+            modelBuilder.Entity("DataCatalog.Data.Model.DataField", b =>
+                {
                     b.HasOne("DataCatalog.Data.Model.Dataset", "Dataset")
                         .WithMany("DataFields")
                         .HasForeignKey("DatasetId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Dataset");
                 });
 
             modelBuilder.Entity("DataCatalog.Data.Model.Dataset", b =>
@@ -718,6 +651,16 @@ namespace DataCatalog.Data.Migrations
                         .HasForeignKey("ContactId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.HasOne("DataCatalog.Data.Model.Hierarchy", "Hierarchy")
+                        .WithMany("Datasets")
+                        .HasForeignKey("HierarchyId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Contact");
+
+                    b.Navigation("Hierarchy");
                 });
 
             modelBuilder.Entity("DataCatalog.Data.Model.DatasetCategory", b =>
@@ -733,6 +676,10 @@ namespace DataCatalog.Data.Migrations
                         .HasForeignKey("DatasetId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Category");
+
+                    b.Navigation("Dataset");
                 });
 
             modelBuilder.Entity("DataCatalog.Data.Model.DatasetChangeLog", b =>
@@ -748,6 +695,10 @@ namespace DataCatalog.Data.Migrations
                         .HasForeignKey("MemberId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Dataset");
+
+                    b.Navigation("Member");
                 });
 
             modelBuilder.Entity("DataCatalog.Data.Model.DatasetDuration", b =>
@@ -763,6 +714,10 @@ namespace DataCatalog.Data.Migrations
                         .HasForeignKey("DurationId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Dataset");
+
+                    b.Navigation("Duration");
                 });
 
             modelBuilder.Entity("DataCatalog.Data.Model.DatasetGroup", b =>
@@ -772,6 +727,8 @@ namespace DataCatalog.Data.Migrations
                         .HasForeignKey("MemberId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Member");
                 });
 
             modelBuilder.Entity("DataCatalog.Data.Model.DatasetGroupDataset", b =>
@@ -787,15 +744,30 @@ namespace DataCatalog.Data.Migrations
                         .HasForeignKey("DatasetId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Dataset");
+
+                    b.Navigation("DatasetGroup");
+                });
+
+            modelBuilder.Entity("DataCatalog.Data.Model.Hierarchy", b =>
+                {
+                    b.HasOne("DataCatalog.Data.Model.Hierarchy", "ParentHierarchy")
+                        .WithMany("ChildHierarchies")
+                        .HasForeignKey("ParentHierarchyId");
+
+                    b.Navigation("ParentHierarchy");
                 });
 
             modelBuilder.Entity("DataCatalog.Data.Model.Member", b =>
                 {
-                    b.HasOne("DataCatalog.Data.Model.MemberRole", "MemberRole")
-                        .WithMany("Members")
-                        .HasForeignKey("MemberRoleId")
+                    b.HasOne("DataCatalog.Data.Model.IdentityProvider", "IdentityProvider")
+                        .WithMany()
+                        .HasForeignKey("IdentityProviderId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("IdentityProvider");
                 });
 
             modelBuilder.Entity("DataCatalog.Data.Model.MemberGroupMember", b =>
@@ -811,6 +783,10 @@ namespace DataCatalog.Data.Migrations
                         .HasForeignKey("MemberId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Member");
+
+                    b.Navigation("MemberGroup");
                 });
 
             modelBuilder.Entity("DataCatalog.Data.Model.TransformationDataset", b =>
@@ -826,6 +802,71 @@ namespace DataCatalog.Data.Migrations
                         .HasForeignKey("TransformationId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Dataset");
+
+                    b.Navigation("Transformation");
+                });
+
+            modelBuilder.Entity("DataCatalog.Data.Model.Category", b =>
+                {
+                    b.Navigation("DatasetCategories");
+                });
+
+            modelBuilder.Entity("DataCatalog.Data.Model.DataSource", b =>
+                {
+                    b.Navigation("DataContracts");
+                });
+
+            modelBuilder.Entity("DataCatalog.Data.Model.Dataset", b =>
+                {
+                    b.Navigation("DataContracts");
+
+                    b.Navigation("DataFields");
+
+                    b.Navigation("DatasetCategories");
+
+                    b.Navigation("DatasetChangeLogs");
+
+                    b.Navigation("DatasetDurations");
+
+                    b.Navigation("TransformationDatasets");
+                });
+
+            modelBuilder.Entity("DataCatalog.Data.Model.DatasetGroup", b =>
+                {
+                    b.Navigation("DatasetGroupDatasets");
+                });
+
+            modelBuilder.Entity("DataCatalog.Data.Model.Duration", b =>
+                {
+                    b.Navigation("DatasetsDurations");
+                });
+
+            modelBuilder.Entity("DataCatalog.Data.Model.Hierarchy", b =>
+                {
+                    b.Navigation("ChildHierarchies");
+
+                    b.Navigation("Datasets");
+                });
+
+            modelBuilder.Entity("DataCatalog.Data.Model.Member", b =>
+                {
+                    b.Navigation("DatasetChangeLogs");
+
+                    b.Navigation("MemberGroupMembers");
+                });
+
+            modelBuilder.Entity("DataCatalog.Data.Model.MemberGroup", b =>
+                {
+                    b.Navigation("Datasets");
+
+                    b.Navigation("MemberGroupMembers");
+                });
+
+            modelBuilder.Entity("DataCatalog.Data.Model.Transformation", b =>
+                {
+                    b.Navigation("TransformationDatasets");
                 });
 #pragma warning restore 612, 618
         }

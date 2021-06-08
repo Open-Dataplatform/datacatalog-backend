@@ -15,8 +15,8 @@ namespace DataCatalog.Data.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "3.1.6")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
+                .HasAnnotation("ProductVersion", "5.0.5")
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
             modelBuilder.Entity("DataCatalog.Data.Model.Category", b =>
@@ -58,184 +58,6 @@ namespace DataCatalog.Data.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Category");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = new Guid("8713b259-0294-480a-960c-08a9c9983961"),
-                            Colour = "#2A939B",
-                            CreatedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            ModifiedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Name = "Ancillary Services",
-                            OriginDeleted = false,
-                            OriginEnvironment = "prod",
-                            Version = 0
-                        },
-                        new
-                        {
-                            Id = new Guid("b94863a9-685a-44d6-aae4-2cfb3a63c489"),
-                            Colour = "#389B88",
-                            CreatedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            ModifiedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Name = "Auctions, Transmission Capacity",
-                            OriginDeleted = false,
-                            OriginEnvironment = "prod",
-                            Version = 0
-                        },
-                        new
-                        {
-                            Id = new Guid("e5b2f760-e965-452f-b0ab-70ca506d4c20"),
-                            Colour = "#452A9B",
-                            CreatedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            ModifiedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Name = "Emissions",
-                            OriginDeleted = false,
-                            OriginEnvironment = "prod",
-                            Version = 0
-                        },
-                        new
-                        {
-                            Id = new Guid("08e58f12-51bf-4af9-af3a-02022cab77c7"),
-                            Colour = "#2A9B65",
-                            CreatedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            ModifiedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Name = "Day Ahead Market",
-                            OriginDeleted = false,
-                            OriginEnvironment = "prod",
-                            Version = 0
-                        },
-                        new
-                        {
-                            Id = new Guid("23ab1cd5-ae16-4aa4-bab7-25380c1634d5"),
-                            Colour = "#B27736",
-                            CreatedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            ModifiedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Name = "Electric Boilers",
-                            OriginDeleted = false,
-                            OriginEnvironment = "prod",
-                            Version = 0
-                        },
-                        new
-                        {
-                            Id = new Guid("8a95d290-417e-4a53-a807-a13293f3117d"),
-                            Colour = "#F8AE3C",
-                            CreatedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            ModifiedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Name = "Gas",
-                            OriginDeleted = false,
-                            OriginEnvironment = "prod",
-                            Version = 0
-                        },
-                        new
-                        {
-                            Id = new Guid("5873b2e5-5db1-42db-bf25-83fd9dded293"),
-                            Colour = "#663BCC",
-                            CreatedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            ModifiedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Name = "Production and Consumption",
-                            OriginDeleted = false,
-                            OriginEnvironment = "prod",
-                            Version = 0
-                        },
-                        new
-                        {
-                            Id = new Guid("084e6353-82a8-4f99-b9f3-b247081c34c8"),
-                            Colour = "#A0C1C2",
-                            CreatedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            ModifiedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Name = "Electricity Consumption",
-                            OriginDeleted = false,
-                            OriginEnvironment = "prod",
-                            Version = 0
-                        },
-                        new
-                        {
-                            Id = new Guid("5b39fbdd-76c5-44df-9f7d-d314db760fc1"),
-                            Colour = "#819B38",
-                            CreatedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            ModifiedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Name = "Intra Day Market",
-                            OriginDeleted = false,
-                            OriginEnvironment = "prod",
-                            Version = 0
-                        },
-                        new
-                        {
-                            Id = new Guid("a90abc39-c2de-4c29-a9f8-4e10f41a50f0"),
-                            Colour = "#293A4C",
-                            CreatedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            ModifiedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Name = "Electricity Production",
-                            OriginDeleted = false,
-                            OriginEnvironment = "prod",
-                            Version = 0
-                        },
-                        new
-                        {
-                            Id = new Guid("9ac5af8d-4165-448a-ace5-2edcf0c3e202"),
-                            Colour = "#548E80",
-                            CreatedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            ModifiedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Name = "Regulating Power",
-                            OriginDeleted = false,
-                            OriginEnvironment = "prod",
-                            Version = 0
-                        },
-                        new
-                        {
-                            Id = new Guid("7434d8a3-7ebb-4212-967c-061d5a2666d7"),
-                            Colour = "#7D8E1C",
-                            CreatedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            ModifiedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Name = "Whole Sale Market",
-                            OriginDeleted = false,
-                            OriginEnvironment = "prod",
-                            Version = 0
-                        },
-                        new
-                        {
-                            Id = new Guid("90909fcd-4a5a-455a-a543-9c2c8a45e453"),
-                            Colour = "#398C22",
-                            CreatedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            ModifiedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Name = "Reserves",
-                            OriginDeleted = false,
-                            OriginEnvironment = "prod",
-                            Version = 0
-                        },
-                        new
-                        {
-                            Id = new Guid("d6944781-c069-4c14-859f-07865164763f"),
-                            Colour = "#FFD424",
-                            CreatedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            ModifiedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Name = "Solar Power",
-                            OriginDeleted = false,
-                            OriginEnvironment = "prod",
-                            Version = 0
-                        },
-                        new
-                        {
-                            Id = new Guid("b4cef11a-d0f4-4c33-9796-b80ea6d2489a"),
-                            Colour = "#547B8E",
-                            CreatedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            ModifiedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Name = "Transmission Lines",
-                            OriginDeleted = false,
-                            OriginEnvironment = "prod",
-                            Version = 0
-                        },
-                        new
-                        {
-                            Id = new Guid("418e657d-3efb-4a30-ad3f-3f95a6ab8888"),
-                            Colour = "#C2E4F0",
-                            CreatedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            ModifiedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Name = "Wind Power",
-                            OriginDeleted = false,
-                            OriginEnvironment = "prod",
-                            Version = 0
-                        });
                 });
 
             modelBuilder.Entity("DataCatalog.Data.Model.DataContract", b =>
@@ -362,73 +184,6 @@ namespace DataCatalog.Data.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("DataSource");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = new Guid("14c7e740-6104-4036-af76-73891fdf0033"),
-                            ContactInfo = "dataplatform@energinet.dk",
-                            CreatedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Description = "Use for any dataset that originates from within the data platform itself",
-                            ModifiedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Name = "DataPlatform",
-                            OriginDeleted = false,
-                            OriginEnvironment = "prod",
-                            SourceType = 0,
-                            Version = 0
-                        },
-                        new
-                        {
-                            Id = new Guid("3db55181-4eee-4601-9d52-8aa69e2562ab"),
-                            ContactInfo = "dps@energinet.dk",
-                            CreatedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Description = "Energinet system DPS",
-                            ModifiedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Name = "DPS",
-                            OriginDeleted = false,
-                            OriginEnvironment = "prod",
-                            SourceType = 1,
-                            Version = 0
-                        },
-                        new
-                        {
-                            Id = new Guid("43a95e77-79e6-4da1-a4ea-2d64f3587b32"),
-                            ContactInfo = "propel@energinet.dk",
-                            CreatedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Description = "Energinet system Propel",
-                            ModifiedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Name = "Propel",
-                            OriginDeleted = false,
-                            OriginEnvironment = "prod",
-                            SourceType = 1,
-                            Version = 0
-                        },
-                        new
-                        {
-                            Id = new Guid("44bbd193-dd57-4221-89ac-80e3509a0c73"),
-                            ContactInfo = "neptun@energinet.dk",
-                            CreatedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Description = "Energinet system Neptun",
-                            ModifiedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Name = "Neptun",
-                            OriginDeleted = false,
-                            OriginEnvironment = "prod",
-                            SourceType = 1,
-                            Version = 0
-                        },
-                        new
-                        {
-                            Id = new Guid("bec46f78-9ef7-49f1-b98b-748f85aa823b"),
-                            ContactInfo = "dmi.dk/kontakt",
-                            CreatedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Description = "Danish Meteorological Institute",
-                            ModifiedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Name = "DMI",
-                            OriginDeleted = false,
-                            OriginEnvironment = "prod",
-                            SourceType = 2,
-                            Version = 0
-                        });
                 });
 
             modelBuilder.Entity("DataCatalog.Data.Model.Dataset", b =>
@@ -478,6 +233,9 @@ namespace DataCatalog.Data.Migrations
 
                     b.Property<string>("Owner")
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("ProvisionStatus")
+                        .HasColumnType("int");
 
                     b.Property<int>("RefinementLevel")
                         .ValueGeneratedOnAdd()
@@ -669,96 +427,6 @@ namespace DataCatalog.Data.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Duration");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = new Guid("f745f308-1542-4a7a-975f-0cd6f1e73668"),
-                            Code = "PT1H",
-                            CreatedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Description = "1 hour",
-                            ModifiedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
-                        },
-                        new
-                        {
-                            Id = new Guid("2ff90ae1-27a8-4cb8-a697-6e81a5e36fb0"),
-                            Code = "P1Y",
-                            CreatedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Description = "1 year",
-                            ModifiedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
-                        },
-                        new
-                        {
-                            Id = new Guid("6817a5e6-7c80-470f-a1b2-fa79ed3c125d"),
-                            Code = "P1M",
-                            CreatedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Description = "1 month",
-                            ModifiedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
-                        },
-                        new
-                        {
-                            Id = new Guid("c70a3773-3473-4074-8c08-4a1bfffaa1d1"),
-                            Code = "P7D",
-                            CreatedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Description = "7 days",
-                            ModifiedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
-                        },
-                        new
-                        {
-                            Id = new Guid("20986017-c3a8-41a0-8221-b5e1a5995c05"),
-                            Code = "P1D",
-                            CreatedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Description = "1 day",
-                            ModifiedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
-                        },
-                        new
-                        {
-                            Id = new Guid("2b3d0756-0817-4281-a2ca-76c2b0eb90d6"),
-                            Code = "PT12H",
-                            CreatedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Description = "12 hours",
-                            ModifiedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
-                        },
-                        new
-                        {
-                            Id = new Guid("984b1eb4-0420-4354-8ae7-a9b6c9c33aa8"),
-                            Code = "PT6H",
-                            CreatedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Description = "6 hours",
-                            ModifiedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
-                        },
-                        new
-                        {
-                            Id = new Guid("2fb37506-3252-4065-a81b-5c633e158a7c"),
-                            Code = "PT15M",
-                            CreatedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Description = "15 minutes",
-                            ModifiedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
-                        },
-                        new
-                        {
-                            Id = new Guid("b64a8a70-cb40-4117-93ba-093571ea4aeb"),
-                            Code = "PT5M",
-                            CreatedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Description = "5 minutes",
-                            ModifiedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
-                        },
-                        new
-                        {
-                            Id = new Guid("d05a8570-6155-41bd-95b1-20e6f2856cc2"),
-                            Code = "PT3M",
-                            CreatedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Description = "3 minutes",
-                            ModifiedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
-                        },
-                        new
-                        {
-                            Id = new Guid("b57f0531-0eb0-4bc2-b81c-266a3f52368e"),
-                            Code = "PT1M",
-                            CreatedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Description = "1 minute",
-                            ModifiedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
-                        });
                 });
 
             modelBuilder.Entity("DataCatalog.Data.Model.Hierarchy", b =>
@@ -792,194 +460,6 @@ namespace DataCatalog.Data.Migrations
                     b.HasIndex("ParentHierarchyId");
 
                     b.ToTable("Hierarchy");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = new Guid("668f1737-5501-4db5-a072-c2fa37ef26d0"),
-                            CreatedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Description = "Anything mainly related to electricity",
-                            ModifiedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Name = "Electricity"
-                        },
-                        new
-                        {
-                            Id = new Guid("ad240fb2-ca95-4ec0-9bc2-58c73bc4ac31"),
-                            CreatedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Description = "Electricity consumption",
-                            ModifiedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Name = "Consumption",
-                            ParentHierarchyId = new Guid("668f1737-5501-4db5-a072-c2fa37ef26d0")
-                        },
-                        new
-                        {
-                            Id = new Guid("276af4b1-72ea-4654-8ce3-37e73b2657c0"),
-                            CreatedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Description = "Electricity production",
-                            ModifiedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Name = "Production",
-                            ParentHierarchyId = new Guid("668f1737-5501-4db5-a072-c2fa37ef26d0")
-                        },
-                        new
-                        {
-                            Id = new Guid("a9a780d7-8f2c-4d86-b863-1327bd264575"),
-                            CreatedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Description = "Electricity consumption and production",
-                            ModifiedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Name = "Consumption and Production",
-                            ParentHierarchyId = new Guid("668f1737-5501-4db5-a072-c2fa37ef26d0")
-                        },
-                        new
-                        {
-                            Id = new Guid("ecce1213-9886-4361-bbc2-12ca79138f0e"),
-                            CreatedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Description = "Electricity reserves",
-                            ModifiedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Name = "Reserves",
-                            ParentHierarchyId = new Guid("668f1737-5501-4db5-a072-c2fa37ef26d0")
-                        },
-                        new
-                        {
-                            Id = new Guid("a6b40fdf-9831-49ec-87b0-cfed8f447577"),
-                            CreatedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Description = "Electricity ancillary services",
-                            ModifiedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Name = "Ancillary Services",
-                            ParentHierarchyId = new Guid("668f1737-5501-4db5-a072-c2fa37ef26d0")
-                        },
-                        new
-                        {
-                            Id = new Guid("5f2d33fc-decc-4061-af3c-5d58e65bbc9c"),
-                            CreatedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Description = "Electricity CO2 Emissions",
-                            ModifiedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Name = "CO2 Emissions",
-                            ParentHierarchyId = new Guid("668f1737-5501-4db5-a072-c2fa37ef26d0")
-                        },
-                        new
-                        {
-                            Id = new Guid("d27b19d3-e589-4f98-809a-351a062635e8"),
-                            CreatedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Description = "Electricity regulating power",
-                            ModifiedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Name = "Regulating Power",
-                            ParentHierarchyId = new Guid("668f1737-5501-4db5-a072-c2fa37ef26d0")
-                        },
-                        new
-                        {
-                            Id = new Guid("fb668c70-219c-4edf-b31a-7ad36ee43d88"),
-                            CreatedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Description = "Electricity solar power",
-                            ModifiedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Name = "Solar Power",
-                            ParentHierarchyId = new Guid("668f1737-5501-4db5-a072-c2fa37ef26d0")
-                        },
-                        new
-                        {
-                            Id = new Guid("ded03663-ec2e-445f-b897-b5b78c00f2d4"),
-                            CreatedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Description = "Electricity wind power",
-                            ModifiedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Name = "Wind Power",
-                            ParentHierarchyId = new Guid("668f1737-5501-4db5-a072-c2fa37ef26d0")
-                        },
-                        new
-                        {
-                            Id = new Guid("c5dfc671-dcb3-4f10-bf11-758c1d3e97be"),
-                            CreatedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Description = "Electricity capacities",
-                            ModifiedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Name = "Capacities",
-                            ParentHierarchyId = new Guid("668f1737-5501-4db5-a072-c2fa37ef26d0")
-                        },
-                        new
-                        {
-                            Id = new Guid("fc20e468-5ab4-48db-8a0b-09e86935c3aa"),
-                            CreatedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Description = "Electricity forecasts",
-                            ModifiedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Name = "Forecasts",
-                            ParentHierarchyId = new Guid("668f1737-5501-4db5-a072-c2fa37ef26d0")
-                        },
-                        new
-                        {
-                            Id = new Guid("586c321c-3f01-4cd2-8228-000670114e32"),
-                            CreatedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Description = "Anything mainly related to gas",
-                            ModifiedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Name = "Gas"
-                        },
-                        new
-                        {
-                            Id = new Guid("5b22fc05-6837-40f4-a8a2-184e9aa25aff"),
-                            CreatedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Description = "Gas consumption",
-                            ModifiedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Name = "Consumption",
-                            ParentHierarchyId = new Guid("586c321c-3f01-4cd2-8228-000670114e32")
-                        },
-                        new
-                        {
-                            Id = new Guid("49ca837b-79ba-4a4f-bbc5-e01a8f23befd"),
-                            CreatedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Description = "Gas Production",
-                            ModifiedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Name = "Production",
-                            ParentHierarchyId = new Guid("586c321c-3f01-4cd2-8228-000670114e32")
-                        },
-                        new
-                        {
-                            Id = new Guid("7330f2ef-f86f-4b7d-8592-e7c56ef52d15"),
-                            CreatedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Description = "Gas consumption and production",
-                            ModifiedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Name = "Consumption and Production",
-                            ParentHierarchyId = new Guid("586c321c-3f01-4cd2-8228-000670114e32")
-                        },
-                        new
-                        {
-                            Id = new Guid("334740dd-7158-475d-84e9-c8e83403b515"),
-                            CreatedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Description = "Gas storage",
-                            ModifiedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Name = "Storage",
-                            ParentHierarchyId = new Guid("586c321c-3f01-4cd2-8228-000670114e32")
-                        },
-                        new
-                        {
-                            Id = new Guid("1653a169-9548-46f6-aa47-ea9a90088b0f"),
-                            CreatedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Description = "Gas CO2 Emissions",
-                            ModifiedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Name = "CO2 Emissions",
-                            ParentHierarchyId = new Guid("586c321c-3f01-4cd2-8228-000670114e32")
-                        },
-                        new
-                        {
-                            Id = new Guid("596203b3-743a-4482-8b20-f4bc6eb844b6"),
-                            CreatedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Description = "Anything mainly related to weather",
-                            ModifiedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Name = "Weather"
-                        },
-                        new
-                        {
-                            Id = new Guid("a8adde4d-4dc9-4028-8993-0ef9bc153d7d"),
-                            CreatedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Description = "Weather forecasts",
-                            ModifiedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Name = "Forecasts",
-                            ParentHierarchyId = new Guid("596203b3-743a-4482-8b20-f4bc6eb844b6")
-                        },
-                        new
-                        {
-                            Id = new Guid("077a87f9-1842-40b4-b132-1c966b41d761"),
-                            CreatedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Description = "Weather historical data",
-                            ModifiedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Name = "Historical Data",
-                            ParentHierarchyId = new Guid("596203b3-743a-4482-8b20-f4bc6eb844b6")
-                        });
                 });
 
             modelBuilder.Entity("DataCatalog.Data.Model.IdentityProvider", b =>
@@ -1145,6 +625,10 @@ namespace DataCatalog.Data.Migrations
                         .HasForeignKey("DatasetId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Dataset");
+
+                    b.Navigation("DataSource");
                 });
 
             modelBuilder.Entity("DataCatalog.Data.Model.DataField", b =>
@@ -1154,6 +638,8 @@ namespace DataCatalog.Data.Migrations
                         .HasForeignKey("DatasetId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Dataset");
                 });
 
             modelBuilder.Entity("DataCatalog.Data.Model.Dataset", b =>
@@ -1169,6 +655,10 @@ namespace DataCatalog.Data.Migrations
                         .HasForeignKey("HierarchyId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Contact");
+
+                    b.Navigation("Hierarchy");
                 });
 
             modelBuilder.Entity("DataCatalog.Data.Model.DatasetCategory", b =>
@@ -1184,6 +674,10 @@ namespace DataCatalog.Data.Migrations
                         .HasForeignKey("DatasetId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Category");
+
+                    b.Navigation("Dataset");
                 });
 
             modelBuilder.Entity("DataCatalog.Data.Model.DatasetChangeLog", b =>
@@ -1199,6 +693,10 @@ namespace DataCatalog.Data.Migrations
                         .HasForeignKey("MemberId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Dataset");
+
+                    b.Navigation("Member");
                 });
 
             modelBuilder.Entity("DataCatalog.Data.Model.DatasetDuration", b =>
@@ -1214,6 +712,10 @@ namespace DataCatalog.Data.Migrations
                         .HasForeignKey("DurationId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Dataset");
+
+                    b.Navigation("Duration");
                 });
 
             modelBuilder.Entity("DataCatalog.Data.Model.DatasetGroup", b =>
@@ -1223,6 +725,8 @@ namespace DataCatalog.Data.Migrations
                         .HasForeignKey("MemberId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Member");
                 });
 
             modelBuilder.Entity("DataCatalog.Data.Model.DatasetGroupDataset", b =>
@@ -1238,6 +742,10 @@ namespace DataCatalog.Data.Migrations
                         .HasForeignKey("DatasetId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Dataset");
+
+                    b.Navigation("DatasetGroup");
                 });
 
             modelBuilder.Entity("DataCatalog.Data.Model.Hierarchy", b =>
@@ -1245,6 +753,8 @@ namespace DataCatalog.Data.Migrations
                     b.HasOne("DataCatalog.Data.Model.Hierarchy", "ParentHierarchy")
                         .WithMany("ChildHierarchies")
                         .HasForeignKey("ParentHierarchyId");
+
+                    b.Navigation("ParentHierarchy");
                 });
 
             modelBuilder.Entity("DataCatalog.Data.Model.Member", b =>
@@ -1254,6 +764,8 @@ namespace DataCatalog.Data.Migrations
                         .HasForeignKey("IdentityProviderId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("IdentityProvider");
                 });
 
             modelBuilder.Entity("DataCatalog.Data.Model.MemberGroupMember", b =>
@@ -1269,6 +781,10 @@ namespace DataCatalog.Data.Migrations
                         .HasForeignKey("MemberId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Member");
+
+                    b.Navigation("MemberGroup");
                 });
 
             modelBuilder.Entity("DataCatalog.Data.Model.TransformationDataset", b =>
@@ -1284,6 +800,71 @@ namespace DataCatalog.Data.Migrations
                         .HasForeignKey("TransformationId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Dataset");
+
+                    b.Navigation("Transformation");
+                });
+
+            modelBuilder.Entity("DataCatalog.Data.Model.Category", b =>
+                {
+                    b.Navigation("DatasetCategories");
+                });
+
+            modelBuilder.Entity("DataCatalog.Data.Model.DataSource", b =>
+                {
+                    b.Navigation("DataContracts");
+                });
+
+            modelBuilder.Entity("DataCatalog.Data.Model.Dataset", b =>
+                {
+                    b.Navigation("DataContracts");
+
+                    b.Navigation("DataFields");
+
+                    b.Navigation("DatasetCategories");
+
+                    b.Navigation("DatasetChangeLogs");
+
+                    b.Navigation("DatasetDurations");
+
+                    b.Navigation("TransformationDatasets");
+                });
+
+            modelBuilder.Entity("DataCatalog.Data.Model.DatasetGroup", b =>
+                {
+                    b.Navigation("DatasetGroupDatasets");
+                });
+
+            modelBuilder.Entity("DataCatalog.Data.Model.Duration", b =>
+                {
+                    b.Navigation("DatasetsDurations");
+                });
+
+            modelBuilder.Entity("DataCatalog.Data.Model.Hierarchy", b =>
+                {
+                    b.Navigation("ChildHierarchies");
+
+                    b.Navigation("Datasets");
+                });
+
+            modelBuilder.Entity("DataCatalog.Data.Model.Member", b =>
+                {
+                    b.Navigation("DatasetChangeLogs");
+
+                    b.Navigation("MemberGroupMembers");
+                });
+
+            modelBuilder.Entity("DataCatalog.Data.Model.MemberGroup", b =>
+                {
+                    b.Navigation("Datasets");
+
+                    b.Navigation("MemberGroupMembers");
+                });
+
+            modelBuilder.Entity("DataCatalog.Data.Model.Transformation", b =>
+                {
+                    b.Navigation("TransformationDatasets");
                 });
 #pragma warning restore 612, 618
         }
