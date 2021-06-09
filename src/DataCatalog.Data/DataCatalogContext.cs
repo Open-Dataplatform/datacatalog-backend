@@ -8,8 +8,6 @@ namespace DataCatalog.Data
 {
     public class DataCatalogContext : DbContext
     {
-        internal static Guid DPGuid => new Guid("8c30dee9-af3f-4bd1-bca4-641492e7690b");
-
         public DbSet<IdentityProvider> IdentityProvider { get; set; }
         public DbSet<Dataset> Datasets { get; set; }
         public DbSet<DataField> DataFields { get; set; }
@@ -58,11 +56,11 @@ namespace DataCatalog.Data
                 e.Property(a => a.Version).IsRequired().HasDefaultValue(1);
                 e.Property(a => a.Name).IsRequired();
                 e.Property(a => a.ContactId).IsRequired();
-                e.Property(a => a.SourceId).IsRequired().HasDefaultValue(new Guid("5777efb5-f55c-4f16-bb83-0125b810f995"));
+                e.Property(a => a.SourceId).IsRequired();
                 e.Property(a => a.Status).IsRequired().HasDefaultValue(DatasetStatus.Draft);
                 e.Property(a => a.Confidentiality).IsRequired().HasDefaultValue(Confidentiality.Public);
                 e.Property(a => a.RefinementLevel).IsRequired().HasDefaultValue(RefinementLevel.Raw);
-                e.Property(a => a.HierarchyId).IsRequired().HasDefaultValue(new Guid("668f1737-5501-4db5-a072-c2fa37ef26d0"));
+                e.Property(a => a.HierarchyId).IsRequired();
             });
 
             //DatasetGroup
@@ -123,7 +121,5 @@ namespace DataCatalog.Data
             modelBuilder.Entity<DatasetGroupDataset>(e => e.HasKey(a => new { a.DatasetGroupId, a.DatasetId }));
             modelBuilder.Entity<DatasetDuration>(e => e.HasKey(a => new { a.DatasetId, a.DurationId, a.DurationType }));
         }
-
-        
     }
 }

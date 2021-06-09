@@ -10,7 +10,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DataCatalog.Data.Migrations
 {
     [DbContext(typeof(DataCatalogContext))]
-    [Migration("20210608134958_InitialMigration")]
+    [Migration("20210609081623_InitialMigration")]
     partial class InitialMigration
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -211,9 +211,7 @@ namespace DataCatalog.Data.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<Guid>("HierarchyId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier")
-                        .HasDefaultValue(new Guid("668f1737-5501-4db5-a072-c2fa37ef26d0"));
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Location")
                         .HasColumnType("nvarchar(max)");
@@ -251,9 +249,7 @@ namespace DataCatalog.Data.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<Guid>("SourceId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier")
-                        .HasDefaultValue(new Guid("5777efb5-f55c-4f16-bb83-0125b810f995"));
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<int>("Status")
                         .ValueGeneratedOnAdd()
