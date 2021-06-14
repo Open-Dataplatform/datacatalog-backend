@@ -1,10 +1,10 @@
 ﻿using System;
+using DataCatalog.Common.Data;
 
 namespace DataCatalog.Data.Model
 {
-    public class IdentityProvider
+    public class IdentityProvider : GuidId
     {
-        public Guid Id { get; set; }
         public string Name { get; set; }
         public string TenantId { get; set; }
     }
