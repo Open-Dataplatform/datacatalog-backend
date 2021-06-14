@@ -22,16 +22,16 @@ namespace DataCatalog.Api.Services.Local
 
         public LocalMessageHandler(IDatasetRepository datasetRepository, IUnitIOfWork unitOfWork)
         {
+            if (!EnvironmentUtil.IsLocal())
+            {
+                throw new InvalidOperationException("This class cannot be used unless the environment is local");
+            }
             _datasetRepository = datasetRepository;
             _unitOfWork = unitOfWork;
         }
 
         public async Task PublishAsync(TMessage message, string topicName)
         {
-            if (!EnvironmentUtil.IsLocal())
-            {
-                throw new InvalidOperationException("This class cannot be used unless the environment is local");
-            }
             // Just assume the data is provisioned correctly - locally we have no clue anyways about data.
             if (message is DatasetCreated datasetCreatedMessage)
             {
@@ -42,19 +42,11 @@ namespace DataCatalog.Api.Services.Local
 
         public Task StartAsync(CancellationToken cancellationToken)
         {
-            if (!EnvironmentUtil.IsLocal())
-            {
-                throw new InvalidOperationException("This class cannot be used unless the environment is local");
-            }
             return Task.CompletedTask;
         }
 
         public Task StopAsync(CancellationToken cancellationToken)
         {
-            if (!EnvironmentUtil.IsLocal())
-            {
-                throw new InvalidOperationException("This class cannot be used unless the environment is local");
-            }
             return Task.CompletedTask;
         }
     }

@@ -1,18 +1,19 @@
 ﻿using System;
 using System.Linq;
+using System.Threading.Tasks;
 using DataCatalog.Common.Extensions;
 using DataCatalog.Common.Utils;
+using DataCatalog.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Serilog;
 using Serilog.Events;
-using src.DataCatalog.Migrations;
 
-namespace DataCatalog.Migrations
+namespace DataCatalog.Migrator
 {
     public class Program
     {
-        public static void Main(string[] args)
+        public static async Task Main(string[] args)
         {
             var environmentName = EnvironmentUtil.GetCurrentEnvironment();
 
@@ -29,7 +30,7 @@ namespace DataCatalog.Migrations
 
             try 
             {
-                UpdateDatabase(configuration);
+                await UpdateDatabase(configuration);
             }
             catch (Exception ex)
             {
@@ -41,7 +42,7 @@ namespace DataCatalog.Migrations
             }
         }
 
-        static void UpdateDatabase(IConfiguration configuration)
+        static async Task UpdateDatabase(IConfiguration configuration)
         {
             using var db = new DataCatalogContextFactory().CreateDbContext(configuration);
 
@@ -74,7 +75,8 @@ namespace DataCatalog.Migrations
                 a.OriginEnvironment = originEnvironment;
             }
 
-            db.SaveChanges();
+            await db.SaveChangesAsync();
+            await new SeedLogic(db).SeedData();
         }
     }
 }

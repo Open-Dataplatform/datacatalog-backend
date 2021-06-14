@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Design;
 using Microsoft.Extensions.Configuration;
 using DataCatalog.Common.Extensions;
 
-namespace src.DataCatalog.Migrations
+namespace DataCatalog.Data
 {
     public class DataCatalogContextFactory : IDesignTimeDbContextFactory<DataCatalogContext>
     {

@@ -12,12 +12,16 @@ namespace DataCatalog.Api.Services.Local
     /// </summary>
     public class LocalMemberService : IMemberService
     {
-        public Task<Member> GetOrCreateAsync(string externalId, Guid identityProviderId)
+        public LocalMemberService()
         {
             if (!EnvironmentUtil.IsLocal())
             {
                 throw new InvalidOperationException("This class cannot be used unless the environment is local");
             }
+        }
+        
+        public Task<Member> GetOrCreateAsync(string externalId, Guid identityProviderId)
+        {
             return Task.FromResult(new Member
             {
                 CreatedDate = DateTime.UtcNow,

@@ -2,8 +2,10 @@
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Azure.Messaging.ServiceBus;
+using DataCatalog.Common.Extensions;
 using DataCatalog.Common.Utils;
-using Microsoft.Azure.ServiceBus;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
@@ -11,55 +13,59 @@ namespace DataCatalog.Api.MessageBus
 {
     public class MessageBusReceiver<TMessage, TService> : IHostedService where TService : IHandleMessageBusMessage
     {
-        private ISubscriptionClient _subscriptionClient;
         private readonly IServiceScopeFactory _serviceScopeFactory;
+        private readonly ServiceBusClient _serviceBusClient;
+        private readonly ServiceBusProcessor _serviceBusProcessor;
 
-        public MessageBusReceiver(IServiceScopeFactory serviceScopeFactory)
+        public MessageBusReceiver(IServiceScopeFactory serviceScopeFactory, IConfiguration configuration)
         {
             _serviceScopeFactory = serviceScopeFactory;
-        }
+            var conn = configuration.GetConnectionString("ServiceBus");
+            conn.ValidateConfiguration("ConnectionStrings:ServiceBus");
 
-        public Task StartAsync(CancellationToken cancellationToken)
-        {
-            using var scope = _serviceScopeFactory.CreateScope();
-
-            // Subscribe to service bus messages
-            var serviceBusNamespace = $"dpdomainevents-servicebus-{EnvironmentUtil.GetCurrentEnvironment().ToLower()}";
-            var serviceBusEndpoint = $"Endpoint=sb://{serviceBusNamespace}.servicebus.windows.net/;Authentication=Managed Identity;";
-            _subscriptionClient = new SubscriptionClient(serviceBusEndpoint, typeof(TMessage).Name, "DataCatalog-API", ReceiveMode.PeekLock, RetryPolicy.Default);
-            var messageHandlerOptions = new MessageHandlerOptions(ExceptionReceivedHandler)
+            var messageHandlerOptions = new ServiceBusProcessorOptions()
             {
                 MaxConcurrentCalls = 1,
-                AutoComplete = false
+                ReceiveMode = ServiceBusReceiveMode.PeekLock,
+                AutoCompleteMessages = false,
             };
-            _subscriptionClient.RegisterMessageHandler(ReceiveAsync, messageHandlerOptions);
 
-            return Task.CompletedTask;
+            _serviceBusClient = new ServiceBusClient(conn);
+            _serviceBusProcessor = _serviceBusClient.CreateProcessor(typeof(TMessage).Name, "DataCatalog-API", messageHandlerOptions);
         }
-        public Task StopAsync(CancellationToken cancellationToken)
+
+        public async Task StartAsync(CancellationToken cancellationToken)
         {
-            return Task.CompletedTask;
+            // Subscribe to service bus messages
+
+            _serviceBusProcessor.ProcessMessageAsync += ReceiveAsync;
+            _serviceBusProcessor.ProcessErrorAsync += ExceptionReceivedHandler;
+
+            await _serviceBusProcessor.StartProcessingAsync(cancellationToken);
         }
 
-        private async Task ReceiveAsync(Message message, CancellationToken token)
+        public async Task StopAsync(CancellationToken cancellationToken)
+        {
+            await _serviceBusProcessor.DisposeAsync();
+            await _serviceBusClient.DisposeAsync();
+        }
+
+        private async Task ReceiveAsync(ProcessMessageEventArgs args)
         {
             // Process the message.
             using var scope = _serviceScopeFactory.CreateScope();
             var service = scope.ServiceProvider.GetService<TService>();
-            await service.HandleMessage(Encoding.UTF8.GetString(message.Body));
+            await service.HandleMessage(args.Message.Body.ToString());
 
             // Complete the message so that it is not received again.
-            await _subscriptionClient.CompleteAsync(message.SystemProperties.LockToken);
+            await args.CompleteMessageAsync(args.Message);
         }
 
-        private static Task ExceptionReceivedHandler(ExceptionReceivedEventArgs exceptionReceivedEventArgs)
+        private static Task ExceptionReceivedHandler(ProcessErrorEventArgs args)
         {
-            Console.WriteLine($"Message handler encountered an exception {exceptionReceivedEventArgs.Exception}.");
-            var context = exceptionReceivedEventArgs.ExceptionReceivedContext;
+            Console.WriteLine($"Message handler encountered an exception {args.Exception}.");
             Console.WriteLine("Exception context for troubleshooting:");
-            Console.WriteLine($"- Endpoint: {context.Endpoint}");
-            Console.WriteLine($"- Entity Path: {context.EntityPath}");
-            Console.WriteLine($"- Executing Action: {context.Action}");
+            Console.WriteLine($"- Entity Path: {args.EntityPath}");
             return Task.CompletedTask;
         }
     }
