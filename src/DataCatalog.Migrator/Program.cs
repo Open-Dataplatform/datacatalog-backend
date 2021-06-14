@@ -30,7 +30,9 @@ namespace DataCatalog.Migrator
 
             try 
             {
+                Log.Information("Configuring the DataCatalog Api using the environment {Environment}", environmentName);
                 await UpdateDatabase(configuration);
+                Log.Information("Database successfully updated");
             }
             catch (Exception ex)
             {
@@ -44,10 +46,14 @@ namespace DataCatalog.Migrator
 
         static async Task UpdateDatabase(IConfiguration configuration)
         {
+            Log.Information("Creating database connection");
             using var db = new DataCatalogContextFactory().CreateDbContext(configuration);
 
             // Apply migrations
+            Log.Information("Successfully connected. Applying migrations");
             db.Database.Migrate();
+
+            Log.Information("Successfully applied migrations. Updating origin environments");
 
             //One-time update of OriginEnvironment
             var originEnvironment = EnvironmentUtil.GetCurrentEnvironment().ToLower();
@@ -76,6 +82,8 @@ namespace DataCatalog.Migrator
             }
 
             await db.SaveChangesAsync();
+
+            Log.Information("Successfully updated origin environments. Seeding data");
             await new SeedLogic(db).SeedData();
         }
     }
