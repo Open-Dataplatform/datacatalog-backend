@@ -5,6 +5,7 @@
 secretName: datacatalog-api-test
 environment: test
 appName: datacatalog-backend
+tag: "latest"
 
 deployment:
   replicaCount: 1
@@ -13,7 +14,7 @@ deployment:
     repository: <IMAGENAME>
     pullPolicy: IfNotPresent
     # Overrides the image tag whose default is the chart appVersion.
-    tag: "latest"
+    tag: "{{ .Values.tag }}"
 
   livenessProbe:
     path: /health
@@ -58,3 +59,13 @@ ingress:
     cert-manager.io/cluster-issuer: letsencrypt-prod
   host: 
   path: /
+
+job:
+  image:
+    repository: <IMAGENAME>
+    pullPolicy: IfNotPresent
+    # Overrides the image tag whose default is the chart appVersion.
+    tag: "{{ .Values.tag }}"
+
+  env: 
+    "ASPNETCORE_ENVIRONMENT": "{{ .Values.environment }}"
