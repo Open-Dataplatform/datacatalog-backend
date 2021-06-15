@@ -61,6 +61,7 @@ ingress:
   path: /
 
 job:
+  enabled: true
   image:
     repository: <IMAGENAME>
     pullPolicy: IfNotPresent

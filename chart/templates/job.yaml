@@ -1,3 +1,4 @@
+{{- if .Values.job.enabled -}}
 apiVersion: batch/v1
 kind: Job
 metadata:
@@ -37,3 +38,4 @@ spec:
             - name: {{ $k | quote }}
               value: {{ $v | quote }}
           {{- end }}
+{{- end -}}
