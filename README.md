@@ -1,26 +1,51 @@
-# Datacatalog API
-For documentation of API endpoints go to http://[DOMAIN]/swagger
+# Datacatalog API <!-- omit in toc --><!-- omit in toc -->
+- [API Documentation](#api-documentation)
+- [Development](#development)
+	- [Running locally](#running-locally)
+	- [Migrations and Seeding](#migrations-and-seeding)
+	- [Tests](#tests)
+- [API Versioning](#api-versioning)
+	- [Deprecation a API Version](#deprecation-a-api-version)
+	- [Adding Documentation for a new API Version](#adding-documentation-for-a-new-api-version)
+
+## API Documentation
+For documentation of API endpoints go to http://[DOMAIN]/swagger  
 OpenAPI json can be found at http://[DOMAIN]/swagger/v[API-VERSION]/swagger.json
 
-# Build, Test and Run
-Build command:
+## Development
+
+### Running locally
+To launch the API from the command line run:
 ```powershell
- dotnet build
+dotnet run -p .\src\DataCatalog.Api\
 ```
 
-Run command
+Alternatively all C# compatible IDE's should be able to load the project using the .sln file.
+
+### Migrations and Seeding
+Generating and applying database migrations are handled by EF Core. The history is located at [src/DataCatalog.Data/](src/DataCatalog.Data/Migrations).
+
+New migrations can be added using the [Entity Framework Core tools](https://docs.microsoft.com/en-us/ef/core/cli/dotnet) by running the following command from the root folder:
+
 ```powershell
-dotnet run --project .\DataCatalog.Api\DataCatalog.Api.csproj
+dotnet ef migrations add NameOfMigration -p .\src\DataCatalog.Data\ -s .\src\DataCatalog.Migrator\
 ```
-The solution will start the api and show the swagger documentation in a browser instanse.
 
-# Http Status Codes
-The API is intented to be RESTfull and statuscodes should fullfill the following diagram:
-
-![HttpStausCodes](https://dev.azure.com/energinet/716a4329-d8fc-4ed1-aa6a-b131bfeb639f/_apis/git/repositories/a0d4dc27-c2a1-4cbb-9f3f-129414a2b2dd/items?path=%2FStatusCodeStateDiagram.png&versionDescriptor%5BversionOptions%5D=0&versionDescriptor%5BversionType%5D=0&versionDescriptor%5Bversion%5D=master&resolveLfs=true&%24format=octetStream&api-version=5.0 "HttpStausCodes")
+Applying migrations can be done either using the Entity Framework Core tools or by running the [DataCatalog.Migrator console app](src/DataCatalog.Migrator/README.md). In a production environment the migrator app is expected to run before the API is launched for every new release.
 
 
-# API Versioning
+### Tests
+Two test projects projects are present
+- [tests/integration/DataCatalog.Api.IntegrationTests](tests/integration/DataCatalog.Api.IntegrationTests/)
+- [tests/unit/DataCatalog.Api.UnitTests/](tests/unit/DataCatalog.Api.UnitTests/)
+
+These can be run using:
+```powerchell
+dotnet test .\tests\integration\DataCatalog.Api.IntegrationTests\
+dotnet test .\tests\unit\DataCatalog.Api.UnitTests\
+```
+
+## API Versioning
 Api versioning is done with [Microsoft.AspNetCore.Mvc.Versioning](https://github.com/microsoft/aspnet-api-versioning/wiki) as Http header based versioning.
 Specifying a version via an Http Header using Api Versioning, allows urls to stay clean without cluttering them with version information.
 
@@ -51,8 +76,7 @@ public class DummyController : ControllerBase
 	}	
 }
 ```
-
-# Deprecation a API Version
+### Deprecation a API Version
 To advertise that one or more API versions have been deprecated, simply decorate your controller with the deprecated API versions. A deprecated API version does not mean the API version is not supported. A deprecated API version means that the version will become unsupported after six months or more.
 
 
@@ -71,11 +95,7 @@ public class HelloWorldController : ControllerBase
 }
 ```
 
-Resulting in:
-
-![deprecated-versions](https://dev.azure.com/energinet/716a4329-d8fc-4ed1-aa6a-b131bfeb639f/_apis/git/repositories/a0d4dc27-c2a1-4cbb-9f3f-129414a2b2dd/items?path=%2Fapi-deprecated-versions.png&versionDescriptor%5BversionOptions%5D=0&versionDescriptor%5BversionType%5D=0&versionDescriptor%5Bversion%5D=master&resolveLfs=true&%24format=octetStream&api-version=5.0 "deprecated-versions")
-
-# API documentation by swagger 
+### Adding Documentation for a new API Version
 Appending Swagger and openApi with new version is done by adding a new SwaggerDoc to options in the SwaggerExtensions class.
 
 ```
@@ -97,4 +117,3 @@ And adding a new swagger endpoint in the same SwaggerExtensions class.
 	c.SwaggerEndpoint("/swagger/v2.0/swagger.json", "API v1.1");
 ```
 
-# TODO:
