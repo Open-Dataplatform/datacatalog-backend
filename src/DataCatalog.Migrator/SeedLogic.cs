@@ -8,6 +8,7 @@ using DataCatalog.Common.Interfaces;
 using DataCatalog.Data;
 using DataCatalog.Data.Model;
 using Microsoft.EntityFrameworkCore;
+using Serilog;
 
 namespace DataCatalog.Migrator
 {
@@ -158,6 +159,7 @@ namespace DataCatalog.Migrator
                 else 
                 {
                     // Insert the item if it's not currently present in the database
+                    Log.Information($"Adding seeded item of type {typeof(T).Name} with ID {dataItem.Id}");
                     dbSet.Add(dataItem);
                 }
             }
