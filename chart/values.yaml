@@ -2,9 +2,10 @@
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
 
-secretName: datacatalog-api-test
-environment: test
+secretName: <secretName>
+environment: Development
 appName: datacatalog-backend
+tag: "latest"
 
 deployment:
   replicaCount: 1
@@ -13,7 +14,7 @@ deployment:
     repository: <IMAGENAME>
     pullPolicy: IfNotPresent
     # Overrides the image tag whose default is the chart appVersion.
-    tag: "latest"
+    tag: "{{ .Values.tag }}"
 
   livenessProbe:
     path: /health
@@ -56,5 +57,17 @@ ingress:
     nginx.ingress.kubernetes.io/rewrite-target: /$2
     kubernetes.io/ingress.class: nginx
     cert-manager.io/cluster-issuer: letsencrypt-prod
+    nginx.ingress.kubernetes.io/proxy-buffer-size: "8k"
   host: 
   path: /
+
+job:
+  enabled: true
+  image:
+    repository: <IMAGENAME>
+    pullPolicy: IfNotPresent
+    # Overrides the image tag whose default is the chart appVersion.
+    tag: "{{ .Values.tag }}"
+
+  env: 
+    "ASPNETCORE_ENVIRONMENT": "{{ .Values.environment }}"
