@@ -180,12 +180,15 @@ And adding a new swagger endpoint in the same SwaggerExtensions class.
 
 ## Kubernetes
 Helm charts have been created to easily deploy to kubernetes. These are found within the chart folder.
-The dockerfile in the root of the repository needs to be build with the following command:
+The [Dockerfile](Dockerfile) needs to be build with the following command:
 `docker build -t datacatalog-backend .`
 
-Update the image repository within the chart/values.yaml file to datacatalog-backend.
-To then deploy a release to kubernetes run:
+Update the image repository within the chart/values.yaml file to 'datacatalog-backend' or whichever value you tagged it with.
+To then deploy a release to kubernetes, run:
 
 ``` bash
 helm install datacatalog-backend chart/
 ```
+
+If you touch nothing, the chosen environment will be Development. 
+The [Values](chart/values.yaml) file will indicate which values are available for configuration.
