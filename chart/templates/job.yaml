@@ -14,7 +14,7 @@ spec:
     metadata:
       annotations:
         vault.hashicorp.com/agent-inject: "true"
-        vault.hashicorp.com/agent-pre-populate-only: true
+        vault.hashicorp.com/agent-pre-populate-only: "true"
         vault.hashicorp.com/role: "{{ .Values.secretName }}-reader"
         vault.hashicorp.com/auth-path: "auth/kubernetes-{{ .Values.environment }}"
         vault.hashicorp.com/agent-inject-secret-appsettings.secrets.json: "{{ .Values.secretName }}/data/credentials"
