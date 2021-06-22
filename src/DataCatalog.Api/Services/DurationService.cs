@@ -11,13 +11,13 @@ namespace DataCatalog.Api.Services
     public class DurationService : IDurationService
     {
         private readonly IDurationRepository _durationRepository;
-        private readonly IUnitIOfWork _unitOfWork;
+        private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
 
-        public DurationService(IDurationRepository durationRepository, IMapper mapper, IUnitIOfWork unitIOfWork)
+        public DurationService(IDurationRepository durationRepository, IMapper mapper, IUnitOfWork unitOfWork)
         {
             _durationRepository = durationRepository;
-            _unitOfWork = unitIOfWork;
+            _unitOfWork = unitOfWork;
             _mapper = mapper;
         }
 

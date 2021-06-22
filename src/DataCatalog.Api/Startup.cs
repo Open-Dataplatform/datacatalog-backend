@@ -15,11 +15,9 @@ using Serilog;
 using System.Runtime.CompilerServices;
 using Azure.Identity;
 using Azure.Storage.Files.DataLake;
-using DataCatalog.Api.Data.Domain;
-using DataCatalog.Api.Data.Messages;
 using DataCatalog.Api.Implementations;
 using DataCatalog.Common.Interfaces;
-using DataCatalog.Api.MessageBus;
+using DataCatalog.Api.MessageHandlers;
 using DataCatalog.Api.Services.AD;
 using DataCatalog.Api.Services.Local;
 using DataCatalog.Api.Services.Storage;
@@ -33,6 +31,7 @@ using Microsoft.Identity.Client;
 using Serilog.Context;
 using DataCatalog.Data;
 using DataCatalog.Common.Extensions;
+using DataCatalog.Common.Rebus.Extensions;
 
 [assembly: ApiConventionType(typeof(ApiConventions))]
 [assembly: InternalsVisibleTo("DynamicProxyGenAssembly2")]
@@ -95,7 +94,7 @@ namespace DataCatalog.Api
             services.AddScoped<IMemberRepository, MemberRepository>();
             services.AddScoped<ITransformationDatasetRepository, TransformationDatasetRepository>();
             services.AddScoped<ITransformationRepository, TransformationRepository>();
-            services.AddScoped<IUnitIOfWork, UnitOfWork>();
+            services.AddScoped<IUnitOfWork, UnitOfWork>();
             var allUsersGroup = Configuration.GetValidatedStringValue("ALL_USERS_GROUP");
             services.AddSingleton<IAllUsersGroupProvider>(new AllUsersGroupProvider(allUsersGroup));
 
@@ -207,6 +206,7 @@ namespace DataCatalog.Api
                 .WithTenantId(tenantId)
                 .Build();
 
+            services.AddSingleton(confidentialGroupClient);
             services.AddSingleton<IGraphServiceClient>(
                 new GraphServiceClient(new ClientCredentialProvider(confidentialGroupClient)));
 
@@ -269,31 +269,22 @@ namespace DataCatalog.Api
             services.AddTransient<IMemberService, MemberService>();
 
             services.AddTransient<ITransformationService, TransformationService>();
-            services.AddTransient(typeof(IMessageBusSender<>), typeof(MessageBusSender<>));
             services.AddTransient<IDataCatalogAuthorizationService, DataCatalogAuthorizationService>();
             
-            if (!EnvironmentUtil.IsLocal())
+            // Db Context
+            var conn = Configuration.GetConnectionString("DataCatalog");
+            conn.ValidateConfiguration("ConnectionStrings:DataCatalog");
+            services.AddDbContext<DataCatalogContext>(o => o.UseSqlServer(conn));
+            
+            services.AddRebusWithSubscription<DatasetProvisionedHandler>(Configuration, conn);
+            
+            if (EnvironmentUtil.IsLocal())
             {
-                
-                // Hosted services
-                services.AddHostedService<MessageBusReceiver<DatasetProvisioned, IDatasetService>>();
-            }
-            else
-            {
-                services.RemoveAll(typeof(IMessageBusSender<>));
-                services.AddTransient(typeof(IMessageBusSender<>), typeof(LocalMessageHandler<>));
-                services.AddHostedService<LocalMessageHandler<DatasetCreated>>();
-                
                 services.AddTransient<IGroupService, LocalGroupService>();
                 services.AddTransient<IStorageService, LocalStorageService>();
                 services.RemoveAll(typeof(IDataCatalogAuthorizationService));
                 services.AddTransient<IDataCatalogAuthorizationService, LocalDataCatalogAuthorizationService>();
             }
-
-            // Db Context
-            var conn = Configuration.GetConnectionString("DataCatalog");
-            conn.ValidateConfiguration("ConnectionStrings:DataCatalog");
-            services.AddDbContext<DataCatalogContext>(o => o.UseSqlServer(conn));
 
             //HttpContext
             services.AddHttpContextAccessor();

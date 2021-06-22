@@ -10,13 +10,13 @@ namespace DataCatalog.Api.Services
     public class MemberService : IMemberService
     {
         private readonly IMemberRepository _memberRepository;
-        private readonly IUnitIOfWork _unitOfWork;
+        private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
 
-        public MemberService(IMemberRepository memberRepository, IMapper mapper, IUnitIOfWork unitIOfWork)
+        public MemberService(IMemberRepository memberRepository, IMapper mapper, IUnitOfWork unitOfWork)
         {
             _memberRepository = memberRepository;
-            _unitOfWork = unitIOfWork;
+            _unitOfWork = unitOfWork;
             _mapper = mapper;
         }
 

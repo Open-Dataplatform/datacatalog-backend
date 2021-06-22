@@ -122,7 +122,7 @@ namespace DataCatalog.Api.UnitTests.Services
             memberGroupRepositoryMock.Setup(x => x.AddAsync(It.IsAny<MemberGroup>()));
             _fixture.Inject(memberGroupRepositoryMock.Object);
             _fixture.Freeze<IMemberGroupRepository>();
-            var unitOfWorkMock = new Mock<IUnitIOfWork>();
+            var unitOfWorkMock = new Mock<IUnitOfWork>();
             unitOfWorkMock.Setup(x => x.CompleteAsync());
             _fixture.Inject(unitOfWorkMock.Object);
             _fixture.Freeze<IMemberGroupRepository>();
@@ -145,7 +145,7 @@ namespace DataCatalog.Api.UnitTests.Services
             memberGroupRepositoryMock.Setup(x => x.FindByIdAsync(It.IsAny<Guid>())).ReturnsAsync((MemberGroup)null);
             _fixture.Inject(memberGroupRepositoryMock.Object);
             _fixture.Freeze<IMemberGroupRepository>();
-            var unitOfWorkMock = new Mock<IUnitIOfWork>();
+            var unitOfWorkMock = new Mock<IUnitOfWork>();
             unitOfWorkMock.Setup(x => x.CompleteAsync());
             _fixture.Inject(unitOfWorkMock.Object);
             _fixture.Freeze<IMemberGroupRepository>();
@@ -170,7 +170,7 @@ namespace DataCatalog.Api.UnitTests.Services
             memberGroupRepositoryMock.Setup(x => x.FindByIdAsync(memberGroupEntity.Id)).ReturnsAsync(memberGroupEntity);
             _fixture.Inject(memberGroupRepositoryMock.Object);
             _fixture.Freeze<IMemberGroupRepository>();
-            var unitOfWorkMock = new Mock<IUnitIOfWork>();
+            var unitOfWorkMock = new Mock<IUnitOfWork>();
             unitOfWorkMock.Setup(x => x.CompleteAsync());
             _fixture.Inject(unitOfWorkMock.Object);
             _fixture.Freeze<IMemberGroupRepository>();
@@ -191,7 +191,7 @@ namespace DataCatalog.Api.UnitTests.Services
             var memberGroupRepositoryMock = new Mock<IMemberGroupRepository>();
             _fixture.Inject(memberGroupRepositoryMock.Object);
             _fixture.Freeze<IMemberGroupRepository>();
-            var unitOfWorkMock = new Mock<IUnitIOfWork>();
+            var unitOfWorkMock = new Mock<IUnitOfWork>();
             unitOfWorkMock.Setup(x => x.CompleteAsync());
             _fixture.Inject(unitOfWorkMock.Object);
             _fixture.Freeze<IMemberGroupRepository>();
@@ -214,7 +214,7 @@ namespace DataCatalog.Api.UnitTests.Services
             var memberGroupRepositoryMock = new Mock<IMemberGroupRepository>();
             _fixture.Inject(memberGroupRepositoryMock.Object);
             _fixture.Freeze<IMemberGroupRepository>();
-            var unitOfWorkMock = new Mock<IUnitIOfWork>();
+            var unitOfWorkMock = new Mock<IUnitOfWork>();
             unitOfWorkMock.Setup(x => x.CompleteAsync());
             _fixture.Inject(unitOfWorkMock.Object);
             _fixture.Freeze<IMemberGroupRepository>();
@@ -239,7 +239,7 @@ namespace DataCatalog.Api.UnitTests.Services
             memberGroupRepositoryMock.Setup(x => x.FindByIdAsync(It.IsAny<Guid>())).ReturnsAsync((MemberGroup)null);
             _fixture.Inject(memberGroupRepositoryMock.Object);
             _fixture.Freeze<IMemberGroupRepository>();
-            var unitOfWorkMock = new Mock<IUnitIOfWork>();
+            var unitOfWorkMock = new Mock<IUnitOfWork>();
             unitOfWorkMock.Setup(x => x.CompleteAsync());
             _fixture.Inject(unitOfWorkMock.Object);
             _fixture.Freeze<IMemberGroupRepository>();
@@ -264,7 +264,7 @@ namespace DataCatalog.Api.UnitTests.Services
             memberGroupRepositoryMock.Setup(x => x.FindByIdAsync(memberGroupEntity.Id)).ReturnsAsync(memberGroupEntity);
             _fixture.Inject(memberGroupRepositoryMock.Object);
             _fixture.Freeze<IMemberGroupRepository>();
-            var unitOfWorkMock = new Mock<IUnitIOfWork>();
+            var unitOfWorkMock = new Mock<IUnitOfWork>();
             unitOfWorkMock.Setup(x => x.CompleteAsync());
             _fixture.Inject(unitOfWorkMock.Object);
             _fixture.Freeze<IMemberGroupRepository>();

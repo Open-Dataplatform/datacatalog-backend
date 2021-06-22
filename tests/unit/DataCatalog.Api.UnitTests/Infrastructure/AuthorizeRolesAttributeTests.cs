@@ -41,7 +41,7 @@ namespace DataCatalog.Api.UnitTests.Infrastructure
                 new TestPrincipal(claims);
         }
 
-        private Mock<IServiceProvider> CreateMockedServiceProvider(Mock<IIdentityProviderService> identityProviderServiceMock, Mock<IMemberService> memberServiceMock, Roles settings, Current current)
+        private Mock<IServiceProvider> CreateMockedServiceProvider(Mock<IIdentityProviderService> identityProviderServiceMock, Mock<IMemberService> memberServiceMock, IDataCatalogAuthorizationService authServiceMock, Roles settings, Current current)
         {
             var serviceProviderMock = new Mock<IServiceProvider>();
 
@@ -64,6 +64,11 @@ namespace DataCatalog.Api.UnitTests.Infrastructure
                 serviceProviderMock
                     .Setup(provider => provider.GetService(typeof(Current)))
                 .Returns(current);
+            
+            if (authServiceMock != null)
+                serviceProviderMock
+                    .Setup(provider => provider.GetService(typeof(IDataCatalogAuthorizationService)))
+                    .Returns(authServiceMock);
 
             return serviceProviderMock;
         }
@@ -96,16 +101,20 @@ namespace DataCatalog.Api.UnitTests.Infrastructure
         {
             // ARRANGE
             var tenantId = Guid.NewGuid().ToString();
+            var authServiceMock = new Mock<IDataCatalogAuthorizationService>();
+            var serviceProviderMock = CreateMockedServiceProvider(null, null, authServiceMock.Object, null, null);
             var httpContextMock = new Mock<HttpContext>();
             httpContextMock
                 .Setup(a => a.User)
                 .Returns(CreateUser(null, tenantId, Guid.NewGuid().ToString(), false, new List<Role>()));
+            httpContextMock.SetupGet(context => context.RequestServices)
+                .Returns(serviceProviderMock.Object);
             var fakeAuthFilterContext = CreateAuthorizationFilterContext(httpContextMock);
 
             // ACT
             var attribute = new AuthorizeRolesAttribute();
             await attribute.OnAuthorizationAsync(fakeAuthFilterContext);
-            var result = ((StatusCodeResult)fakeAuthFilterContext.Result);
+            var result = (StatusCodeResult)fakeAuthFilterContext.Result;
 
             // ASSERT
             result.StatusCode.Should().Be(StatusCodes.Status401Unauthorized, "because the caller is not authorized");
@@ -118,10 +127,11 @@ namespace DataCatalog.Api.UnitTests.Infrastructure
             var tenantId = Guid.NewGuid().ToString();
             var invalidTenantId = Guid.NewGuid().ToString();
             var identityProviderServiceMock = new Mock<IIdentityProviderService>();
+            var authServiceMock = new Mock<IDataCatalogAuthorizationService>();
             identityProviderServiceMock
                 .Setup(a => a.FindByTenantIdAsync(invalidTenantId))
                 .Returns(Task.FromResult((IdentityProvider) null));
-            var serviceProviderMock = CreateMockedServiceProvider(identityProviderServiceMock, null, null, null);
+            var serviceProviderMock = CreateMockedServiceProvider(identityProviderServiceMock, null, authServiceMock.Object, null, null);
             var httpContextMock = new Mock<HttpContext>();
             httpContextMock
                 .Setup(a => a.User)
@@ -133,7 +143,7 @@ namespace DataCatalog.Api.UnitTests.Infrastructure
             // ACT
             var attribute = new AuthorizeRolesAttribute(Role.Admin, Role.DataSteward);
             await attribute.OnAuthorizationAsync(fakeAuthFilterContext);
-            var result = ((StatusCodeResult)fakeAuthFilterContext.Result);
+            var result = (StatusCodeResult)fakeAuthFilterContext.Result;
 
             // ASSERT
             result.StatusCode.Should().Be(StatusCodes.Status401Unauthorized, "because the tenant id is not registered as valid");
@@ -164,7 +174,8 @@ namespace DataCatalog.Api.UnitTests.Infrastructure
             {
                 Roles = new List<Role>()
             };
-            var serviceProviderMock = CreateMockedServiceProvider(identityProviderServiceMock, memberServiceMock, settings, current);
+            var authService = new DataCatalogAuthorizationService(memberServiceMock.Object, settings, current, identityProviderServiceMock.Object);
+            var serviceProviderMock = CreateMockedServiceProvider(identityProviderServiceMock, memberServiceMock, authService, settings, current);
             var httpContextMock = new Mock<HttpContext>();
             httpContextMock
                 .Setup(a => a.User)
@@ -178,7 +189,7 @@ namespace DataCatalog.Api.UnitTests.Infrastructure
             await attribute.OnAuthorizationAsync(fakeAuthFilterContext);
 
             // ASSERT
-            var result = ((StatusCodeResult)fakeAuthFilterContext.Result);
+            var result = (StatusCodeResult)fakeAuthFilterContext.Result;
             result.StatusCode.Should().Be(StatusCodes.Status403Forbidden, "because the required role is not present in user claim");
         }
 
@@ -207,7 +218,8 @@ namespace DataCatalog.Api.UnitTests.Infrastructure
             {
                 Roles = new List<Role>()
             };
-            var serviceProviderMock = CreateMockedServiceProvider(identityProviderServiceMock, memberServiceMock, settings, current);
+            var authService = new DataCatalogAuthorizationService(memberServiceMock.Object, settings, current, identityProviderServiceMock.Object);
+            var serviceProviderMock = CreateMockedServiceProvider(identityProviderServiceMock, memberServiceMock, authService, settings, current);
             var httpContextMock = new Mock<HttpContext>();
             httpContextMock
                 .Setup(a => a.User)

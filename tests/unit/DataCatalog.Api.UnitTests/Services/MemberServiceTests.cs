@@ -46,14 +46,14 @@ namespace DataCatalog.Api.UnitTests.Services
             memberRepositoryMock
                 .Setup(x => x.FindByExternalIdAsync(externalId, identityProviderId))
                 .Returns(Task.FromResult((Member) null));
-            var unitOfWorkServiceMock = new Mock<IUnitIOfWork>();
+            var unitOfWorkServiceMock = new Mock<IUnitOfWork>();
             unitOfWorkServiceMock
                 .Setup(x => x.CompleteAsync())
                 .Throws(new DbUpdateException());
             _fixture.Inject(memberRepositoryMock.Object);
             _fixture.Freeze<IMemberRepository>();
             _fixture.Inject(unitOfWorkServiceMock.Object);
-            _fixture.Freeze<IUnitIOfWork>();
+            _fixture.Freeze<IUnitOfWork>();
             var memberService = _fixture.Create<MemberService>();
 
             // ACT
@@ -75,14 +75,14 @@ namespace DataCatalog.Api.UnitTests.Services
                 .SetupSequence(x => x.FindByExternalIdAsync(externalId, identityProviderId))
                 .Returns(Task.FromResult((Member) null))
                 .Returns(Task.FromResult(aMember));
-            var unitOfWorkServiceMock = new Mock<IUnitIOfWork>();
+            var unitOfWorkServiceMock = new Mock<IUnitOfWork>();
             unitOfWorkServiceMock
                 .Setup(x => x.CompleteAsync())
                 .Throws(new DbUpdateException());
             _fixture.Inject(memberRepositoryMock.Object);
             _fixture.Freeze<IMemberRepository>();
             _fixture.Inject(unitOfWorkServiceMock.Object);
-            _fixture.Freeze<IUnitIOfWork>();
+            _fixture.Freeze<IUnitOfWork>();
             var memberService = _fixture.Create<MemberService>();
 
             // ACT
@@ -103,14 +103,14 @@ namespace DataCatalog.Api.UnitTests.Services
             memberRepositoryMock
                 .Setup(x => x.FindByExternalIdAsync(externalId, identityProviderId))
                 .Returns(Task.FromResult(aMember));
-            var unitOfWorkServiceMock = new Mock<IUnitIOfWork>();
+            var unitOfWorkServiceMock = new Mock<IUnitOfWork>();
             unitOfWorkServiceMock
                 .Setup(x => x.CompleteAsync())
                 .Throws(new DbUpdateException());
             _fixture.Inject(memberRepositoryMock.Object);
             _fixture.Freeze<IMemberRepository>();
             _fixture.Inject(unitOfWorkServiceMock.Object);
-            _fixture.Freeze<IUnitIOfWork>();
+            _fixture.Freeze<IUnitOfWork>();
             var memberService = _fixture.Create<MemberService>();
 
             // ACT

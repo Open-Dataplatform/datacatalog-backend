@@ -9,8 +9,8 @@ using DataCatalog.Api.Data.Domain;
 using DataCatalog.Api.Data.Dto;
 using DataCatalog.Common.Enums;
 using DataCatalog.Api.Exceptions;
-using DataCatalog.Api.MessageBus;
 using DataCatalog.Api.Repositories;
+using Rebus.Bus;
 
 namespace DataCatalog.Api.Services
 {
@@ -24,8 +24,8 @@ namespace DataCatalog.Api.Services
         private readonly IDatasetDurationRepository _datasetDurationRepository;
         private readonly IDatasetChangeLogRepository _datasetChangeLogRepository;
         private readonly IDataSourceRepository _dataSourceRepository;
-        private readonly IUnitIOfWork _unitOfWork;
-        private readonly IMessageBusSender<DatasetCreated> _messageBusSender;
+        private readonly IBus _bus;
+        private readonly IUnitOfWork _unitOfWork;
         private readonly Current _current;
         private readonly IMapper _mapper;
 
@@ -37,11 +37,11 @@ namespace DataCatalog.Api.Services
             IDatasetDurationRepository datasetDurationRepository, 
             IDurationRepository durationRepository, 
             IDatasetChangeLogRepository datasetChangeLogRepository, 
-            IDataSourceRepository dataSourceRepository, 
+            IDataSourceRepository dataSourceRepository,
             IMapper mapper, 
-            IUnitIOfWork unitIOfWork, 
-            IMessageBusSender<DatasetCreated> messageBusSender,
-            Current current)
+            IUnitOfWork unitOfWork,
+            Current current, 
+            IBus bus)
         {
             _datasetRepository = datasetRepository;
             _hierarchyRepository = hierarchyRepository;
@@ -51,9 +51,9 @@ namespace DataCatalog.Api.Services
             _datasetDurationRepository = datasetDurationRepository;
             _datasetChangeLogRepository = datasetChangeLogRepository;
             _dataSourceRepository = dataSourceRepository;
-            _unitOfWork = unitIOfWork;
-            _messageBusSender = messageBusSender;
+            _unitOfWork = unitOfWork;
             _current = current;
+            _bus = bus;
             _mapper = mapper;
         }
 
@@ -94,7 +94,9 @@ namespace DataCatalog.Api.Services
             await _unitOfWork.CompleteAsync();
 
             var hierarchy = await _hierarchyRepository.FindByIdAsync(dbDataset.HierarchyId);
-            await _messageBusSender.PublishAsync(new DatasetCreated
+            
+            // Publish a message that the dataset has been created.
+            var datasetCreatedMessage = new DatasetCreated
             {
                 DatasetId = dbDataset.Id.ToString(),
                 Container = request.RefinementLevel switch
@@ -107,7 +109,8 @@ namespace DataCatalog.Api.Services
                 Owner = request.Owner,
                 Hierarchy = $"{GetHierarchyName(hierarchy).ToLower()}",
                 Public = request.Confidentiality == Confidentiality.Public
-            }, "DatasetCreated");
+            };
+            await _bus.Publish(datasetCreatedMessage);
 
             return _mapper.Map<Dataset>(dbDataset);
         }
@@ -223,13 +226,6 @@ namespace DataCatalog.Api.Services
 
             return _mapper.Map<Dataset>(dataset);
 
-        }
-
-        public async Task HandleMessage(string messageJson)
-        {
-            var message = DatasetProvisionedDeserializer.Deserialize(messageJson);
-            await _datasetRepository.UpdateProvisioningStatusAsync(message.DatasetId, message.Status);
-            await _unitOfWork.CompleteAsync();
         }
 
         private async Task<string> GetDatasetLocation(Guid? hierarchyId, string datasetName)

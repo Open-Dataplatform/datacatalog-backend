@@ -4,9 +4,9 @@ using DataCatalog.Data;
 
 namespace DataCatalog.Api.Repositories
 {
-    public class UnitOfWork : IUnitIOfWork
+    public class UnitOfWork : IUnitOfWork
     {
-        protected readonly DataCatalogContext _context;
+        private readonly DataCatalogContext _context;
 
         public UnitOfWork(DataCatalogContext context)
         {

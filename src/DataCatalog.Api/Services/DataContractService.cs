@@ -12,14 +12,14 @@ namespace DataCatalog.Api.Services
     public class DataContractService : IDataContractService
     {
         private readonly IDataContractRepository _dataContractRepository;
-        private readonly IUnitIOfWork _unitOfWork;
+        private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
         private readonly string _environment;
 
-        public DataContractService(IDataContractRepository dataContractRepository, IMapper mapper, IUnitIOfWork unitIOfWork)
+        public DataContractService(IDataContractRepository dataContractRepository, IMapper mapper, IUnitOfWork unitOfWork)
         {
             _dataContractRepository = dataContractRepository;
-            _unitOfWork = unitIOfWork;
+            _unitOfWork = unitOfWork;
             _mapper = mapper;
             _environment = EnvironmentUtil.GetCurrentEnvironment().ToLower();
         }

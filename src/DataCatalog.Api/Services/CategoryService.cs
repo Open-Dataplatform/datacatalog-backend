@@ -13,15 +13,15 @@ namespace DataCatalog.Api.Services
     {
         private readonly ICategoryRepository _categoryRepository;
         private readonly IDatasetCategoryRepository _datasetCategoryRepository;
-        private readonly IUnitIOfWork _unitOfWork;
+        private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
         private readonly string _environment;
 
-        public CategoryService(ICategoryRepository categoryRepository, IDatasetCategoryRepository datasetCategoryRepository, IMapper mapper, IUnitIOfWork unitIOfWork)
+        public CategoryService(ICategoryRepository categoryRepository, IDatasetCategoryRepository datasetCategoryRepository, IMapper mapper, IUnitOfWork unitOfWork)
         {
             _categoryRepository = categoryRepository;
             _datasetCategoryRepository = datasetCategoryRepository;
-            _unitOfWork = unitIOfWork;
+            _unitOfWork = unitOfWork;
             _mapper = mapper;
             _environment = EnvironmentUtil.GetCurrentEnvironment().ToLower();
         }

@@ -99,12 +99,12 @@ namespace DataCatalog.Api.UnitTests.Services
             var hierarchyRepositoryMock = new Mock<IHierarchyRepository>();
             var hierarchyEntity = _fixture.Create<Data.Domain.Hierarchy>();
             hierarchyRepositoryMock.Setup(x => x.AddAsync(It.IsAny<Hierarchy>()));
-            var unitOfWorkMock = new Mock<IUnitIOfWork>();
+            var unitOfWorkMock = new Mock<IUnitOfWork>();
             unitOfWorkMock.Setup(x => x.CompleteAsync());
             _fixture.Inject(hierarchyRepositoryMock.Object);
             _fixture.Inject(unitOfWorkMock.Object);
             _fixture.Freeze<IHierarchyRepository>();
-            _fixture.Freeze<IUnitIOfWork>();
+            _fixture.Freeze<IUnitOfWork>();
             var hierarchyService = _fixture.Create<HierarchyService>();
 
             // Act
@@ -122,12 +122,12 @@ namespace DataCatalog.Api.UnitTests.Services
             var hierarchyRepositoryMock = new Mock<IHierarchyRepository>();
             var hierarchyEntity = _fixture.Create<Data.Domain.Hierarchy>();
             hierarchyRepositoryMock.Setup(x => x.FindByIdAsync(It.IsAny<Guid>())).ReturnsAsync((Hierarchy)null);
-            var unitOfWorkMock = new Mock<IUnitIOfWork>();
+            var unitOfWorkMock = new Mock<IUnitOfWork>();
             unitOfWorkMock.Setup(x => x.CompleteAsync());
             _fixture.Inject(hierarchyRepositoryMock.Object);
             _fixture.Inject(unitOfWorkMock.Object);
             _fixture.Freeze<IHierarchyRepository>();
-            _fixture.Freeze<IUnitIOfWork>();
+            _fixture.Freeze<IUnitOfWork>();
             var hierarchyService = _fixture.Create<HierarchyService>();
 
             // Act
@@ -150,7 +150,7 @@ namespace DataCatalog.Api.UnitTests.Services
             hierarchyRepositoryMock.Setup(x => x.FindByIdAsync(hierarchyEntities[0].Id)).ReturnsAsync(hierarchyEntities[0]);
             hierarchyRepositoryMock.Setup(x => x.FindByIdAsync(hierarchyEntities[1].Id)).ReturnsAsync(hierarchyEntities[1]);
             hierarchyRepositoryMock.Setup(x => x.FindByIdAsync(hierarchyEntities[2].Id)).ReturnsAsync(hierarchyEntities[2]);
-            var unitOfWorkMock = new Mock<IUnitIOfWork>();
+            var unitOfWorkMock = new Mock<IUnitOfWork>();
             unitOfWorkMock.Setup(x => x.CompleteAsync());
             _fixture.Inject(unitOfWorkMock.Object);
             _fixture.Inject(hierarchyRepositoryMock.Object);
@@ -179,7 +179,7 @@ namespace DataCatalog.Api.UnitTests.Services
             hierarchyRepositoryMock.Setup(x => x.FindByIdAsync(hierarchyEntities[0].Id)).ReturnsAsync(hierarchyEntities[0]);
             hierarchyRepositoryMock.Setup(x => x.FindByIdAsync(hierarchyEntities[1].Id)).ReturnsAsync(hierarchyEntities[1]);
             hierarchyRepositoryMock.Setup(x => x.FindByIdAsync(hierarchyEntities[2].Id)).ReturnsAsync(hierarchyEntities[2]);
-            var unitOfWorkMock = new Mock<IUnitIOfWork>();
+            var unitOfWorkMock = new Mock<IUnitOfWork>();
             unitOfWorkMock.Setup(x => x.CompleteAsync());
             _fixture.Inject(unitOfWorkMock.Object);
             _fixture.Inject(hierarchyRepositoryMock.Object);
@@ -207,7 +207,7 @@ namespace DataCatalog.Api.UnitTests.Services
             hierarchyRepositoryMock.Setup(x => x.FindByIdAsync(It.IsAny<Guid>())).ReturnsAsync((Hierarchy)null);
             _fixture.Inject(hierarchyRepositoryMock.Object);
             _fixture.Freeze<IHierarchyRepository>();
-            var unitOfWorkMock = new Mock<IUnitIOfWork>();
+            var unitOfWorkMock = new Mock<IUnitOfWork>();
             unitOfWorkMock.Setup(x => x.CompleteAsync());
             _fixture.Inject(unitOfWorkMock.Object);
             _fixture.Freeze<IHierarchyRepository>();
@@ -232,7 +232,7 @@ namespace DataCatalog.Api.UnitTests.Services
             hierarchyRepositoryMock.Setup(x => x.FindByIdAsync(hierarchyEntity.Id)).ReturnsAsync(hierarchyEntity);
             _fixture.Inject(hierarchyRepositoryMock.Object);
             _fixture.Freeze<IHierarchyRepository>();
-            var unitOfWorkMock = new Mock<IUnitIOfWork>();
+            var unitOfWorkMock = new Mock<IUnitOfWork>();
             unitOfWorkMock.Setup(x => x.CompleteAsync());
             _fixture.Inject(unitOfWorkMock.Object);
             _fixture.Freeze<IHierarchyRepository>();

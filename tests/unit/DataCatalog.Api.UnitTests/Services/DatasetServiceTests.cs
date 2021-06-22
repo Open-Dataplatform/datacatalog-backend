@@ -10,7 +10,6 @@ using DataCatalog.Api.Data.Domain;
 using DataCatalog.Api.Data.Dto;
 using DataCatalog.Common.Enums;
 using DataCatalog.Api.Exceptions;
-using DataCatalog.Api.MessageBus;
 using DataCatalog.Api.Repositories;
 using DataCatalog.Api.Services;
 using FluentAssertions;
@@ -23,6 +22,7 @@ using Hierarchy = DataCatalog.Data.Model.Hierarchy;
 using Transformation = DataCatalog.Data.Model.Transformation;
 using TransformationDataset = DataCatalog.Data.Model.TransformationDataset;
 using DataCatalog.Api.Data;
+using Rebus.Bus;
 
 namespace DataCatalog.Api.UnitTests.Services
 {
@@ -241,7 +241,7 @@ namespace DataCatalog.Api.UnitTests.Services
             _fixture.Inject(transformationRepositoryMock.Object);
             _fixture.Freeze<ITransformationRepository>();
             _datasetCreateRequest.Location = null;
-            var messageBusSenderMock = new Mock<IMessageBusSender<DatasetCreated>>();
+            var messageBusSenderMock = new Mock<IBus>();
             _fixture.Inject(messageBusSenderMock.Object);
             var datasetService = _fixture.Create<DatasetService>();
 
@@ -276,12 +276,11 @@ namespace DataCatalog.Api.UnitTests.Services
             dataset.SlaLink.Should().Be(_datasetCreateRequest.SlaLink);
             dataset.Status.Should().Be(_datasetCreateRequest.Status);
             dataset.Version.Should().Be(0);
-            messageBusSenderMock.Verify(mock => mock.PublishAsync(It.Is<DatasetCreated>(dto =>
+            messageBusSenderMock.Verify(mock => mock.Publish(It.Is<DatasetCreated>(dto =>
                 dto.DatasetName == _datasetCreateRequest.Name  &&
                 dto.Container == "RAW" &&
                 dto.Hierarchy == hierarchy.ParentHierarchy.Name + "/" + hierarchy.Name &&
-                dto.Owner == _datasetCreateRequest.Owner),
-                It.Is<string>(name => name == "DatasetCreated")));
+                dto.Owner == _datasetCreateRequest.Owner), It.IsAny<IDictionary<string, string>>()));
         }
 
         [Fact]
@@ -293,7 +292,7 @@ namespace DataCatalog.Api.UnitTests.Services
             datasetRepositoryMock.Setup(x => x.FindByIdAsync(It.IsAny<Guid>())).ReturnsAsync((Dataset)null);
             _fixture.Inject(datasetRepositoryMock.Object);
             _fixture.Freeze<IDatasetRepository>();
-            var unitOfWorkMock = new Mock<IUnitIOfWork>();
+            var unitOfWorkMock = new Mock<IUnitOfWork>();
             unitOfWorkMock.Setup(x => x.CompleteAsync());
             _fixture.Inject(unitOfWorkMock.Object);
             _fixture.Freeze<IDatasetRepository>();
@@ -318,7 +317,7 @@ namespace DataCatalog.Api.UnitTests.Services
             datasetRepositoryMock.Setup(x => x.FindByIdAsync(datasetEntity.Id)).ReturnsAsync(datasetEntity);
             _fixture.Inject(datasetRepositoryMock.Object);
             _fixture.Freeze<IDatasetRepository>();
-            var unitOfWorkMock = new Mock<IUnitIOfWork>();
+            var unitOfWorkMock = new Mock<IUnitOfWork>();
             unitOfWorkMock.Setup(x => x.CompleteAsync());
             _fixture.Inject(unitOfWorkMock.Object);
             _fixture.Freeze<IDatasetRepository>();

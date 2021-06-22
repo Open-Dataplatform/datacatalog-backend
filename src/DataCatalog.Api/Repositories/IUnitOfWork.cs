@@ -2,7 +2,7 @@
 
 namespace DataCatalog.Api.Repositories
 {
-    public interface IUnitIOfWork
+    public interface IUnitOfWork
     {
         Task CompleteAsync();
     }
