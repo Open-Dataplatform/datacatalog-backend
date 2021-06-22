@@ -215,7 +215,7 @@ namespace DataCatalog.Api
             var dataCatalogBlobStorageUrl = Configuration.GetValidatedStringValue("DataCatalogBlobStorageUrl");
             Log.Information("DataCatalogBlobStorageUrl = {DataCatalogBlobStorageUrl}", dataCatalogBlobStorageUrl);
             var serviceEndpoint = new Uri(dataCatalogBlobStorageUrl);
-            services.AddSingleton(x => new DataLakeServiceClient(serviceEndpoint, new DefaultAzureCredential()));
+            services.AddSingleton(x => new DataLakeServiceClient(serviceEndpoint, new ClientSecretCredential(tenantId, groupManagementClientId, groupManagementClientSecret)));
             services.AddTransient<IStorageService, AzureStorageService>();
         }
 

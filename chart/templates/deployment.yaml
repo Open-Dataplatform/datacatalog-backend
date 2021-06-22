@@ -28,9 +28,7 @@ spec:
               "ServiceBus": "{{ .Data.data.service_bus_connection_string }}"
             },
             "AzureAd": {
-              "TenantId": "{{ .Data.data.tenant_id }}",
-              "ClientId": "{{ .Data.data.client_id }}",
-              "ClientSecret": "{{ .Data.data.secret }}"
+              "TenantId": "{{ .Data.data.tenant_id }}"
             }
           }
           {{- end -}}`}}
