@@ -185,6 +185,15 @@ namespace DataCatalog.Api
 
             app.UseSerilogRequestLogging(config => config.MessageTemplate = "HTTP {RequestMethod} {RequestPath} responded {StatusCode} in {Elapsed:0.0000} ms from user {UserName}");
 
+            if (EnvironmentUtil.IsLocal())
+            {
+                app.UseMiddleware<LocalCurrentUserInitializationMiddleware>();
+            }
+            else 
+            {
+                app.UseMiddleware<CurrentUserInitializationMiddleware>();
+            }
+
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
