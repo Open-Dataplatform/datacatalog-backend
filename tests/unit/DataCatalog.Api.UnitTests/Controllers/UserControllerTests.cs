@@ -1,5 +1,6 @@
 ﻿using DataCatalog.Api.Controllers;
 using DataCatalog.Api.Infrastructure;
+using DataCatalog.Common.Enums;
 using FluentAssertions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -16,14 +17,15 @@ namespace DataCatalog.Api.UnitTests.Controllers
         public void GetUserInfo_ShouldReturnNameAndRole()
         {
             // ARRANGE
-            var settings = new Roles
-            {
-                Admin = Guid.NewGuid().ToString(),
-                DataSteward = Guid.NewGuid().ToString(),
-                User = Guid.NewGuid().ToString()
-            };
+            // var settings = new Roles
+            // {
+            //     Admin = Guid.NewGuid().ToString(),
+            //     DataSteward = Guid.NewGuid().ToString(),
+            //     User = Guid.NewGuid().ToString()
+            // };
+
             var name = Guid.NewGuid().ToString();
-            var userController = new UserController(settings)
+            var userController = new UserController()
             {
                 ControllerContext = new ControllerContext()
                 {
@@ -33,7 +35,7 @@ namespace DataCatalog.Api.UnitTests.Controllers
                             new[]
                             {
                                 new Claim(ClaimsUtility.ClaimName, name),
-                                new Claim(ClaimTypes.Role, settings.DataSteward)
+                                new Claim(ClaimTypes.Role, Role.DataSteward.ToString())
                             }, "auth"))
                     }
                 }

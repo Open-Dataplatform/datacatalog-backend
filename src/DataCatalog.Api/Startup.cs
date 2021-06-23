@@ -59,11 +59,6 @@ namespace DataCatalog.Api
 
             AddServicesAndDbContext(services);
 
-            // Groups and roles
-            var roles = Configuration.GetSection("Roles").Get<Roles>();
-            ValidateRolesConfiguration(roles);
-            services.AddSingleton(roles);
-
             var oAuthConfiguration = Configuration.GetSection("OAuth").Get<OAuth>();
             ValidateOAuthConfiguration(oAuthConfiguration);
             services.AddAuthentication(options =>
@@ -228,23 +223,6 @@ namespace DataCatalog.Api
             services.AddTransient<IStorageService, AzureStorageService>();
         }
 
-        private static void ValidateRolesConfiguration(Roles rolesConfiguration)
-        {
-            if (rolesConfiguration == null)
-            {
-                throw new ArgumentException("'Roles' must have a value");
-            }
-
-            rolesConfiguration.Admin.ValidateConfiguration("Roles:Admin");
-            rolesConfiguration.User.ValidateConfiguration("Roles:User");
-            rolesConfiguration.DataSteward.ValidateConfiguration("Roles:DataSteward");
-            Log.Information("Logging Configuration - start Roles");
-            Log.Information("Roles:Admin = {AdminRole}", rolesConfiguration.Admin);
-            Log.Information("Roles:User = {UserRole}", rolesConfiguration.User);
-            Log.Information("Roles:DataSteward = {DataStewardRole}", rolesConfiguration.DataSteward);
-            Log.Information("Logging Configuration - end Roles");
-        }
-
         private static void ValidateOAuthConfiguration(OAuth oAuthConfiguration)
         {
             if (oAuthConfiguration == null)
@@ -279,7 +257,6 @@ namespace DataCatalog.Api
 
             services.AddTransient<ITransformationService, TransformationService>();
             services.AddTransient(typeof(IMessageBusSender<>), typeof(MessageBusSender<>));
-            services.AddTransient<IDataCatalogAuthorizationService, DataCatalogAuthorizationService>();
             
             if (!EnvironmentUtil.IsLocal())
             {
@@ -295,8 +272,6 @@ namespace DataCatalog.Api
                 
                 services.AddTransient<IGroupService, LocalGroupService>();
                 services.AddTransient<IStorageService, LocalStorageService>();
-                services.RemoveAll(typeof(IDataCatalogAuthorizationService));
-                services.AddTransient<IDataCatalogAuthorizationService, LocalDataCatalogAuthorizationService>();
             }
 
             // Db Context
