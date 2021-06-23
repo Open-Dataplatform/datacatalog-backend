@@ -9,6 +9,9 @@ using Microsoft.AspNetCore.Http;
 
 namespace DataCatalog.Api.Extensions
 {
+    /// <summary>
+    /// This middleware will initialize the scoped 'Current' object and create a Member the first time a user logs on
+    /// </summary>
     public class CurrentUserInitializationMiddleware
     {
         private readonly RequestDelegate _next;
@@ -18,6 +21,7 @@ namespace DataCatalog.Api.Extensions
             _next = next;
         }
 
+        // current, memberService and identityProviderService is populated by DI
         public async Task InvokeAsync(HttpContext context, Current current, IMemberService memberService, IIdentityProviderService identityProviderService)
         {
             var executingUser = context.User;
