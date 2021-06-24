@@ -17,13 +17,6 @@ namespace DataCatalog.Api.UnitTests.Controllers
         public void GetUserInfo_ShouldReturnNameAndRole()
         {
             // ARRANGE
-            // var settings = new Roles
-            // {
-            //     Admin = Guid.NewGuid().ToString(),
-            //     DataSteward = Guid.NewGuid().ToString(),
-            //     User = Guid.NewGuid().ToString()
-            // };
-
             var name = Guid.NewGuid().ToString();
             var userController = new UserController()
             {
