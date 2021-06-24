@@ -1,37 +1,36 @@
 using System;
-
-using DataCatalog.Common.Data;
+using System.Runtime.CompilerServices;
+using Azure.Identity;
+using Azure.Storage.Files.DataLake;
 using DataCatalog.Api.Extensions;
+using DataCatalog.Api.Implementations;
 using DataCatalog.Api.Infrastructure;
+using DataCatalog.Api.MessageHandlers;
 using DataCatalog.Api.Repositories;
 using DataCatalog.Api.Services;
+using DataCatalog.Api.Services.AD;
+using DataCatalog.Api.Services.Local;
+using DataCatalog.Api.Services.Storage;
+using DataCatalog.Common.Data;
+using DataCatalog.Common.Extensions;
+using DataCatalog.Common.Interfaces;
+using DataCatalog.Common.Rebus.Extensions;
+using DataCatalog.Common.Utils;
+using DataCatalog.Data;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Versioning;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Serilog;
-using System.Runtime.CompilerServices;
-using Azure.Identity;
-using Azure.Storage.Files.DataLake;
-using DataCatalog.Api.Implementations;
-using DataCatalog.Common.Interfaces;
-using DataCatalog.Api.MessageHandlers;
-using DataCatalog.Api.Services.AD;
-using DataCatalog.Api.Services.Local;
-using DataCatalog.Api.Services.Storage;
-using DataCatalog.Common.Utils;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Graph;
 using Microsoft.Graph.Auth;
 using Microsoft.Identity.Client;
+using Serilog;
 using Serilog.Context;
-using DataCatalog.Data;
-using DataCatalog.Common.Extensions;
-using DataCatalog.Common.Rebus.Extensions;
 
 [assembly: ApiConventionType(typeof(ApiConventions))]
 [assembly: InternalsVisibleTo("DynamicProxyGenAssembly2")]
@@ -277,7 +276,7 @@ namespace DataCatalog.Api
             services.AddDbContext<DataCatalogContext>(o => o.UseSqlServer(conn));
             
             services.AddRebusWithSubscription<DatasetProvisionedHandler>(Configuration, conn);
-            
+
             if (EnvironmentUtil.IsLocal())
             {
                 services.AddTransient<IGroupService, LocalGroupService>();

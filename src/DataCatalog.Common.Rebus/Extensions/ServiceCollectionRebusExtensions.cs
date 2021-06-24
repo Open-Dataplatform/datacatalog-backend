@@ -51,17 +51,17 @@ namespace DataCatalog.Common.Rebus.Extensions
 
             services.AutoRegisterHandlersFromAssemblyOf<TMessageHandlerType>();
             
-            var mySqlTransportOptions = new MySqlTransportOptions(connectionString);
+            var transportOptions = new SqlServerTransportOptions(connectionString);
             services.AddRebus(configure => configure
                 .Logging(l => l.Serilog())
-                .Transport(t => t.UseMySql(mySqlTransportOptions, inputQueueName))
+                .Transport(t => t.UseSqlServer(transportOptions, inputQueueName))
                 .Options(o =>
                 {
                     o.SetNumberOfWorkers(numberOfWorkers);
                     o.SetMaxParallelism(maxParallelism);
                     o.SimpleRetryStrategy(secondLevelRetriesEnabled: true, maxDeliveryAttempts: maxAttempts, errorQueueAddress: errorQueueAddress);
                 })
-                .Subscriptions(s => s.StoreInMySql(connectionString, subscriptionsTableName))
+                .Subscriptions(s => s.StoreInSqlServer(connectionString, subscriptionsTableName))
                 .Routing(r => r.TypeBased().MapAssemblyOf<TMessageHandlerType>(tableName))
             );
 
