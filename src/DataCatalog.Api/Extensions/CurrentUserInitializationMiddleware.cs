@@ -1,3 +1,4 @@
+using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using DataCatalog.Api.Data.Domain;
@@ -26,6 +27,11 @@ namespace DataCatalog.Api.Extensions
         {
             var executingUser = context.User;
 
+            if (!executingUser.Claims.Any())
+            {
+                // Call must have been made by an allowAnonymous call such as /health
+                return;
+            }
             var identityProvider = await GetIdentityProviderForUser(executingUser, identityProviderService);
 
             // Get claims for IdP and user id
