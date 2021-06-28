@@ -21,8 +21,10 @@ spec:
         vault.hashicorp.com/agent-inject-template-appsettings.secrets.json: |
           {{`{{-`}} with secret "{{ .Values.secretName }}/data/credentials" {{`-}}`}}
           {{`{
-            "GroupManagementClientId": "{{ .Data.data.client_id }}",
-            "GroupManagementClientSecret": "{{ .Data.data.secret }}",
+            "GroupManagementClientId": "{{ .Data.data.group_management_client_id }}",
+            "GroupManagementClientSecret": "{{ .Data.data.group_management_client_secret }}",
+            "DataLakeClientId": "{{ .Data.data.data_lake_client_id }}",
+            "DataLakeClientSecret": "{{ .Data.data.data_lake_client_secret }}",
             "ConnectionStrings": {
               "DataCatalog": "{{ .Data.data.connection_string }}",
               "ServiceBus": "{{ .Data.data.service_bus_connection_string }}"

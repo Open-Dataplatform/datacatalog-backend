@@ -1,5 +1,4 @@
 using System;
-
 using DataCatalog.Common.Data;
 using DataCatalog.Api.Extensions;
 using DataCatalog.Api.Infrastructure;
@@ -216,10 +215,15 @@ namespace DataCatalog.Api
 
             services.AddTransient<IGroupService, AzureGroupService>();
 
+            // Data lake registration
             var dataCatalogBlobStorageUrl = Configuration.GetValidatedStringValue("DataCatalogBlobStorageUrl");
             Log.Information("DataCatalogBlobStorageUrl = {DataCatalogBlobStorageUrl}", dataCatalogBlobStorageUrl);
+            var dataLakeClientId = Configuration.GetValidatedStringValue("DataLakeClientId");
+            Log.Information("DataLakeClientId = {DataLakeClientId}", dataLakeClientId);
+            var dataLakeClientSecret = Configuration.GetValidatedStringValue("DataLakeClientSecret");
+
             var serviceEndpoint = new Uri(dataCatalogBlobStorageUrl);
-            services.AddSingleton(x => new DataLakeServiceClient(serviceEndpoint, new ClientSecretCredential(tenantId, groupManagementClientId, groupManagementClientSecret)));
+            services.AddSingleton(x => new DataLakeServiceClient(serviceEndpoint, new ClientSecretCredential(tenantId, dataLakeClientId, dataLakeClientSecret)));
             services.AddTransient<IStorageService, AzureStorageService>();
         }
 
