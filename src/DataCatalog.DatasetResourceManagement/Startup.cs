@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Azure.Storage.Files.DataLake;
+using DataCatalog.Api.Messages;
 using DataCatalog.Common.Extensions;
 using DataCatalog.Common.Rebus.Extensions;
 using DataCatalog.Common.Utils;
@@ -87,6 +88,11 @@ namespace DataCatalog.DatasetResourceManagement
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapGet("/", async context => { await context.Response.WriteAsync("Hello World!"); });
+            });
+
+            app.ApplicationServices.UseRebusSubscriptions(new[]
+            {
+                typeof(DatasetCreatedMessage)
             });
         }
     }

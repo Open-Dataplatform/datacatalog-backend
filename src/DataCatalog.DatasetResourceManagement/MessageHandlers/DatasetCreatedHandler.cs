@@ -14,7 +14,7 @@ using IAllUsersGroupProvider = DataCatalog.Common.Interfaces.IAllUsersGroupProvi
 
 namespace DataCatalog.DatasetResourceManagement.MessageHandlers
 {
-    public class DatasetCreatedHandler : IHandleMessages<DatasetCreated>
+    public class DatasetCreatedHandler : IHandleMessages<DatasetCreatedMessage>
     {
         private readonly ILogger<DatasetCreatedHandler> _logger;
         private readonly IStorageService _storageService;
@@ -44,13 +44,13 @@ namespace DataCatalog.DatasetResourceManagement.MessageHandlers
             _bus = bus;
         }
 
-        public async Task Handle(DatasetCreated datasetCreated)
+        public async Task Handle(DatasetCreatedMessage datasetCreatedMessage)
         {
             try
             {
 
                 const string container = "datasets";
-                var path = datasetCreated.DatasetId.ToString();
+                var path = datasetCreatedMessage.DatasetId.ToString();
 
                 var rootGroupId = await _activeDirectoryRootGroupProvider.ProvideGroupAsync(
                     $"DataPlatform-{container}-Zone-{EnvironmentUtil.GetCurrentEnvironment()}-Reader",
@@ -64,12 +64,12 @@ namespace DataCatalog.DatasetResourceManagement.MessageHandlers
                 await using (var lease = await _storageService.AcquireLeaseAsync(container, path))
                 {
                     readerGroupId = await _activeDirectoryGroupProvider.ProvideGroupAsync(
-                        $"DataPlatform-DataSet_{datasetCreated.DatasetId}-{EnvironmentUtil.GetCurrentEnvironment()}-Reader",
-                        $"Reader group with id {datasetCreated.DatasetId} and name at creation {datasetCreated.DatasetName}", new[] { datasetCreated.Owner });
+                        $"DataPlatform-DataSet_{datasetCreatedMessage.DatasetId}-{EnvironmentUtil.GetCurrentEnvironment()}-Reader",
+                        $"Reader group with id {datasetCreatedMessage.DatasetId} and name at creation {datasetCreatedMessage.DatasetName}", new[] { datasetCreatedMessage.Owner });
 
                     writerGroupId = await _activeDirectoryGroupProvider.ProvideGroupAsync(
-                        $"DataPlatform-DataSet_{datasetCreated.DatasetId}-{EnvironmentUtil.GetCurrentEnvironment()}-Writer",
-                        $"Writer group with id {datasetCreated.DatasetId} and name at creation {datasetCreated.DatasetName}");
+                        $"DataPlatform-DataSet_{datasetCreatedMessage.DatasetId}-{EnvironmentUtil.GetCurrentEnvironment()}-Writer",
+                        $"Writer group with id {datasetCreatedMessage.DatasetId} and name at creation {datasetCreatedMessage.DatasetName}");
 
                     await _accessControlListService.SetGroupsInAccessControlListAsync(new CreateGroupsInAccessControlList
                     {
@@ -89,7 +89,7 @@ namespace DataCatalog.DatasetResourceManagement.MessageHandlers
                         {
                         { "ReaderGroupId", readerGroupId },
                         { "WriterGroupId", writerGroupId },
-                        { "RootDirectoryDatasetId", datasetCreated.DatasetId.ToString() }
+                        { "RootDirectoryDatasetId", datasetCreatedMessage.DatasetId.ToString() }
                         }, lease.LeaseId);
 
                     await _accessControlListService.RemoveGroupFromAccessControlListAsync(container, path, rootGroupId, lease.LeaseId);
@@ -98,12 +98,12 @@ namespace DataCatalog.DatasetResourceManagement.MessageHandlers
                 await _activeDirectoryGroupService.AddGroupMember(rootGroupId, readerGroupId);
                 await _activeDirectoryGroupService.AddGroupMember(rootGroupId, writerGroupId);
                 
-                if (datasetCreated.Public)
+                if (datasetCreatedMessage.Public)
                     await _activeDirectoryGroupService.AddGroupMember(readerGroupId, _allUsersGroupProvider.GetAllUsersGroup());
 
                 await _bus.Publish(new DatasetProvisionedMessage
                     {
-                        DatasetId = datasetCreated.DatasetId, 
+                        DatasetId = datasetCreatedMessage.DatasetId, 
                         Status = "succeeded"
                     }
                 );

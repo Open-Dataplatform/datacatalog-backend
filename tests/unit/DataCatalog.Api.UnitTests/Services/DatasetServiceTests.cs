@@ -276,7 +276,7 @@ namespace DataCatalog.Api.UnitTests.Services
             dataset.SlaLink.Should().Be(_datasetCreateRequest.SlaLink);
             dataset.Status.Should().Be(_datasetCreateRequest.Status);
             dataset.Version.Should().Be(0);
-            messageBusSenderMock.Verify(mock => mock.Publish(It.Is<DatasetCreated>(dto =>
+            messageBusSenderMock.Verify(mock => mock.Publish(It.Is<DatasetCreatedMessage>(dto =>
                 dto.DatasetName == _datasetCreateRequest.Name  &&
                 dto.Container == "RAW" &&
                 dto.Hierarchy == hierarchy.ParentHierarchy.Name + "/" + hierarchy.Name &&

@@ -2,7 +2,7 @@
 
 namespace DataCatalog.Api.Messages
 {
-    public class DatasetCreated
+    public class DatasetCreatedMessage
     {
         public Guid DatasetId { get; set; }
         public string DatasetName { get; set; }

@@ -97,7 +97,7 @@ namespace DataCatalog.Api.Services
             var hierarchy = await _hierarchyRepository.FindByIdAsync(dbDataset.HierarchyId);
             
             // Publish a message that the dataset has been created.
-            var datasetCreatedMessage = new DatasetCreated
+            var datasetCreatedMessage = new DatasetCreatedMessage
             {
                 DatasetId = dbDataset.Id,
                 Container = request.RefinementLevel switch
