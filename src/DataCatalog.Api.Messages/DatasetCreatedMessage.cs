@@ -1,10 +1,10 @@
-﻿using DataCatalog.Api.Data.Dto;
+﻿using System;
 
-namespace DataCatalog.Api.Data.Domain
+namespace DataCatalog.Api.Messages
 {
-    public class DatasetCreated : MessageBusPublishMessage
+    public class DatasetCreated
     {
-        public string DatasetId { get; set; }
+        public Guid DatasetId { get; set; }
         public string DatasetName { get; set; }
         public string Container { get; set; }
         public string Hierarchy { get; set; }

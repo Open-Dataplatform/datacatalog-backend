@@ -1,0 +1,21 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+    <PropertyGroup>
+        <TargetFramework>net5.0</TargetFramework>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\DataCatalog.Common.Rebus\DataCatalog.Common.Rebus.csproj" />
+        <ProjectReference Include="..\DataCatalog.Common\DataCatalog.Common.csproj" />
+        <ProjectReference Include="..\DataCatalog.Api.Messages\DataCatalog.Api.Messages.csproj" />
+        <ProjectReference Include="..\DataCatalog.DatasetResourceManagement.Messages\DataCatalog.DatasetResourceManagement.Messages.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Azure.Storage.Files.DataLake" Version="12.6.1" />
+        <PackageReference Include="Microsoft.Graph.Auth" Version="1.0.0-preview.6" />
+        <PackageReference Include="Microsoft.Graph.Beta" Version="0.35.0-preview" />
+        <PackageReference Include="Microsoft.Identity.Client" Version="4.23.0" />
+        <PackageReference Include="Polly" Version="7.2.1" />    
+    </ItemGroup>
+</Project>

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Reflection;
 using DataCatalog.Common.Extensions;
 using Microsoft.Extensions.Configuration;
@@ -14,14 +15,33 @@ namespace DataCatalog.Common.Rebus.Extensions
     public static class ServiceCollectionRebusExtensions
     {
         /// <summary>
+        /// Ensures setup of rebus in the service provider and subscribe to message of the given types
+        /// </summary>
+        /// <param name="serviceProvider">The service provider</param>
+        /// <param name="messageTypes">The message types to subscribe to</param>
+        /// <returns>The service provider</returns>
+        public static IServiceProvider UseRebusSubscriptions(this IServiceProvider serviceProvider, IEnumerable<Type> messageTypes)
+        {
+            serviceProvider.UseRebus(bus =>
+            {
+                foreach (var messageType in messageTypes)
+                {
+                    bus.Subscribe(messageType);
+                }
+            });
+
+            return serviceProvider;
+        }
+
+        /// <summary>
         /// Adds Rebus to the DI. It will automatically include all handlers within the assembly that the <code>TMessageHandlerType</code>
         /// is included in.
         /// </summary>
-        /// <param name="services"></param>
-        /// <param name="configuration"></param>
+        /// <param name="services">The service collection</param>
+        /// <param name="configuration">The configuration</param>
         /// <param name="connectionString">The connection string to the Mysql database</param>
         /// <typeparam name="TMessageHandlerType">A type from the assembly where all handlers should be included in</typeparam>
-        /// <returns></returns>
+        /// <returns>The service collection</returns>
         public static IServiceCollection AddRebusWithSubscription<TMessageHandlerType>(this IServiceCollection services,
             IConfiguration configuration, string connectionString)
         {

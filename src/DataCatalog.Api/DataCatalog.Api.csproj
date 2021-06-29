@@ -52,8 +52,10 @@
     <PackageReference Include="Microsoft.Graph.Beta" Version="0.35.0-preview" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\DataCatalog.Api.Messages\DataCatalog.Api.Messages.csproj" />
     <ProjectReference Include="..\DataCatalog.Common.Rebus\DataCatalog.Common.Rebus.csproj" />
     <ProjectReference Include="..\DataCatalog.Data\DataCatalog.Data.csproj" />
     <ProjectReference Include="..\DataCatalog.Common\DataCatalog.Common.csproj" />
+    <ProjectReference Include="..\DataCatalog.DatasetResourceManagement.Messages\DataCatalog.DatasetResourceManagement.Messages.csproj" />
   </ItemGroup>
 </Project>

@@ -17,6 +17,7 @@ using DataCatalog.Common.Interfaces;
 using DataCatalog.Common.Rebus.Extensions;
 using DataCatalog.Common.Utils;
 using DataCatalog.Data;
+using DataCatalog.DatasetResourceManagement.Messages;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
@@ -191,6 +192,11 @@ namespace DataCatalog.Api
             {
                 endpoints.MapControllers();
                 endpoints.MapHealthChecks("/health");
+            });
+
+            app.ApplicationServices.UseRebusSubscriptions(new[]
+            {
+                typeof(DatasetProvisionedMessage)
             });
         }
 

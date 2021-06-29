@@ -5,8 +5,6 @@ using System.Threading.Tasks;
 using AutoFixture;
 using AutoFixture.AutoMoq;
 using AutoMapper;
-
-using DataCatalog.Api.Data.Domain;
 using DataCatalog.Api.Data.Dto;
 using DataCatalog.Common.Enums;
 using DataCatalog.Api.Exceptions;
@@ -22,6 +20,8 @@ using Hierarchy = DataCatalog.Data.Model.Hierarchy;
 using Transformation = DataCatalog.Data.Model.Transformation;
 using TransformationDataset = DataCatalog.Data.Model.TransformationDataset;
 using DataCatalog.Api.Data;
+using DataCatalog.Api.Messages;
+using DataCatalog.DatasetResourceManagement.Messages;
 using Rebus.Bus;
 
 namespace DataCatalog.Api.UnitTests.Services

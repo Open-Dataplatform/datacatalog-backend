@@ -9,6 +9,7 @@ using DataCatalog.Api.Data.Domain;
 using DataCatalog.Api.Data.Dto;
 using DataCatalog.Common.Enums;
 using DataCatalog.Api.Exceptions;
+using DataCatalog.Api.Messages;
 using DataCatalog.Api.Repositories;
 using Rebus.Bus;
 
@@ -98,7 +99,7 @@ namespace DataCatalog.Api.Services
             // Publish a message that the dataset has been created.
             var datasetCreatedMessage = new DatasetCreated
             {
-                DatasetId = dbDataset.Id.ToString(),
+                DatasetId = dbDataset.Id,
                 Container = request.RefinementLevel switch
                 {
                     RefinementLevel.Raw => "RAW",
