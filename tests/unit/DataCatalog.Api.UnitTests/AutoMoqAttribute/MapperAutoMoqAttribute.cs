@@ -1,7 +1,8 @@
 ﻿using System.Linq;
 using AutoFixture;
 using DataCatalog.Api.UnitTests.SpecimenBuilders;
-using DataCatalog.Api.UnitTests.Extensions;
+using DataCatalog.Common.UnitTests.AutoMoqAttribute;
+using DataCatalog.Common.UnitTests.Extensions;
 
 namespace DataCatalog.Api.UnitTests.AutoMoqAttribute
 {

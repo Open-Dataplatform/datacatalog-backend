@@ -1,30 +1,25 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using Azure.Identity;
 using Azure.Storage.Files.DataLake;
 using DataCatalog.Api.Messages;
 using DataCatalog.Common.Extensions;
+using DataCatalog.Common.Interfaces;
 using DataCatalog.Common.Rebus.Extensions;
-using DataCatalog.Common.Utils;
 using DataCatalog.DatasetResourceManagement.Common.ServiceInterfaces.ActiveDirectory;
 using DataCatalog.DatasetResourceManagement.Common.ServiceInterfaces.Storage;
 using DataCatalog.DatasetResourceManagement.MessageHandlers;
 using DataCatalog.DatasetResourceManagement.Services.ActiveDirectory;
 using DataCatalog.DatasetResourceManagement.Services.ActiveDirectory.Middleware;
 using DataCatalog.DatasetResourceManagement.Services.Storage;
-using Energinet.DataPlatform.DataSetResourceManagement.Infrastructure.Configuration;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Graph;
 using Microsoft.Graph.Auth;
 using Microsoft.Identity.Client;
-using Polly.Retry;
-using Rebus.ServiceProvider;
+using Serilog;
 
 namespace DataCatalog.DatasetResourceManagement
 {
@@ -41,25 +36,38 @@ namespace DataCatalog.DatasetResourceManagement
         // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
         public void ConfigureServices(IServiceCollection services)
         {
-            var config = new InfrastructureConfiguration();
-            _configuration.Bind(config);
-            services.AddTransient<IStorageService, StorageService>();
-
-            var storageAccountName = $"dpcontentstorage{EnvironmentUtil.GetCurrentEnvironment()}";
-            var serviceEndpoint = new Uri($"https://{storageAccountName}.blob.core.windows.net");
-            services.AddSingleton(x => new DataLakeServiceClient(serviceEndpoint, new DefaultAzureCredential()));
-
-            var connectionString = _configuration.GetValidatedStringValue("ConnectionStrings:DataCatalog");
-            services.AddRebusWithSubscription<DatasetCreatedHandler>(_configuration, connectionString);
-
-            IConfidentialClientApplication confidentialGroupClient = ConfidentialClientApplicationBuilder
-                .Create(config.ClientId)
-                .WithClientSecret(config.ClientSecret)
-                .WithTenantId(config.TenantId)
+            // Graph client registration
+            var groupManagementClientId = _configuration.GetValidatedStringValue("GroupManagementClientId");
+            Log.Information("GroupManagementClientId = {GroupManagementClientId}", groupManagementClientId);
+            var tenantId = _configuration.GetValidatedStringValue("AzureAd:TenantId");
+            Log.Information("AzureAd:TenantId = {TenantId}", tenantId);
+            var groupManagementClientSecret = _configuration.GetValidatedStringValue("GroupManagementClientSecret");
+            
+            var confidentialGroupClient = ConfidentialClientApplicationBuilder
+                .Create(groupManagementClientId)
+                .WithClientSecret(groupManagementClientSecret)
+                .WithTenantId(tenantId)
                 .Build();
 
             services.AddSingleton<IGraphServiceClient>(
                 new GraphServiceClient(new ClientCredentialProvider(confidentialGroupClient)));
+            
+            services.AddTransient<IStorageService, StorageService>();
+
+            // Data lake registration
+            var dataCatalogBlobStorageUrl = _configuration.GetValidatedStringValue("DataCatalogBlobStorageUrl");
+            Log.Information("DataCatalogBlobStorageUrl = {DataCatalogBlobStorageUrl}", dataCatalogBlobStorageUrl);
+            var dataLakeClientId = _configuration.GetValidatedStringValue("DataLakeClientId");
+            Log.Information("DataLakeClientId = {DataLakeClientId}", dataLakeClientId);
+            var dataLakeClientSecret = _configuration.GetValidatedStringValue("DataLakeClientSecret");
+
+            var serviceEndpoint = new Uri(dataCatalogBlobStorageUrl);
+            services.AddSingleton(x => new DataLakeServiceClient(serviceEndpoint, 
+                new ClientSecretCredential(tenantId, dataLakeClientId, dataLakeClientSecret))
+            );
+
+            var connectionString = _configuration.GetValidatedStringValue("ConnectionStrings:DataCatalog");
+            services.AddRebusWithSubscription<DatasetCreatedHandler>(_configuration, connectionString);
 
             services.AddTransient<IActiveDirectoryGroupService, AzureActiveDirectoryGroupService>();
             services.AddTransient<IAccessControlListService, AccessControlListService>();
@@ -69,9 +77,12 @@ namespace DataCatalog.DatasetResourceManagement
             services.AddTransient<IActiveDirectoryGroupProvider, AzureActiveDirectoryGroupProvider>();
             services.AddTransient<IActiveDirectoryRootGroupProvider, AzureActiveDirectoryRootGroupProvider>();
             services.AddTransient<ILeaseClientProvider, DataLakeLeaseClientProvider>();
+            var allUsersGroup = _configuration.GetValidatedStringValue("ALL_USERS_GROUP");
+            services.AddSingleton<IAllUsersGroupProvider>(new AllUsersGroupProvider(allUsersGroup));
 
+            var aadProvisionerBaseUrl = new Uri(_configuration.GetValidatedStringValue("AadProvisionerBaseUrl"));
             services.AddHttpClient<IActiveDirectoryGroupService, AzureActiveDirectoryGroupService>(httpConfig =>
-                    httpConfig.BaseAddress = config.AadProvisionerBaseUrl)
+                    httpConfig.BaseAddress = aadProvisionerBaseUrl)
                 .AddHttpMessageHandler<GroupAuthenticationMiddleware>();
         }
 
@@ -84,11 +95,6 @@ namespace DataCatalog.DatasetResourceManagement
             }
 
             app.UseRouting();
-
-            app.UseEndpoints(endpoints =>
-            {
-                endpoints.MapGet("/", async context => { await context.Response.WriteAsync("Hello World!"); });
-            });
 
             app.ApplicationServices.UseRebusSubscriptions(new[]
             {

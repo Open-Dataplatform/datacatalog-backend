@@ -2,7 +2,7 @@
 using AutoFixture.Kernel;
 using Microsoft.Graph;
 
-namespace DataCatalog.Api.UnitTests.SpecimenBuilders
+namespace DataCatalog.Common.UnitTests.SpecimenBuilders
 {
     public class ServicePrincipalSpecimenBuilder : ISpecimenBuilder<ServicePrincipal>
     {

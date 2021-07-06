@@ -1,7 +1,7 @@
 ﻿using AutoFixture;
-using DataCatalog.Api.UnitTests.SpecimenBuilders;
+using DataCatalog.Common.UnitTests.SpecimenBuilders;
 
-namespace DataCatalog.Api.UnitTests.Extensions
+namespace DataCatalog.Common.UnitTests.Extensions
 {
     /// <summary>
     /// Extends the <see cref="T:AutoFixture.IFixture" /> interface to make it possible to add specimen builders directly to a fixture without the need for an <see cref="T:AutoFixture.ICustomization" /> instance.

@@ -1,25 +1,23 @@
 ﻿using System.Linq;
 using AutoFixture;
 using DataCatalog.Common.UnitTests.Extensions;
-using DataCatalog.Common.UnitTests.AutoMoqAttribute;
-using DataCatalog.Common.UnitTests.SpecimenBuilders;
+using DataCatalog.DatasetResourceManagement.UnitTests.SpecimenBuilders;
 
-namespace DataCatalog.Api.UnitTests.AutoMoqAttribute
+namespace DataCatalog.DatasetResourceManagement.UnitTests.AutoMoqData
 {
-    public class GraphAutoMoqAttribute : MoqAutoDataAttribute
+    public class AutoMoqInfrastructureAttribute : MoqAutoDataAttribute
     {
-        public GraphAutoMoqAttribute()
+        public AutoMoqInfrastructureAttribute()
             : base(() =>
             {
                 var fixture = new Fixture()
-                    .Customize(new GroupSpecimenBuilder())
-                    .Customize(new UserSpecimenBuilder())
-                    .Customize(new ServicePrincipalSpecimenBuilder());
+                    .Customize(new CreateGroupsInAccessControlListSpecimenBuilder())
+                    .Customize(new PathAccessControlSpecimenBuilder());
 
                 fixture.Behaviors.OfType<ThrowingRecursionBehavior>().ToList()
                     .ForEach(b => fixture.Behaviors.Remove(b));
                 fixture.Behaviors.Add(new OmitOnRecursionBehavior());
-
+                
                 return fixture;
             })
         {

@@ -1,10 +1,10 @@
-﻿using AutoFixture.Kernel;
-using System;
+﻿using System;
 using System.Reflection;
+using AutoFixture.Kernel;
 
-namespace DataCatalog.Api.UnitTests.SpecimenBuilders
+namespace DataCatalog.Common.UnitTests.SpecimenBuilders
 {
-    internal class TypedSpecimenBuilder<T> : ISpecimenBuilder
+    public class TypedSpecimenBuilder<T> : ISpecimenBuilder
     {
         private readonly ISpecimenBuilder<T> _specimenBuilder;
 

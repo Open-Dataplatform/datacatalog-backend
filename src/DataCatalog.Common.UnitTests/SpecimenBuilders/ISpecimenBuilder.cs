@@ -1,6 +1,6 @@
 ﻿using AutoFixture.Kernel;
 
-namespace DataCatalog.Api.UnitTests.SpecimenBuilders
+namespace DataCatalog.Common.UnitTests.SpecimenBuilders
 {
     /// <summary>
     /// Builds or helps building anonymous variables (specimens) that are typed.

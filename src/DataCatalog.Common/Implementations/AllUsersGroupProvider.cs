@@ -1,6 +1,6 @@
 ﻿using DataCatalog.Common.Interfaces;
 
-namespace DataCatalog.Api.Implementations
+namespace DataCatalog.Common.Implementations
 {
     public class AllUsersGroupProvider : IAllUsersGroupProvider
     {
