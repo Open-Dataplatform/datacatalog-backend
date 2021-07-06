@@ -5,8 +5,8 @@ metadata:
   labels:
     {{- include "datacatalog-backend.labels" . | nindent 4 }}
 spec:
-  {{- if not .Values.deployment.autoscaling.enabled }}
-  replicas: {{ .Values.deployment.replicaCount }}
+  {{- if not .Values.drmDeployment.autoscaling.enabled }}
+  replicas: {{ .Values.drmDeployment.replicaCount }}
   {{- end }}
   selector:
     matchLabels:
@@ -26,36 +26,35 @@ spec:
             "DataLakeClientId": "{{ .Data.data.data_lake_client_id }}",
             "DataLakeClientSecret": "{{ .Data.data.data_lake_client_secret }}",
             "ConnectionStrings": {
-              "DataCatalog": "{{ .Data.data.connection_string }}",
-              "ServiceBus": "{{ .Data.data.service_bus_connection_string }}"
+              "DataCatalog": "{{ .Data.data.connection_string }}"
             },
             "AzureAd": {
               "TenantId": "{{ .Data.data.tenant_id }}"
             }
           }
           {{- end -}}`}}
-      {{- with .Values.deployment.annotations }}
-        {{- toYaml . | nindent 8 }}
+      {{- with .Values.drmDeployment.annotations }}
+      {{- toYaml . | nindent 8 }}
       {{- end }}
       labels:
         {{- include "datacatalog-backend.selectorLabels" . | nindent 8 }}
     spec:
-      {{- with .Values.deployment.imagePullSecrets }}
+      {{- with .Values.drmDeployment.imagePullSecrets }}
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       securityContext:
-        {{- toYaml .Values.deployment.podSecurityContext | nindent 8 }}
+        {{- toYaml .Values.drmDeployment.podSecurityContext | nindent 8 }}
       containers:
         - name: {{ .Chart.Name }}
           securityContext:
-            {{- toYaml .Values.deployment.securityContext | nindent 12 }}
-          image: "{{ .Values.deployment.image.repository }}:{{ .Values.deployment.image.tag | default .Chart.AppVersion }}"
-          imagePullPolicy: {{ .Values.deployment.image.pullPolicy }}
+            {{- toYaml .Values.drmDeployment.securityContext | nindent 12 }}
+          image: "{{ .Values.drmDeployment.image.repository }}:{{ .Values.drmDeployment.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.drmDeployment.image.pullPolicy }}
           env:
-          {{ range $k, $v := .Values.deployment.env }}
-            - name: {{ $k | quote }}
-              value: {{ $v | quote }}
+          {{ range $k, $v := .Values.drmDeployment.env }}
+          - name: {{ $k | quote }}
+            value: {{ $v | quote }}
           {{- end }}
           ports:
             - name: http
@@ -63,22 +62,22 @@ spec:
               protocol: TCP
           livenessProbe:
             httpGet:
-              path: {{ .Values.deployment.livenessProbe.path }}
+              path: {{ .Values.drmDeployment.livenessProbe.path }}
               port: http
-            initialDelaySeconds: {{ .Values.deployment.livenessProbe.initialDelaySeconds }}
-            timeoutSeconds: {{ .Values.deployment.livenessProbe.timeoutSeconds }}
-            periodSeconds: {{ .Values.deployment.livenessProbe.periodSeconds }}
+            initialDelaySeconds: {{ .Values.drmDeployment.livenessProbe.initialDelaySeconds }}
+            timeoutSeconds: {{ .Values.drmDeployment.livenessProbe.timeoutSeconds }}
+            periodSeconds: {{ .Values.drmDeployment.livenessProbe.periodSeconds }}
           resources:
-            {{- toYaml .Values.deployment.resources | nindent 12 }}
-      {{- with .Values.deployment.nodeSelector }}
+            {{- toYaml .Values.drmDeployment.resources | nindent 12 }}
+      {{- with .Values.drmDeployment.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-      {{- with .Values.deployment.affinity }}
+      {{- with .Values.drmDeployment.affinity }}
       affinity:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-      {{- with .Values.deployment.tolerations }}
+      {{- with .Values.drmDeployment.tolerations }}
       tolerations:
         {{- toYaml . | nindent 8 }}
       {{- end }}
