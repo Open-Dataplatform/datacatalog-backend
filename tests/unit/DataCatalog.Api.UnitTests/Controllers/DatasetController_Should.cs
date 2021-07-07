@@ -36,8 +36,8 @@ namespace DataCatalog.Api.UnitTests.Controllers
             // Assert
             result.Result.ShouldBeOfType(typeof(OkObjectResult));
             var okResult = (OkObjectResult)result.Result;
-            var value = (Guid)okResult.Value;
-            value.ShouldBe(request.Id);
+            var value = (DatasetResponse)okResult.Value;
+            value.Id.ShouldBe(request.Id);
             datasetServiceMock.Verify(x => x.UpdateAsync(request), Times.Once);
             storageServiceMock.Verify(x => x.GetDirectoryMetadataAsync(request.Id.ToString()), Times.Once);
         }
@@ -66,8 +66,10 @@ namespace DataCatalog.Api.UnitTests.Controllers
             // Assert
             result.Result.ShouldBeOfType(typeof(OkObjectResult));
             var okResult = (OkObjectResult)result.Result;
-            var value = (Guid)okResult.Value;
-            value.ShouldBe(request.Id);
+            var value = (DatasetResponse)okResult.Value;
+            value.Id.ShouldBe(request.Id);
+
+        
 
             activeDirectoryGroupServiceMock.Verify(x => x.AddGroupMemberAsync(readerGroupId, allUsersGroupId), Times.Once);
         }
@@ -99,8 +101,8 @@ namespace DataCatalog.Api.UnitTests.Controllers
             // Assert
             result.Result.ShouldBeOfType(typeof(OkObjectResult));
             var okResult = (OkObjectResult)result.Result;
-            var value = (Guid)okResult.Value;
-            value.ShouldBe(request.Id);
+            var value = (DatasetResponse)okResult.Value;
+            value.Id.ShouldBe(request.Id);
 
             activeDirectoryGroupServiceMock.Verify(x => x.RemoveGroupMemberAsync(readerGroupId, allUsersGroupId), Times.Once);
         }
