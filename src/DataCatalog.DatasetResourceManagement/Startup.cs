@@ -84,6 +84,8 @@ namespace DataCatalog.DatasetResourceManagement
             services.AddHttpClient<IActiveDirectoryGroupService, AzureActiveDirectoryGroupService>(httpConfig =>
                     httpConfig.BaseAddress = aadProvisionerBaseUrl)
                 .AddHttpMessageHandler<GroupAuthenticationMiddleware>();
+            
+            services.AddHealthChecks();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -95,6 +97,11 @@ namespace DataCatalog.DatasetResourceManagement
             }
 
             app.UseRouting();
+            
+            app.UseEndpoints(endpoints =>
+            {
+                endpoints.MapHealthChecks("/health");
+            });
 
             app.ApplicationServices.UseRebusSubscriptions(new[]
             {

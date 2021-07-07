@@ -82,7 +82,7 @@ namespace DataCatalog.Common.Rebus.Extensions
                     o.SimpleRetryStrategy(secondLevelRetriesEnabled: true, maxDeliveryAttempts: maxAttempts, errorQueueAddress: errorQueueAddress);
                 })
                 .Subscriptions(s => s.StoreInSqlServer(connectionString, subscriptionsTableName))
-                .Routing(r => r.TypeBased().MapAssemblyOf<TMessageHandlerType>(tableName))
+                .Routing(r => r.TypeBased().MapAssemblyOf<TMessageHandlerType>(inputQueueName))
             );
 
             return services;

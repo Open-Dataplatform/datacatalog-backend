@@ -28,6 +28,21 @@ namespace DataCatalog.Migrator
             await SeedHierarchies();
             await SeedDataSources();
             await SeedIdentityProviders();
+            await SeedContacts();
+        }
+
+        private async Task SeedContacts()
+        {
+            var contacts = new List<MemberGroup>
+            {
+                new()
+                {
+                    Id = new Guid("1d51b693-b7b1-436d-896b-59c5d7b9d062"),
+                    Name = "Sune's Group",
+                    Email = "sjj@energinet.dk"
+                }
+            };
+            await UpsertData(contacts);
         }
 
         private async Task SeedCategories()

@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Security.Claims;
 using System.Threading.Tasks;
-using DataCatalog.Api.Data.Domain;
 using DataCatalog.Api.Infrastructure;
 using DataCatalog.Api.Repositories;
 using DataCatalog.Common.Data;
@@ -35,7 +34,7 @@ namespace DataCatalog.Api.Services.Local
         }
 
         // This will initialize the Current object and add all roles to the HttpContext in order to make these available in controllers
-        public async Task InvokeAsync(HttpContext context, Current current, IMemberService memberService, IIdentityProviderService identityProviderService, IMemberRepository memberRepository, IUnitIOfWork unitOfWork)
+        public async Task InvokeAsync(HttpContext context, Current current, IMemberService memberService, IIdentityProviderService identityProviderService, IMemberRepository memberRepository, IUnitOfWork unitOfWork)
         {
             var executingUser = context.User;
 
@@ -75,7 +74,7 @@ namespace DataCatalog.Api.Services.Local
             }
         }
 
-        private async Task<DataCatalog.Data.Model.Member> CreateLocalMemberAndIdentityProvider(IMemberRepository memberRepository, IUnitIOfWork unitOfWork)
+        private async Task<DataCatalog.Data.Model.Member> CreateLocalMemberAndIdentityProvider(IMemberRepository memberRepository, IUnitOfWork unitOfWork)
         {
             var member = new DataCatalog.Data.Model.Member
             {
