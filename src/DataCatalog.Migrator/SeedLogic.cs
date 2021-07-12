@@ -38,8 +38,8 @@ namespace DataCatalog.Migrator
                 new()
                 {
                     Id = new Guid("1d51b693-b7b1-436d-896b-59c5d7b9d062"),
-                    Name = "Sune's Group",
-                    Email = "sjj@energinet.dk"
+                    Name = "Demo Group",
+                    Email = "demo@energinet.dk"
                 }
             };
             await UpsertData(contacts);
