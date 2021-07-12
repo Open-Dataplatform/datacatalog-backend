@@ -2,7 +2,7 @@
 using DataCatalog.Api.Infrastructure;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
-using Roles = DataCatalog.Api.Infrastructure.Roles;
+using Microsoft.AspNetCore.Authorization;
 
 namespace DataCatalog.Api.Controllers
 {
@@ -11,27 +11,20 @@ namespace DataCatalog.Api.Controllers
     [Route("api/[controller]")]
     public class UserController : ControllerBase
     {
-        private Roles _roles;
-
-        public UserController(Roles roles)
-        {
-            _roles = roles;
-        }
-
         /// <summary>
         /// Get name and roles for current user
         /// </summary>
         /// <returns>User name and roles</returns>
         [HttpGet]
-        public IActionResult GetUserInfo()
+        public ActionResult<Data.Domain.User> GetUserInfo()
         {
             var roles = new List<string>();
 
-            if (User.IsInRole(_roles.Admin))
+            if (User.IsInRole(Role.Admin.ToString()))
                 roles.Add(Role.Admin.ToString());
-            if (User.IsInRole(_roles.DataSteward))
+            if (User.IsInRole(Role.DataSteward.ToString()))
                 roles.Add(Role.DataSteward.ToString());
-            if (User.IsInRole(_roles.User))
+            if (User.IsInRole(Role.User.ToString()))
                 roles.Add(Role.User.ToString());
 
             var result = new Data.Domain.User
