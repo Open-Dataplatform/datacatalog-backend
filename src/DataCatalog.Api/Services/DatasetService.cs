@@ -7,10 +7,12 @@ using AutoMapper;
 using DataCatalog.Common.Data;
 using DataCatalog.Api.Data.Domain;
 using DataCatalog.Api.Data.Dto;
+using DataCatalog.Api.DomainEvents;
 using DataCatalog.Common.Enums;
 using DataCatalog.Api.Exceptions;
 using DataCatalog.Api.Messages;
 using DataCatalog.Api.Repositories;
+using MediatR;
 using Rebus.Bus;
 
 namespace DataCatalog.Api.Services
@@ -25,7 +27,7 @@ namespace DataCatalog.Api.Services
         private readonly IDatasetDurationRepository _datasetDurationRepository;
         private readonly IDatasetChangeLogRepository _datasetChangeLogRepository;
         private readonly IDataSourceRepository _dataSourceRepository;
-        private readonly IBus _bus;
+        private readonly IMediator _mediator;
         private readonly IUnitOfWork _unitOfWork;
         private readonly Current _current;
         private readonly IMapper _mapper;
@@ -42,7 +44,7 @@ namespace DataCatalog.Api.Services
             IMapper mapper, 
             IUnitOfWork unitOfWork,
             Current current, 
-            IBus bus)
+            IMediator mediator)
         {
             _datasetRepository = datasetRepository;
             _hierarchyRepository = hierarchyRepository;
@@ -54,7 +56,7 @@ namespace DataCatalog.Api.Services
             _dataSourceRepository = dataSourceRepository;
             _unitOfWork = unitOfWork;
             _current = current;
-            _bus = bus;
+            _mediator = mediator;
             _mapper = mapper;
         }
 
@@ -97,7 +99,7 @@ namespace DataCatalog.Api.Services
             var hierarchy = await _hierarchyRepository.FindByIdAsync(dbDataset.HierarchyId);
             
             // Publish a message that the dataset has been created.
-            var datasetCreatedMessage = new DatasetCreatedMessage
+            var datasetCreatedEvent = new DatasetCreatedEvent
             {
                 DatasetId = dbDataset.Id,
                 Container = request.RefinementLevel switch
@@ -111,7 +113,7 @@ namespace DataCatalog.Api.Services
                 Hierarchy = $"{GetHierarchyName(hierarchy).ToLower()}",
                 Public = request.Confidentiality == Confidentiality.Public
             };
-            await _bus.Publish(datasetCreatedMessage);
+            await _mediator.Publish(datasetCreatedEvent);
 
             return _mapper.Map<Dataset>(dbDataset);
         }

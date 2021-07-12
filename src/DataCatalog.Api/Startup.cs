@@ -2,6 +2,7 @@ using System;
 using System.Runtime.CompilerServices;
 using Azure.Identity;
 using Azure.Storage.Files.DataLake;
+using DataCatalog.Api.DomainEvents;
 using DataCatalog.Api.Extensions;
 using DataCatalog.Api.Infrastructure;
 using DataCatalog.Api.MessageHandlers;
@@ -18,6 +19,7 @@ using DataCatalog.Common.Rebus.Extensions;
 using DataCatalog.Common.Utils;
 using DataCatalog.Data;
 using DataCatalog.DatasetResourceManagement.Messages;
+using MediatR;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
@@ -272,11 +274,15 @@ namespace DataCatalog.Api
             services.AddDbContext<DataCatalogContext>(o => o.UseSqlServer(conn));
             
             services.AddRebusWithSubscription<DatasetProvisionedHandler>(Configuration, conn);
-
+            
+            services.AddMediatR(typeof(Startup));
+            
             if (EnvironmentUtil.IsLocal())
             {
                 services.AddTransient<IGroupService, LocalGroupService>();
                 services.AddTransient<IStorageService, LocalStorageService>();
+                services.RemoveAll(typeof(INotificationHandler<DatasetCreatedEvent>));
+                services.AddTransient<INotificationHandler<DatasetCreatedEvent>, LocalDatasetCreatedEventHandler>();
             }
 
             //HttpContext
