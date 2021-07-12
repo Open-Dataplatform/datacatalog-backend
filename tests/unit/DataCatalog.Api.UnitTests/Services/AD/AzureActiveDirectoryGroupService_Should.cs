@@ -281,7 +281,7 @@ namespace DataCatalog.Api.UnitTests.Services.AD
             AzureGroupService sut)
         {
             // Arrange
-            graphServiceClientMock.Setup(x => x.Groups[groupId].Members[memberId].Request().GetAsync())
+            graphServiceClientMock.Setup(x => x.Groups[groupId].Members[memberId].Reference.Request().DeleteAsync())
                 .ThrowsAsync(se);
 
             // Act / Assert
@@ -291,7 +291,6 @@ namespace DataCatalog.Api.UnitTests.Services.AD
         [Theory]
         [GraphAutoMoq]
         public async Task Throw_On_Exception_On_RemoveGroupMemberAsync(
-            GroupMembersCollectionWithReferencesPage memberPage,
             string groupId,
             string memberId,
             Exception e,
@@ -299,10 +298,6 @@ namespace DataCatalog.Api.UnitTests.Services.AD
             AzureGroupService sut)
         {
             // Arrange
-            memberPage.Add(new DirectoryObject { Id = memberId });
-            graphServiceClientMock.Setup(x => x.Groups[groupId].Members.Request().GetAsync())
-                .ReturnsAsync(memberPage);
-
             graphServiceClientMock.Setup(x => x.Groups[groupId].Members[memberId].Reference.Request().DeleteAsync())
                 .ThrowsAsync(e);
 

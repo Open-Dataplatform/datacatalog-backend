@@ -64,11 +64,6 @@ namespace DataCatalog.Api.Services.AD
         {
             try
             {
-                var members = await _graphServiceClient.Groups[groupId].Members.Request().GetAsync();
-
-                // Just return if member isn't present in the group
-                if (!members.Any(x => Equals(x.Id, memberId))) return;
-
                 await _graphServiceClient.Groups[groupId].Members[memberId].Reference.Request().DeleteAsync();
             }
             catch (ServiceException se)
