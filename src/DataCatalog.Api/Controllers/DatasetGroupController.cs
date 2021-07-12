@@ -49,7 +49,7 @@ namespace DataCatalog.Api.Controllers
         /// <returns>The dataset group</returns>
         [HttpGet]
         [Route("{id}")]
-        public async Task<IActionResult> Get(Guid id)
+        public async Task<ActionResult<DatasetGroupResponse>> Get(Guid id)
         {
             var datasetGroup = await _datasetGroupService.FindByIdAsync(id);
 

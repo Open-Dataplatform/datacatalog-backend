@@ -16,7 +16,7 @@ namespace DataCatalog.Api.Controllers
         /// </summary>
         /// <returns>User name and roles</returns>
         [HttpGet]
-        public IActionResult GetUserInfo()
+        public ActionResult<Data.Domain.User> GetUserInfo()
         {
             var roles = new List<string>();
 

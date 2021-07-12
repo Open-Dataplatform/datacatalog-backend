@@ -98,7 +98,7 @@ namespace DataCatalog.Api.Controllers
         [HttpPut]
         public async Task<ActionResult<DatasetResponse>> PutAsync(DatasetUpdateRequest request)
         {
-            await _datasetService.UpdateAsync(request);
+            var dataset = await _datasetService.UpdateAsync(request);
 
             var directoryMetadata = await _storageService.GetDirectoryMetadataAsync(request.Id.ToString());
 
@@ -118,7 +118,7 @@ namespace DataCatalog.Api.Controllers
                 }
             }
 
-            return Ok(request.Id);
+            return Ok(_mapper.Map<DatasetResponse>(dataset));
         }
 
         /// <summary>
