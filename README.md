@@ -4,12 +4,13 @@
 - [Development](#development)
   - [Environment](#environment)
     - [Local](#local)
-	  - [Running locally](#running-locally)
-    - [Implementation Details](#implementation-details)
-      - [Storage](#storage)
-      - [Identity Provider](#identity-provider)
-	- [Migrations and Seeding](#migrations-and-seeding)
-	- [Tests](#tests)
+	    - [Running locally](#running-locally)
+    - [Development/Test/Prod](#Development/Test/Prod)
+  - [Implementation Details](#implementation-details)
+    - [Storage](#storage)
+    - [Identity Provider](#identity-provider)
+  - [Migrations and Seeding](#migrations-and-seeding)
+- [Tests](#tests)
 - [API Documentation](#api-documentation)
 - [API Versioning](#api-versioning)
 	- [Deprecation a API Version](#deprecation-a-api-version)
@@ -18,7 +19,7 @@
 
 ## Purpose
 The Data catalog api is a backend service for the data catalog frontend which can show various datasets and categories of those.
-A dataset is conceptually a set of data points (duh!) which has a number of properties attached to it. Among these we find an owner,
+A dataset is conceptually a set of data points which has a number of properties attached to it. Among these we find an owner,
 a category and a list of people which have some type of access to the data.
 
 This project provides the skeleton for managing the datasets, but the data itself is not stored within the data catalog,
@@ -28,12 +29,14 @@ The backend service api can be used to define new datasets and categories of dat
 Furthermore it is responsible for controlling access to those datasets.
 
 ## Project structure
-
 There are four projects within the repository:
 - DataCatalog.Api: The actual Api responsible for running the logic of managing datasets
 - DataCatalog.Migrator: A command line tool able to run migrations when needed. Uses the Entity Framework as the migration tool.
 - DataCatalog.Common: Shared code between the other projects
-- DataCatalog.Data: Initial data required for the skeleton to function. Contains Energinet specific data.
+- DataCatalog.Data: Initial data required for the skeleton to function. Contains Energinet specific data structures.
+
+## Architecture
+
 
 ## Development
 
@@ -49,7 +52,8 @@ To run the Api locally, you need to set the environment variable _ASPNETCORE_ENV
 - Disable all security requirements and allow anonymous access to the entire Api with all roles granted.
 - Use a dummy implementation of IStorageService which always finds the path required and sets reader and write capabilities for that path.
 - Use a dummy implementation of IGroupService which always returns the same local dummy user.
-- Use a dummy implementation of IMemberService which always returns the same dummy member
+- Use a dummy middleware which ensures that the dummy user has a corresponding member within the database and sets the current user.
+- Use dummy message handlers for messages out of the system.
 
 #### Running locally
 To launch the API from the command line run:
