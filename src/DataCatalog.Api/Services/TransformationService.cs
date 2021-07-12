@@ -11,13 +11,13 @@ namespace DataCatalog.Api.Services
     public class TransformationService : ITransformationService
     {
         private readonly ITransformationRepository _transformationRepository;
-        private readonly IUnitIOfWork _unitOfWork;
+        private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
 
-        public TransformationService(ITransformationRepository transformationRepository, IMapper mapper, IUnitIOfWork unitIOfWork)
+        public TransformationService(ITransformationRepository transformationRepository, IMapper mapper, IUnitOfWork unitOfWork)
         {
             _transformationRepository = transformationRepository;
-            _unitOfWork = unitIOfWork;
+            _unitOfWork = unitOfWork;
             _mapper = mapper;
         }
 

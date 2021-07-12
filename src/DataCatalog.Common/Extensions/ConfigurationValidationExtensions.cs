@@ -23,5 +23,15 @@ namespace DataCatalog.Common.Extensions
             }
             return stringValue;
         }
+        
+        public static int GetValidatedIntValue(this IConfiguration conf, string configurationKey)
+        {
+            var intValue = conf.GetValue<int?>(configurationKey);
+            if (!intValue.HasValue)
+            {
+                throw new ArgumentException($"'{configurationKey}' must have a value");
+            }
+            return intValue.Value;
+        }
     }
 }

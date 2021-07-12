@@ -11,13 +11,13 @@ namespace DataCatalog.Api.Services
     public class HierarchyService : IHierarchyService
     {
         private readonly IHierarchyRepository _hierarchyRepository;
-        private readonly IUnitIOfWork _unitOfWork;
+        private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
 
-        public HierarchyService(IHierarchyRepository hierarchyRepository, IMapper mapper, IUnitIOfWork unitIOfWork)
+        public HierarchyService(IHierarchyRepository hierarchyRepository, IMapper mapper, IUnitOfWork unitOfWork)
         {
             _hierarchyRepository = hierarchyRepository;
-            _unitOfWork = unitIOfWork;
+            _unitOfWork = unitOfWork;
             _mapper = mapper;
         }
 

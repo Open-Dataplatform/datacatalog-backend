@@ -17,15 +17,15 @@ namespace DataCatalog.Api.Services
         private readonly IMemberRepository _memberRepository;
         private readonly IDatasetRepository _datasetRepository;
         private readonly Current _current;
-        private readonly IUnitIOfWork _unitOfWork;
+        private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
 
-        public DatasetGroupService(Current current, IDatasetGroupRepository datasetGroupRepository, IMemberRepository memberRepository, IDatasetRepository datasetRepository, IMapper mapper, IUnitIOfWork unitIOfWork)
+        public DatasetGroupService(Current current, IDatasetGroupRepository datasetGroupRepository, IMemberRepository memberRepository, IDatasetRepository datasetRepository, IMapper mapper, IUnitOfWork unitOfWork)
         {
             _datasetGroupRepository = datasetGroupRepository;
             _memberRepository = memberRepository;
             _datasetRepository = datasetRepository;
-            _unitOfWork = unitIOfWork;
+            _unitOfWork = unitOfWork;
             _mapper = mapper;
             _current = current;
         }

@@ -1,6 +1,7 @@
 ﻿using AutoFixture.Kernel;
 using AutoMapper;
 using DataCatalog.Api.Data;
+using DataCatalog.Common.UnitTests.SpecimenBuilders;
 
 namespace DataCatalog.Api.UnitTests.SpecimenBuilders
 {

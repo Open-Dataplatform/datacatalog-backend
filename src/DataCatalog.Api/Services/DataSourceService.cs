@@ -12,14 +12,14 @@ namespace DataCatalog.Api.Services
     public class DataSourceService : IDataSourceService
     {
         private readonly IDataSourceRepository _dataSourceRepository;
-        private readonly IUnitIOfWork _unitOfWork;
+        private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
         private readonly string _environment;
 
-        public DataSourceService(IDataSourceRepository dataSourceRepository, IMapper mapper, IUnitIOfWork unitIOfWork)
+        public DataSourceService(IDataSourceRepository dataSourceRepository, IMapper mapper, IUnitOfWork unitOfWork)
         {
             _dataSourceRepository = dataSourceRepository;
-            _unitOfWork = unitIOfWork;
+            _unitOfWork = unitOfWork;
             _mapper = mapper;
             _environment = EnvironmentUtil.GetCurrentEnvironment().ToLower();
         }

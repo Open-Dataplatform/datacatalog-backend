@@ -122,7 +122,7 @@ namespace DataCatalog.Api.UnitTests.Services
             transformationRepositoryMock.Setup(x => x.AddAsync(It.IsAny<Transformation>()));
             _fixture.Inject(transformationRepositoryMock.Object);
             _fixture.Freeze<ITransformationRepository>();
-            var unitOfWorkMock = new Mock<IUnitIOfWork>();
+            var unitOfWorkMock = new Mock<IUnitOfWork>();
             unitOfWorkMock.Setup(x => x.CompleteAsync());
             _fixture.Inject(unitOfWorkMock.Object);
             _fixture.Freeze<ITransformationRepository>();
@@ -145,7 +145,7 @@ namespace DataCatalog.Api.UnitTests.Services
             transformationRepositoryMock.Setup(x => x.FindByIdAsync(It.IsAny<Guid>())).ReturnsAsync((Transformation)null);
             _fixture.Inject(transformationRepositoryMock.Object);
             _fixture.Freeze<ITransformationRepository>();
-            var unitOfWorkMock = new Mock<IUnitIOfWork>();
+            var unitOfWorkMock = new Mock<IUnitOfWork>();
             unitOfWorkMock.Setup(x => x.CompleteAsync());
             _fixture.Inject(unitOfWorkMock.Object);
             _fixture.Freeze<ITransformationRepository>();
@@ -170,7 +170,7 @@ namespace DataCatalog.Api.UnitTests.Services
             transformationRepositoryMock.Setup(x => x.FindByIdAsync(transformationEntity.Id)).ReturnsAsync(transformationEntity);
             _fixture.Inject(transformationRepositoryMock.Object);
             _fixture.Freeze<ITransformationRepository>();
-            var unitOfWorkMock = new Mock<IUnitIOfWork>();
+            var unitOfWorkMock = new Mock<IUnitOfWork>();
             unitOfWorkMock.Setup(x => x.CompleteAsync());
             _fixture.Inject(unitOfWorkMock.Object);
             _fixture.Freeze<ITransformationRepository>();
@@ -193,7 +193,7 @@ namespace DataCatalog.Api.UnitTests.Services
             transformationRepositoryMock.Setup(x => x.FindByIdAsync(It.IsAny<Guid>())).ReturnsAsync((Transformation)null);
             _fixture.Inject(transformationRepositoryMock.Object);
             _fixture.Freeze<ITransformationRepository>();
-            var unitOfWorkMock = new Mock<IUnitIOfWork>();
+            var unitOfWorkMock = new Mock<IUnitOfWork>();
             unitOfWorkMock.Setup(x => x.CompleteAsync());
             _fixture.Inject(unitOfWorkMock.Object);
             _fixture.Freeze<ITransformationRepository>();
@@ -218,7 +218,7 @@ namespace DataCatalog.Api.UnitTests.Services
             transformationRepositoryMock.Setup(x => x.FindByIdAsync(transformationEntity.Id)).ReturnsAsync(transformationEntity);
             _fixture.Inject(transformationRepositoryMock.Object);
             _fixture.Freeze<ITransformationRepository>();
-            var unitOfWorkMock = new Mock<IUnitIOfWork>();
+            var unitOfWorkMock = new Mock<IUnitOfWork>();
             unitOfWorkMock.Setup(x => x.CompleteAsync());
             _fixture.Inject(unitOfWorkMock.Object);
             _fixture.Freeze<ITransformationRepository>();

@@ -3,12 +3,11 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using DataCatalog.Api.Data.Dto;
-using DataCatalog.Api.MessageBus;
 using DataCatalog.Common.Enums;
 
 namespace DataCatalog.Api.Services
 {
-    public interface IDatasetService : IHandleMessageBusMessage
+    public interface IDatasetService
     {
         Task<Dataset> FindByIdAsync(Guid id);
         Task<IEnumerable<Dataset>> GetAllSummariesAsync(bool onlyPublished);

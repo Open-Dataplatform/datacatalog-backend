@@ -6,6 +6,7 @@ using AutoFixture.Xunit2;
 using DataCatalog.Api.Data.Domain;
 using DataCatalog.Api.Services.AD;
 using DataCatalog.Api.UnitTests.AutoMoqAttribute;
+using DataCatalog.Common.UnitTests.AutoMoqAttribute;
 using Microsoft.Graph;
 using Moq;
 using Shouldly;

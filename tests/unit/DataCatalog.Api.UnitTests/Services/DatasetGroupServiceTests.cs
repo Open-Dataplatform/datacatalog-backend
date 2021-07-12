@@ -191,7 +191,7 @@ namespace DataCatalog.Api.UnitTests.Services
             datasetGroupRepositoryMock.Setup(x => x.AddAsync(It.IsAny<DatasetGroup>()));
             _fixture.Inject(datasetGroupRepositoryMock.Object);
             _fixture.Freeze<IDatasetGroupRepository>();
-            var unitOfWorkMock = new Mock<IUnitIOfWork>();
+            var unitOfWorkMock = new Mock<IUnitOfWork>();
             unitOfWorkMock.Setup(x => x.CompleteAsync());
             _fixture.Inject(unitOfWorkMock.Object);
             _fixture.Freeze<IDatasetGroupRepository>();
@@ -232,7 +232,7 @@ namespace DataCatalog.Api.UnitTests.Services
             datasetGroupRepositoryMock.Setup(x => x.FindByIdAsync(datasetGroupEntity.Id)).ReturnsAsync(datasetGroupEntity);
             _fixture.Inject(datasetGroupRepositoryMock.Object);
             _fixture.Freeze<IDatasetGroupRepository>();
-            var unitOfWorkMock = new Mock<IUnitIOfWork>();
+            var unitOfWorkMock = new Mock<IUnitOfWork>();
             unitOfWorkMock.Setup(x => x.CompleteAsync());
             _fixture.Inject(unitOfWorkMock.Object);
             _fixture.Freeze<IDatasetGroupRepository>();

@@ -103,7 +103,7 @@ namespace DataCatalog.Api.UnitTests.Services
             dataSourceRepositoryMock.Setup(x => x.AddAsync(It.IsAny<DataSource>()));
             _fixture.Inject(dataSourceRepositoryMock.Object);
             _fixture.Freeze<IDataSourceRepository>();
-            var unitOfWorkMock = new Mock<IUnitIOfWork>();
+            var unitOfWorkMock = new Mock<IUnitOfWork>();
             unitOfWorkMock.Setup(x => x.CompleteAsync());
             _fixture.Inject(unitOfWorkMock.Object);
             _fixture.Freeze<IDataSourceRepository>();
@@ -126,7 +126,7 @@ namespace DataCatalog.Api.UnitTests.Services
             dataSourceRepositoryMock.Setup(x => x.FindByIdAsync(It.IsAny<Guid>())).ReturnsAsync((DataSource)null);
             _fixture.Inject(dataSourceRepositoryMock.Object);
             _fixture.Freeze<IDataSourceRepository>();
-            var unitOfWorkMock = new Mock<IUnitIOfWork>();
+            var unitOfWorkMock = new Mock<IUnitOfWork>();
             unitOfWorkMock.Setup(x => x.CompleteAsync());
             _fixture.Inject(unitOfWorkMock.Object);
             _fixture.Freeze<IDataSourceRepository>();
@@ -151,7 +151,7 @@ namespace DataCatalog.Api.UnitTests.Services
             dataSourceRepositoryMock.Setup(x => x.FindByIdAsync(dataSourceEntity.Id)).ReturnsAsync(dataSourceEntity);
             _fixture.Inject(dataSourceRepositoryMock.Object);
             _fixture.Freeze<IDataSourceRepository>();
-            var unitOfWorkMock = new Mock<IUnitIOfWork>();
+            var unitOfWorkMock = new Mock<IUnitOfWork>();
             unitOfWorkMock.Setup(x => x.CompleteAsync());
             _fixture.Inject(unitOfWorkMock.Object);
             _fixture.Freeze<IDataSourceRepository>();
@@ -174,7 +174,7 @@ namespace DataCatalog.Api.UnitTests.Services
             dataSourceRepositoryMock.Setup(x => x.FindByIdAsync(It.IsAny<Guid>())).ReturnsAsync((DataSource)null);
             _fixture.Inject(dataSourceRepositoryMock.Object);
             _fixture.Freeze<IDataSourceRepository>();
-            var unitOfWorkMock = new Mock<IUnitIOfWork>();
+            var unitOfWorkMock = new Mock<IUnitOfWork>();
             unitOfWorkMock.Setup(x => x.CompleteAsync());
             _fixture.Inject(unitOfWorkMock.Object);
             _fixture.Freeze<IDataSourceRepository>();
@@ -199,7 +199,7 @@ namespace DataCatalog.Api.UnitTests.Services
             dataSourceRepositoryMock.Setup(x => x.FindByIdAsync(dataSourceEntity.Id)).ReturnsAsync(dataSourceEntity);
             _fixture.Inject(dataSourceRepositoryMock.Object);
             _fixture.Freeze<IDataSourceRepository>();
-            var unitOfWorkMock = new Mock<IUnitIOfWork>();
+            var unitOfWorkMock = new Mock<IUnitOfWork>();
             unitOfWorkMock.Setup(x => x.CompleteAsync());
             _fixture.Inject(unitOfWorkMock.Object);
             _fixture.Freeze<IDataSourceRepository>();
