@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using DataCatalog.DatasetResourceManagement.Commands.Group;
+using DataCatalog.DatasetResourceManagement.Common;
 using DataCatalog.DatasetResourceManagement.Common.ServiceInterfaces.ActiveDirectory;
 
 namespace DataCatalog.DatasetResourceManagement.Services.ActiveDirectory
@@ -16,7 +17,7 @@ namespace DataCatalog.DatasetResourceManagement.Services.ActiveDirectory
 
         public async Task<string> ProvideGroupAsync(string displayName, string description, string[] members = null)
         {
-            var group = await _activeDirectoryGroupService.GetGroupAsync($"SEC-A-ENDK-{displayName}");
+            var group = await _activeDirectoryGroupService.GetGroupAsync($"{GroupConstants.SecurityGroupPrefix}{displayName}");
 
             if (group == null)
                 return await CreateGroup(displayName, description, members);

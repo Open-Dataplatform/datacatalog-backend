@@ -1,6 +1,6 @@
 ﻿using System.Threading.Tasks;
 using DataCatalog.DatasetResourceManagement.Commands.Group;
-using Energinet.DataPlatform.DataSetResourceManagement.Application.Responses.Group;
+using DataCatalog.DatasetResourceManagement.Responses.Group;
 
 namespace DataCatalog.DatasetResourceManagement.Common.ServiceInterfaces.ActiveDirectory
 {

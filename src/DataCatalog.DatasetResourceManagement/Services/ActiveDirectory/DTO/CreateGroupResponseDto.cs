@@ -1,4 +1,4 @@
-﻿namespace Energinet.DataPlatform.DataSetResourceManagement.Infrastructure.Services.ActiveDirectory.Dto
+﻿namespace DataCatalog.DatasetResourceManagement.Services.ActiveDirectory.DTO
 {
     public class CreateGroupResponseDto
     {

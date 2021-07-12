@@ -1,4 +1,4 @@
-﻿namespace Energinet.DataPlatform.DataSetResourceManagement.Application.Responses.Group
+﻿namespace DataCatalog.DatasetResourceManagement.Responses.Group
 {
     public class CreateGroupResponse
     {
