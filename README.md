@@ -31,12 +31,19 @@ Furthermore it is responsible for controlling access to those datasets.
 ## Project structure
 There are four projects within the repository:
 - DataCatalog.Api: The actual Api responsible for running the logic of managing datasets
-- DataCatalog.Migrator: A command line tool able to run migrations when needed. Uses the Entity Framework as the migration tool.
+- DataCatalog.Migrator: A command line tool able to run migrations when needed. Uses the Entity Framework as the migration tool
 - DataCatalog.Common: Shared code between the other projects
-- DataCatalog.Data: Initial data required for the skeleton to function. Contains Energinet specific data structures.
+- DataCatalog.Common.Rebus: Shared code between projects which needs to utilize the Rebus message bus
+- DataCatalog.Data: Initial data required for the skeleton to function. Contains Energinet specific data structures
+- DataCatalog.Api.Messages: Messages that the data catalog api will publish
+- DataCatalog.DatasetResourceManagement: DRM for short. Handles how dataset are provisioned
+- DataCatalog.DatasetResourceManagement.Messages: Messages that the DRM will publish.
 
 ## Architecture
-
+The DataCatalog.Api is the backbone of the backend. It handles all incoming API requests from the frontend and communicates to the database as well as Azure Graph API
+and reads information directly from Azure storage. It also publishes messages - in particular when a new dataset is created. 
+This message is then subscribed to by the DatasetResourceManagement (DRM) which will ensure that the dataset is provisioned by creating 
+the required groups and give proper access to the azure storage folder.  
 
 ## Development
 
@@ -46,6 +53,15 @@ Which environment is used on runtime is controlled by the environment variable _
 The environment determines which particular appsettings.{_environment_}.json is used. Any values within this will override those within appsettings.json.
 Furthermore the environment is included in the category, data contract and data source meta data.
 
+#### Database
+We currently assume an mssql database such as the managed mssql database one can acquire from Azure. 
+If you would prefer another database, choose one that works with Entity Framework to avoid rewriting the entire DAL.
+
+#### Rebus
+We use Rebus as the messaging system. This works by utilizing the database as the message bus. 
+Rebus has support for most popular databases, so choosing another for this purpose is easily done in the code. 
+Look within the DataCatalog.Common.Rebus project.
+
 ### Local
 To run the Api locally, you need to set the environment variable _ASPNETCORE_ENVIRONMENT_ to "Local". This will do the following:
 
@@ -53,7 +69,7 @@ To run the Api locally, you need to set the environment variable _ASPNETCORE_ENV
 - Use a dummy implementation of IStorageService which always finds the path required and sets reader and write capabilities for that path.
 - Use a dummy implementation of IGroupService which always returns the same local dummy user.
 - Use a dummy middleware which ensures that the dummy user has a corresponding member within the database and sets the current user.
-- Use dummy message handlers for messages out of the system.
+- Use dummy message handlers for messages out of the system. 
 
 #### Running locally
 To launch the API from the command line run:
