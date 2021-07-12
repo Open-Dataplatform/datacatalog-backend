@@ -62,8 +62,7 @@ namespace DataCatalog.Common.Rebus.Extensions
             Log.Information("Logging configuration - end Rebus");
 
             var callerModuleName = RemoveDotsAndDll(Assembly.GetCallingAssembly().ManifestModule.Name);
-
-            const string tableName = "datacatalog_messaging_queue";
+            
             const string subscriptionsTableName = "datacatalog_messaging_subscriptions";
 
             var inputQueueName = callerModuleName + "_Queue";

@@ -39,9 +39,7 @@ namespace DataCatalog.Api.UnitTests.Controllers
 
             // ASSERT
             result.Should().NotBeNull("because the endpoint must return user info");
-            var okResult = ((OkObjectResult)result);
-            okResult.Should().NotBeNull("because the call should succeed");
-            var user = (Data.Domain.User)okResult.Value;
+            var user = result.Value;
             user.Should().NotBeNull("because the endpoint must return a object of type Data.Domain.User");
             user.Name.Should().Be(name, "because that was the users name");
             user.Roles.Should().NotBeNull("because the endpoint should always return a list");
