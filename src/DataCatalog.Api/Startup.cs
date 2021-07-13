@@ -145,8 +145,7 @@ namespace DataCatalog.Api
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-
-        public void Configure(IApplicationBuilder app, DataCatalogContext db)
+        public void Configure(IApplicationBuilder app)
         {
             // Use IEnvironment to check what environment the web app is running in
             if (EnvironmentUtil.IsDevelopment())
@@ -281,8 +280,6 @@ namespace DataCatalog.Api
             {
                 services.AddTransient<IGroupService, LocalGroupService>();
                 services.AddTransient<IStorageService, LocalStorageService>();
-                services.RemoveAll(typeof(INotificationHandler<DatasetCreatedEvent>));
-                services.AddTransient<INotificationHandler<DatasetCreatedEvent>, LocalDatasetCreatedEventHandler>();
             }
 
             //HttpContext
