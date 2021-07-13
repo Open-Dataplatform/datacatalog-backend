@@ -80,8 +80,8 @@ namespace DataCatalog.Api.Controllers
         /// <summary>
         /// Update category
         /// </summary>
-        /// <param name="request">The category to create</param>
-        /// <returns>The created category</returns>
+        /// <param name="request">The category to update</param>
+        /// <returns>The updated category Id</returns>
         [AuthorizeRoles(Role.Admin)]
         [HttpPut]
         public async Task<IActionResult> PutAsync([FromBody] CategoryUpdateRequest request)

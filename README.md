@@ -36,14 +36,26 @@ There are four projects within the repository:
 - DataCatalog.Common.Rebus: Shared code between projects which needs to utilize the Rebus message bus
 - DataCatalog.Data: Initial data required for the skeleton to function. Contains Energinet specific data structures
 - DataCatalog.Api.Messages: Messages that the data catalog api will publish
-- DataCatalog.DatasetResourceManagement: DRM for short. Handles how dataset are provisioned
+- DataCatalog.DatasetResourceManagement: Handles how dataset are provisioned
 - DataCatalog.DatasetResourceManagement.Messages: Messages that the DRM will publish.
 
 ## Architecture
 The DataCatalog.Api is the backbone of the backend. It handles all incoming API requests from the frontend and communicates to the database as well as Azure Graph API
 and reads information directly from Azure storage. It also publishes messages - in particular when a new dataset is created. 
 This message is then subscribed to by the DatasetResourceManagement (DRM) which will ensure that the dataset is provisioned by creating 
-the required groups and give proper access to the azure storage folder.  
+the required groups and give proper access to the azure storage folder via an external component named _Aad Provisioner_. Once provisioned, 
+the DRM will publish a Dataset Provisioned message which is consumed by the API.
+
+Both the API and DRM communicates with Azure's graph API to obtain information and modify information on the groups which has access to a particular dataset.
+
+A client such as the one found in the repository [here](https://github.com/Open-Dataplatform/datacatalog-frontend) can be used to connect to the API and should 
+be authenticated through the Identity Provider using the Authorization Code with PKCE flow. In order to access the API a user should be given one of the roles:
+
+- User (view access to public datasets)
+- DataSteward (editorial rights and access to internal datasets)
+- Admin (Able to create and modify master data)
+
+![Architecture diagram](architecture.png "Architecture diagram")
 
 ## Development
 
@@ -72,9 +84,24 @@ To run the Api locally, you need to set the environment variable _ASPNETCORE_ENV
 - Use dummy message handlers for messages out of the system. 
 
 #### Running locally
-To launch the API from the command line run:
+Since we want all services to communicate via the same database, we suggest you run the following docker image:
+
 ```powershell
-set ASPNETCORE_ENVIRONMENT="Local"; dotnet run -p .\src\DataCatalog.Api\
+docker run -e 'ACCEPT_EULA=Y' -e 'SA_PASSWORD=Test1234' -p 1433:1433 -d --name mssql mcr.microsoft.com/mssql/server:2017-CU8-ubuntu
+```
+
+Then modify the connection strings in appsettings.local.json for all projects needing access to the database to:
+
+`Data Source=localhost,1433;Initial Catalog=Datacatalog;User Id=sa;Password=Test1234`
+
+This includes the migrator project since you now want to run that project to create the database and the data foundation:
+```powershell
+cd src/DataCatalog.Migrator/;set ASPNETCORE_ENVIRONMENT="Local"; dotnet run
+```
+
+To launch the API from the command line run from the project root:
+```powershell
+cd src/DataCatalog.Api/;set ASPNETCORE_ENVIRONMENT="Local"; dotnet run
 ```
 
 Alternatively all C# compatible IDE's should be able to load the project using the .sln file.
