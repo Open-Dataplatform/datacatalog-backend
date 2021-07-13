@@ -40,10 +40,11 @@ namespace DataCatalog.Common.Rebus.Extensions
         /// <param name="services">The service collection</param>
         /// <param name="configuration">The configuration</param>
         /// <param name="connectionString">The connection string to the Mysql database</param>
-        /// <typeparam name="TMessageHandlerType">A type from the assembly where all handlers should be included in</typeparam>
+        /// <param name="messageTypesToMap">All message types which you would like to subscribe to</param>
+        /// <typeparam name="TMessageHandlerType">A type from the assembly where all message handlers should be included in</typeparam>
         /// <returns>The service collection</returns>
         public static IServiceCollection AddRebusWithSubscription<TMessageHandlerType>(this IServiceCollection services,
-            IConfiguration configuration, string connectionString)
+            IConfiguration configuration, string connectionString, IEnumerable<Type> messageTypesToMap)
         {
             var numberOfWorkers = configuration.GetValidatedIntValue("Rebus:NumberOfWorkers");
             var maxParallelism = configuration.GetValidatedIntValue("Rebus:MaxParallelism");
@@ -60,6 +61,8 @@ namespace DataCatalog.Common.Rebus.Extensions
             Log.Information("Rebus:RetryInMinutes = {RetryInMinutes}", retryInMinutes);
             Log.Information("Rebus:SecondsTimeout = {SecondsTimeout}", secondsTimeout);
             Log.Information("Logging configuration - end Rebus");
+            
+            services.Configure<RebusOptions>(configuration.GetSection("Rebus"));
 
             var callerModuleName = RemoveDotsAndDll(Assembly.GetCallingAssembly().ManifestModule.Name);
             
@@ -81,7 +84,13 @@ namespace DataCatalog.Common.Rebus.Extensions
                     o.SimpleRetryStrategy(secondLevelRetriesEnabled: true, maxDeliveryAttempts: maxAttempts, errorQueueAddress: errorQueueAddress);
                 })
                 .Subscriptions(s => s.StoreInSqlServer(connectionString, subscriptionsTableName))
-                .Routing(r => r.TypeBased().MapAssemblyOf<TMessageHandlerType>(inputQueueName))
+                .Routing(r =>
+                {
+                    foreach (var type in messageTypesToMap)
+                    {
+                        r.TypeBased().Map(type, inputQueueName);
+                    }
+                })
             );
 
             return services;

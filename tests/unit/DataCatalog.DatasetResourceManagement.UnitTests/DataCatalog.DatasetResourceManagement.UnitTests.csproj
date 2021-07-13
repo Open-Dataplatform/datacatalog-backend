@@ -21,7 +21,7 @@
     
     <ItemGroup>
         <ProjectReference Include="..\DataCatalog.Common.UnitTests\DataCatalog.Common.UnitTests.csproj" />
-        <ProjectReference Include="..\DataCatalog.DatasetResourceManagement\DataCatalog.DatasetResourceManagement.csproj" />
+        <ProjectReference Include="..\..\..\src\DataCatalog.DatasetResourceManagement\DataCatalog.DatasetResourceManagement.csproj" />
     </ItemGroup>
 
 </Project>

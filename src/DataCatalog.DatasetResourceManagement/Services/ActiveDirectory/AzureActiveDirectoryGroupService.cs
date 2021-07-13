@@ -26,9 +26,9 @@ namespace DataCatalog.DatasetResourceManagement.Services.ActiveDirectory
             ILogger<AzureActiveDirectoryGroupService> logger, 
             IGraphServiceClient graphServiceClient)
         {
-            _httpClient = httpClient ?? throw new ArgumentNullException(nameof(httpClient));
-            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
-            _graphServiceClient = graphServiceClient ?? throw new ArgumentNullException(nameof(graphServiceClient));
+            _httpClient = httpClient;
+            _logger = logger;
+            _graphServiceClient = graphServiceClient;
             _retryPolicy = Policy
                 .Handle<ServiceException>()
                 .RetryAsync(100, (e, r) => Task.Delay(500));
