@@ -250,12 +250,17 @@ namespace DataCatalog.Api.UnitTests.Services.AD
         [Theory]
         [GraphAutoMoq]
         public async Task Correctly_Remove_Member_From_Group_On_RemoveGroupMemberAsync(
+            GroupMembersCollectionWithReferencesPage memberPage,
             string groupId,
             string memberId,
             [Frozen] Mock<IGraphServiceClient> graphServiceClientMock,
             AzureGroupService sut)
         {
             // Arrange
+            memberPage.Add(new DirectoryObject { Id = memberId });
+            graphServiceClientMock.Setup(x => x.Groups[groupId].Members.Request().GetAsync())
+                .ReturnsAsync(memberPage);
+
             graphServiceClientMock.Setup(x => x.Groups[groupId].Members[memberId].Reference.Request().DeleteAsync())
                 .Returns(Task.CompletedTask);
 

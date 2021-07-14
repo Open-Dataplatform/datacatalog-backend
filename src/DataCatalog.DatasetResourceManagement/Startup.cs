@@ -3,6 +3,7 @@ using Azure.Identity;
 using Azure.Storage.Files.DataLake;
 using DataCatalog.Api.Messages;
 using DataCatalog.Common.Extensions;
+using DataCatalog.Common.Implementations;
 using DataCatalog.Common.Interfaces;
 using DataCatalog.Common.Rebus.Extensions;
 using DataCatalog.DatasetResourceManagement.Common.ServiceInterfaces.ActiveDirectory;
@@ -67,7 +68,10 @@ namespace DataCatalog.DatasetResourceManagement
             );
 
             var connectionString = _configuration.GetValidatedStringValue("ConnectionStrings:DataCatalog");
-            services.AddRebusWithSubscription<DatasetCreatedHandler>(_configuration, connectionString);
+            services.AddRebusWithSubscription<DatasetCreatedHandler>(_configuration, connectionString, new[]
+            {
+                typeof(DatasetCreatedMessage)
+            });
 
             services.AddTransient<IActiveDirectoryGroupService, AzureActiveDirectoryGroupService>();
             services.AddTransient<IAccessControlListService, AccessControlListService>();

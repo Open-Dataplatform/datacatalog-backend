@@ -20,14 +20,14 @@ namespace DataCatalog.DatasetResourceManagement.Services.ActiveDirectory
             IAccessControlListService accessControlListService,
             IStorageService storageService)
         {
-            _activeDirectoryGroupService = activeDirectoryGroupService ?? throw new ArgumentNullException(nameof(activeDirectoryGroupService));
-            _accessControlListService = accessControlListService ?? throw new ArgumentNullException(nameof(accessControlListService));
-            _storageService = storageService ?? throw new ArgumentNullException(nameof(storageService));
+            _activeDirectoryGroupService = activeDirectoryGroupService;
+            _accessControlListService = accessControlListService;
+            _storageService = storageService;
         }
 
         public async Task<string> ProvideGroupAsync(string displayName, string description, string leaseContainer)
         {
-            var group = await _activeDirectoryGroupService.GetGroupAsync($"{GroupConstants.SecurityGroupPrefix}{displayName}");
+            var group = await _activeDirectoryGroupService.GetGroupAsync($"{Constants.SecurityGroupPrefix}{displayName}");
 
             if (group == null)
             {

@@ -2,22 +2,26 @@
 using System.Threading.Tasks;
 using DataCatalog.Api.DomainEvents;
 using DataCatalog.Common.Enums;
+using DataCatalog.Common.Rebus;
 using DataCatalog.DatasetResourceManagement.Messages;
 using MediatR;
-using Rebus.Handlers;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
+using Rebus.Bus;
 
 namespace DataCatalog.Api.MessageHandlers
 {
-    public class DatasetProvisionedHandler : IHandleMessages<DatasetProvisionedMessage>
+    public class DatasetProvisionedHandler : AbstractMessageHandler<DatasetProvisionedMessage>
     {
         private readonly IMediator _mediator;
-
-        public DatasetProvisionedHandler(IMediator mediator)
+        
+        public DatasetProvisionedHandler(IMediator mediator, IBus bus, IOptions<RebusOptions> rebusOptions, ILogger<DatasetProvisionedHandler> logger)
+            :base(logger, rebusOptions, bus)
         {
             _mediator = mediator;
         }
 
-        public Task Handle(DatasetProvisionedMessage message)
+        public override Task Handle(DatasetProvisionedMessage message)
         {
             var parseSuccess = Enum.TryParse(message.Status, out ProvisionDatasetStatusEnum status);
             if (!parseSuccess)

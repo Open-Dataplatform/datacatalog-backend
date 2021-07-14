@@ -272,10 +272,13 @@ namespace DataCatalog.Api
             conn.ValidateConfiguration("ConnectionStrings:DataCatalog");
             services.AddDbContext<DataCatalogContext>(o => o.UseSqlServer(conn));
             
-            services.AddRebusWithSubscription<DatasetProvisionedHandler>(Configuration, conn);
+            services.AddRebusWithSubscription<DatasetProvisionedHandler>(Configuration, conn, new[]
+            {
+                typeof(DatasetProvisionedMessage)
+            });
             
             services.AddMediatR(typeof(Startup));
-            
+
             if (EnvironmentUtil.IsLocal())
             {
                 services.AddTransient<IGroupService, LocalGroupService>();

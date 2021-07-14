@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using DataCatalog.Common.Data;
 using DataCatalog.Common.Enums;
 using DataCatalog.Common.Interfaces;
 using DataCatalog.Data;
@@ -28,21 +27,6 @@ namespace DataCatalog.Migrator
             await SeedHierarchies();
             await SeedDataSources();
             await SeedIdentityProviders();
-            await SeedContacts();
-        }
-
-        private async Task SeedContacts()
-        {
-            var contacts = new List<MemberGroup>
-            {
-                new()
-                {
-                    Id = new Guid("1d51b693-b7b1-436d-896b-59c5d7b9d062"),
-                    Name = "Demo Group",
-                    Email = "demo@energinet.dk"
-                }
-            };
-            await UpsertData(contacts);
         }
 
         private async Task SeedCategories()
@@ -174,7 +158,7 @@ namespace DataCatalog.Migrator
                 else 
                 {
                     // Insert the item if it's not currently present in the database
-                    Log.Information($"Adding seeded item of type {typeof(T).Name} with ID {dataItem.Id}");
+                    Log.Information("Adding seeded item of type {Type} with ID {ID}", typeof(T).Name, dataItem.Id);
                     dbSet.Add(dataItem);
                 }
             }

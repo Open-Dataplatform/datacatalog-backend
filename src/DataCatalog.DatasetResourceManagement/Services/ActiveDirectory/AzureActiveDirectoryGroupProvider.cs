@@ -12,12 +12,12 @@ namespace DataCatalog.DatasetResourceManagement.Services.ActiveDirectory
 
         public AzureActiveDirectoryGroupProvider(IActiveDirectoryGroupService activeDirectoryGroupService)
         {
-            _activeDirectoryGroupService = activeDirectoryGroupService ?? throw new ArgumentNullException(nameof(activeDirectoryGroupService));
+            _activeDirectoryGroupService = activeDirectoryGroupService;
         }
 
         public async Task<string> ProvideGroupAsync(string displayName, string description, string[] members = null)
         {
-            var group = await _activeDirectoryGroupService.GetGroupAsync($"{GroupConstants.SecurityGroupPrefix}{displayName}");
+            var group = await _activeDirectoryGroupService.GetGroupAsync($"{Constants.SecurityGroupPrefix}{displayName}");
 
             if (group == null)
                 return await CreateGroup(displayName, description, members);
