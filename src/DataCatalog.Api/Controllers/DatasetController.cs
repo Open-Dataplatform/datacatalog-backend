@@ -98,6 +98,7 @@ namespace DataCatalog.Api.Controllers
         [HttpPut]
         public async Task<ActionResult<DatasetResponse>> PutAsync(DatasetUpdateRequest request)
         {
+            var oldConfidentiality = (await _datasetService.FindByIdAsync(request.Id)).Confidentiality;
             var dataset = await _datasetService.UpdateAsync(request);
 
             var directoryMetadata = await _storageService.GetDirectoryMetadataAsync(request.Id.ToString());
@@ -108,13 +109,16 @@ namespace DataCatalog.Api.Controllers
 
                 if (readerGroupId != null)
                 {
-                    var memberOperationTask = request.Confidentiality == Confidentiality.Public
-                        ? _groupService.AddGroupMemberAsync(readerGroupId,
-                            _allUsersGroupProvider.GetAllUsersGroup())
-                        : _groupService.RemoveGroupMemberAsync(readerGroupId,
-                            _allUsersGroupProvider.GetAllUsersGroup());
-
-                    await memberOperationTask;
+                    if (oldConfidentiality == Confidentiality.Public && request.Confidentiality != Confidentiality.Public)
+                    {
+                        // Updated from public to non-public -> Remove AllUsersGroup
+                        await _groupService.RemoveGroupMemberAsync(readerGroupId, _allUsersGroupProvider.GetAllUsersGroup());
+                    }
+                    else if (oldConfidentiality != Confidentiality.Public && request.Confidentiality == Confidentiality.Public)
+                    {
+                        // Updated from non-public to public -> Add AllUsersGroup
+                        await _groupService.AddGroupMemberAsync(readerGroupId, _allUsersGroupProvider.GetAllUsersGroup());
+                    }
                 }
             }
 

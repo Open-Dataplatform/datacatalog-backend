@@ -83,6 +83,7 @@ namespace DataCatalog.Api.Services.AD
             {
                 var members = await _graphServiceClient.Groups[groupId].Members.Request().GetAsync();
 
+                // Just return if member is already present in the group
                 if (members.Any(x => Equals(x.Id, memberId))) return;
 
                 await _graphServiceClient.Groups[groupId].Members.References.Request()

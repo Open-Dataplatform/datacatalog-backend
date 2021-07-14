@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using DataCatalog.Common.Data;
 using DataCatalog.Common.Enums;
 using DataCatalog.Common.Interfaces;
 using DataCatalog.Data;
@@ -159,7 +158,7 @@ namespace DataCatalog.Migrator
                 else 
                 {
                     // Insert the item if it's not currently present in the database
-                    Log.Information($"Adding seeded item of type {typeof(T).Name} with ID {dataItem.Id}");
+                    Log.Information("Adding seeded item of type {Type} with ID {ID}", typeof(T).Name, dataItem.Id);
                     dbSet.Add(dataItem);
                 }
             }
