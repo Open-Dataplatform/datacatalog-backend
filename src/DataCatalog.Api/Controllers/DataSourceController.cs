@@ -1,7 +1,6 @@
 ﻿using DataCatalog.Api.Data.Dto;
 using DataCatalog.Common.Enums;
 using DataCatalog.Api.Infrastructure;
-using DataCatalog.Api.MessageBus;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;

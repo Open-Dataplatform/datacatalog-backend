@@ -1,37 +1,37 @@
 using System;
-using DataCatalog.Common.Data;
+using System.Runtime.CompilerServices;
+using Azure.Identity;
+using Azure.Storage.Files.DataLake;
 using DataCatalog.Api.Extensions;
 using DataCatalog.Api.Infrastructure;
+using DataCatalog.Api.MessageHandlers;
 using DataCatalog.Api.Repositories;
 using DataCatalog.Api.Services;
+using DataCatalog.Api.Services.AD;
+using DataCatalog.Api.Services.Local;
+using DataCatalog.Api.Services.Storage;
+using DataCatalog.Common.Data;
+using DataCatalog.Common.Extensions;
+using DataCatalog.Common.Implementations;
+using DataCatalog.Common.Interfaces;
+using DataCatalog.Common.Rebus.Extensions;
+using DataCatalog.Common.Utils;
+using DataCatalog.Data;
+using DataCatalog.DatasetResourceManagement.Messages;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Versioning;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Serilog;
-using System.Runtime.CompilerServices;
-using Azure.Identity;
-using Azure.Storage.Files.DataLake;
-using DataCatalog.Api.Data.Domain;
-using DataCatalog.Api.Data.Messages;
-using DataCatalog.Api.Implementations;
-using DataCatalog.Common.Interfaces;
-using DataCatalog.Api.MessageBus;
-using DataCatalog.Api.Services.AD;
-using DataCatalog.Api.Services.Local;
-using DataCatalog.Api.Services.Storage;
-using DataCatalog.Common.Utils;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Graph;
 using Microsoft.Graph.Auth;
 using Microsoft.Identity.Client;
+using Serilog;
 using Serilog.Context;
-using DataCatalog.Data;
-using DataCatalog.Common.Extensions;
 
 [assembly: ApiConventionType(typeof(ApiConventions))]
 [assembly: InternalsVisibleTo("DynamicProxyGenAssembly2")]
@@ -89,7 +89,7 @@ namespace DataCatalog.Api
             services.AddScoped<IMemberRepository, MemberRepository>();
             services.AddScoped<ITransformationDatasetRepository, TransformationDatasetRepository>();
             services.AddScoped<ITransformationRepository, TransformationRepository>();
-            services.AddScoped<IUnitIOfWork, UnitOfWork>();
+            services.AddScoped<IUnitOfWork, UnitOfWork>();
             var allUsersGroup = Configuration.GetValidatedStringValue("ALL_USERS_GROUP");
             services.AddSingleton<IAllUsersGroupProvider>(new AllUsersGroupProvider(allUsersGroup));
 
@@ -193,6 +193,11 @@ namespace DataCatalog.Api
                 endpoints.MapControllers();
                 endpoints.MapHealthChecks("/health");
             });
+
+            app.ApplicationServices.UseRebusSubscriptions(new[]
+            {
+                typeof(DatasetProvisionedMessage)
+            });
         }
 
         private void ConfigureAzureServices(IServiceCollection services)
@@ -209,7 +214,7 @@ namespace DataCatalog.Api
                 .WithClientSecret(groupManagementClientSecret)
                 .WithTenantId(tenantId)
                 .Build();
-
+            
             services.AddSingleton<IGraphServiceClient>(
                 new GraphServiceClient(new ClientCredentialProvider(confidentialGroupClient)));
 
@@ -260,28 +265,22 @@ namespace DataCatalog.Api
             services.AddTransient<IMemberService, MemberService>();
 
             services.AddTransient<ITransformationService, TransformationService>();
-            services.AddTransient(typeof(IMessageBusSender<>), typeof(MessageBusSender<>));
-            
-            if (!EnvironmentUtil.IsLocal())
-            {
-                
-                // Hosted services
-                services.AddHostedService<MessageBusReceiver<DatasetProvisioned, IDatasetService>>();
-            }
-            else
-            {
-                services.RemoveAll(typeof(IMessageBusSender<>));
-                services.AddTransient(typeof(IMessageBusSender<>), typeof(LocalMessageHandler<>));
-                services.AddHostedService<LocalMessageHandler<DatasetCreated>>();
-                
-                services.AddTransient<IGroupService, LocalGroupService>();
-                services.AddTransient<IStorageService, LocalStorageService>();
-            }
 
             // Db Context
             var conn = Configuration.GetConnectionString("DataCatalog");
             conn.ValidateConfiguration("ConnectionStrings:DataCatalog");
             services.AddDbContext<DataCatalogContext>(o => o.UseSqlServer(conn));
+            
+            services.AddRebusWithSubscription<DatasetProvisionedHandler>(Configuration, conn, new[]
+            {
+                typeof(DatasetProvisionedMessage)
+            });
+
+            if (EnvironmentUtil.IsLocal())
+            {
+                services.AddTransient<IGroupService, LocalGroupService>();
+                services.AddTransient<IStorageService, LocalStorageService>();
+            }
 
             //HttpContext
             services.AddHttpContextAccessor();

@@ -11,13 +11,13 @@ namespace DataCatalog.Api.Services
     public class MemberGroupService : IMemberGroupService
     {
         private readonly IMemberGroupRepository _memberGroupRepository;
-        private readonly IUnitIOfWork _unitOfWork;
+        private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
 
-        public MemberGroupService(IMemberGroupRepository memberGroupRepository, IMapper mapper, IUnitIOfWork unitIOfWork)
+        public MemberGroupService(IMemberGroupRepository memberGroupRepository, IMapper mapper, IUnitOfWork unitOfWork)
         {
             _memberGroupRepository = memberGroupRepository;
-            _unitOfWork = unitIOfWork;
+            _unitOfWork = unitOfWork;
             _mapper = mapper;
         }
 

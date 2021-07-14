@@ -182,7 +182,7 @@ namespace DataCatalog.Api.UnitTests.Services
             dataContractRepositoryMock.Setup(x => x.AddAsync(It.IsAny<DataContract>()));
             _fixture.Inject(dataContractRepositoryMock.Object);
             _fixture.Freeze<IDataContractRepository>();
-            var unitOfWorkMock = new Mock<IUnitIOfWork>();
+            var unitOfWorkMock = new Mock<IUnitOfWork>();
             unitOfWorkMock.Setup(x => x.CompleteAsync());
             _fixture.Inject(unitOfWorkMock.Object);
             _fixture.Freeze<IDataContractRepository>();
@@ -205,7 +205,7 @@ namespace DataCatalog.Api.UnitTests.Services
             dataContractRepositoryMock.Setup(x => x.FindByIdAsync(It.IsAny<Guid>())).ReturnsAsync((DataContract)null);
             _fixture.Inject(dataContractRepositoryMock.Object);
             _fixture.Freeze<IDataContractRepository>();
-            var unitOfWorkMock = new Mock<IUnitIOfWork>();
+            var unitOfWorkMock = new Mock<IUnitOfWork>();
             unitOfWorkMock.Setup(x => x.CompleteAsync());
             _fixture.Inject(unitOfWorkMock.Object);
             _fixture.Freeze<IDataContractRepository>();
@@ -230,7 +230,7 @@ namespace DataCatalog.Api.UnitTests.Services
             dataContractRepositoryMock.Setup(x => x.FindByIdAsync(dataContractEntity.Id)).ReturnsAsync(dataContractEntity);
             _fixture.Inject(dataContractRepositoryMock.Object);
             _fixture.Freeze<IDataContractRepository>();
-            var unitOfWorkMock = new Mock<IUnitIOfWork>();
+            var unitOfWorkMock = new Mock<IUnitOfWork>();
             unitOfWorkMock.Setup(x => x.CompleteAsync());
             _fixture.Inject(unitOfWorkMock.Object);
             _fixture.Freeze<IDataContractRepository>();
@@ -253,7 +253,7 @@ namespace DataCatalog.Api.UnitTests.Services
             dataContractRepositoryMock.Setup(x => x.FindByIdAsync(It.IsAny<Guid>())).ReturnsAsync((DataContract)null);
             _fixture.Inject(dataContractRepositoryMock.Object);
             _fixture.Freeze<IDataContractRepository>();
-            var unitOfWorkMock = new Mock<IUnitIOfWork>();
+            var unitOfWorkMock = new Mock<IUnitOfWork>();
             unitOfWorkMock.Setup(x => x.CompleteAsync());
             _fixture.Inject(unitOfWorkMock.Object);
             _fixture.Freeze<IDataContractRepository>();
@@ -278,7 +278,7 @@ namespace DataCatalog.Api.UnitTests.Services
             dataContractRepositoryMock.Setup(x => x.FindByIdAsync(dataContractEntity.Id)).ReturnsAsync(dataContractEntity);
             _fixture.Inject(dataContractRepositoryMock.Object);
             _fixture.Freeze<IDataContractRepository>();
-            var unitOfWorkMock = new Mock<IUnitIOfWork>();
+            var unitOfWorkMock = new Mock<IUnitOfWork>();
             unitOfWorkMock.Setup(x => x.CompleteAsync());
             _fixture.Inject(unitOfWorkMock.Object);
             _fixture.Freeze<IDataContractRepository>();

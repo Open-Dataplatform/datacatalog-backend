@@ -1,0 +1,83 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "datacatalog-backend.fullname" . }}
+  labels:
+    {{- include "datacatalog-backend.labels" . | nindent 4 }}
+spec:
+  {{- if not .Values.drmDeployment.autoscaling.enabled }}
+  replicas: {{ .Values.drmDeployment.replicaCount }}
+  {{- end }}
+  selector:
+    matchLabels:
+      {{- include "datacatalog-backend.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      annotations:
+        vault.hashicorp.com/agent-inject: "true"
+        vault.hashicorp.com/role: "{{ .Values.secretName }}-reader"
+        vault.hashicorp.com/auth-path: "auth/kubernetes-{{ .Values.environment }}"
+        vault.hashicorp.com/agent-inject-secret-appsettings.secrets.json: "{{ .Values.secretName }}/data/credentials"
+        vault.hashicorp.com/agent-inject-template-appsettings.secrets.json: |
+          {{`{{-`}} with secret "{{ .Values.secretName }}/data/credentials" {{`-}}`}}
+          {{`{
+            "GroupManagementClientId": "{{ .Data.data.group_management_client_id }}",
+            "GroupManagementClientSecret": "{{ .Data.data.group_management_client_secret }}",
+            "DataLakeClientId": "{{ .Data.data.data_lake_client_id }}",
+            "DataLakeClientSecret": "{{ .Data.data.data_lake_client_secret }}",
+            "ConnectionStrings": {
+              "DataCatalog": "{{ .Data.data.connection_string }}"
+            },
+            "AzureAd": {
+              "TenantId": "{{ .Data.data.tenant_id }}"
+            }
+          }
+          {{- end -}}`}}
+      {{- with .Values.drmDeployment.annotations }}
+      {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "datacatalog-backend.selectorLabels" . | nindent 8 }}
+    spec:
+      {{- with .Values.drmDeployment.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      securityContext:
+        {{- toYaml .Values.drmDeployment.podSecurityContext | nindent 8 }}
+      containers:
+        - name: {{ .Chart.Name }}
+          securityContext:
+            {{- toYaml .Values.drmDeployment.securityContext | nindent 12 }}
+          image: "{{ .Values.drmDeployment.image.repository }}:{{ .Values.drmDeployment.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.drmDeployment.image.pullPolicy }}
+          env:
+          {{ range $k, $v := .Values.drmDeployment.env }}
+          - name: {{ $k | quote }}
+            value: {{ $v | quote }}
+          {{- end }}
+          ports:
+            - name: http
+              containerPort: 80
+              protocol: TCP
+          livenessProbe:
+            httpGet:
+              path: {{ .Values.drmDeployment.livenessProbe.path }}
+              port: http
+            initialDelaySeconds: {{ .Values.drmDeployment.livenessProbe.initialDelaySeconds }}
+            timeoutSeconds: {{ .Values.drmDeployment.livenessProbe.timeoutSeconds }}
+            periodSeconds: {{ .Values.drmDeployment.livenessProbe.periodSeconds }}
+          resources:
+            {{- toYaml .Values.drmDeployment.resources | nindent 12 }}
+      {{- with .Values.drmDeployment.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.drmDeployment.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.drmDeployment.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}

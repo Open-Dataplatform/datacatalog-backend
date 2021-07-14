@@ -26,6 +26,7 @@
     <ProjectReference Include="..\..\..\src\DataCatalog.Api\DataCatalog.Api.csproj" />
     <ProjectReference Include="..\..\..\src\DataCatalog.Common\DataCatalog.Common.csproj" />
     <ProjectReference Include="..\..\..\src\DataCatalog.Data\DataCatalog.Data.csproj" />
+    <ProjectReference Include="..\DataCatalog.Common.UnitTests\DataCatalog.Common.UnitTests.csproj" />
   </ItemGroup>
 
 </Project>

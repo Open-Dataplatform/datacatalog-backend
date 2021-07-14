@@ -101,7 +101,7 @@ namespace DataCatalog.Api.UnitTests.Services
             durationRepositoryMock.Setup(x => x.AddAsync(It.IsAny<Duration>()));
             _fixture.Inject(durationRepositoryMock.Object);
             _fixture.Freeze<IDurationRepository>();
-            var unitOfWorkMock = new Mock<IUnitIOfWork>();
+            var unitOfWorkMock = new Mock<IUnitOfWork>();
             unitOfWorkMock.Setup(x => x.CompleteAsync());
             _fixture.Inject(unitOfWorkMock.Object);
             _fixture.Freeze<IDurationRepository>();
@@ -124,7 +124,7 @@ namespace DataCatalog.Api.UnitTests.Services
             durationRepositoryMock.Setup(x => x.FindByIdAsync(It.IsAny<Guid>())).ReturnsAsync((Duration)null);
             _fixture.Inject(durationRepositoryMock.Object);
             _fixture.Freeze<IDurationRepository>();
-            var unitOfWorkMock = new Mock<IUnitIOfWork>();
+            var unitOfWorkMock = new Mock<IUnitOfWork>();
             unitOfWorkMock.Setup(x => x.CompleteAsync());
             _fixture.Inject(unitOfWorkMock.Object);
             _fixture.Freeze<IDurationRepository>();
@@ -149,7 +149,7 @@ namespace DataCatalog.Api.UnitTests.Services
             durationRepositoryMock.Setup(x => x.FindByIdAsync(durationEntity.Id)).ReturnsAsync(durationEntity);
             _fixture.Inject(durationRepositoryMock.Object);
             _fixture.Freeze<IDurationRepository>();
-            var unitOfWorkMock = new Mock<IUnitIOfWork>();
+            var unitOfWorkMock = new Mock<IUnitOfWork>();
             unitOfWorkMock.Setup(x => x.CompleteAsync());
             _fixture.Inject(unitOfWorkMock.Object);
             _fixture.Freeze<IDurationRepository>();
@@ -172,7 +172,7 @@ namespace DataCatalog.Api.UnitTests.Services
             durationRepositoryMock.Setup(x => x.FindByIdAsync(It.IsAny<Guid>())).ReturnsAsync((Duration)null);
             _fixture.Inject(durationRepositoryMock.Object);
             _fixture.Freeze<IDurationRepository>();
-            var unitOfWorkMock = new Mock<IUnitIOfWork>();
+            var unitOfWorkMock = new Mock<IUnitOfWork>();
             unitOfWorkMock.Setup(x => x.CompleteAsync());
             _fixture.Inject(unitOfWorkMock.Object);
             _fixture.Freeze<IDurationRepository>();
@@ -197,7 +197,7 @@ namespace DataCatalog.Api.UnitTests.Services
             durationRepositoryMock.Setup(x => x.FindByIdAsync(durationEntity.Id)).ReturnsAsync(durationEntity);
             _fixture.Inject(durationRepositoryMock.Object);
             _fixture.Freeze<IDurationRepository>();
-            var unitOfWorkMock = new Mock<IUnitIOfWork>();
+            var unitOfWorkMock = new Mock<IUnitOfWork>();
             unitOfWorkMock.Setup(x => x.CompleteAsync());
             _fixture.Inject(unitOfWorkMock.Object);
             _fixture.Freeze<IDurationRepository>();

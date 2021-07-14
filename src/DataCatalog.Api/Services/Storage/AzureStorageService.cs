@@ -33,12 +33,12 @@ namespace DataCatalog.Api.Services.Storage
             }
             catch (Azure.RequestFailedException rfe)
             {
-                _logger.LogWarning(rfe, $"Failed to request metadata for directory {path}");
+                _logger.LogWarning(rfe, "Failed to request metadata for directory {Path}", path);
                 return null;
             }
             catch (Exception e)
             {
-                _logger.LogError(e, $"Enexpected error occurred when loading metadata properties for the path {path}");
+                _logger.LogError(e, "Unexpected error occurred when loading metadata properties for the path {Path}", path);
                 throw;
             }
         }
