@@ -29,7 +29,7 @@ namespace DataCatalog.Api.Controllers
         /// </summary>
         /// <returns>A list of all data sources</returns>
         [HttpGet]
-        public async Task<IActionResult> GetAllAsync()
+        public async Task<ActionResult<IEnumerable<DataSourceResponse>>> GetAllAsync()
         {
             var dataSources = await _dataSourceService.ListAsync();
 
@@ -48,7 +48,7 @@ namespace DataCatalog.Api.Controllers
         /// <returns>The category</returns>
         [HttpGet]
         [Route("{id}")]
-        public async Task<IActionResult> Get(Guid id)
+        public async Task<ActionResult<DataSourceResponse>> Get(Guid id)
         {
             var dataSource = await _dataSourceService.FindByIdAsync(id);
 
@@ -67,7 +67,7 @@ namespace DataCatalog.Api.Controllers
         /// <returns>The created data source</returns>
         [AuthorizeRoles(Role.Admin)]
         [HttpPost]
-        public async Task<IActionResult> PostAsync([FromBody] DataSourceCreateRequest request)
+        public async Task<ActionResult<Guid>> PostAsync([FromBody] DataSourceCreateRequest request)
         {
             var dataSource = _mapper.Map<DataSourceCreateRequest, Data.Domain.DataSource>(request);
             await _dataSourceService.SaveAsync(dataSource);
@@ -82,7 +82,7 @@ namespace DataCatalog.Api.Controllers
         /// <returns>The created data source</returns>
         [AuthorizeRoles(Role.Admin)]
         [HttpPut]
-        public async Task<IActionResult> PutAsync([FromBody] DataSourceUpdateRequest request)
+        public async Task<ActionResult<Guid>> PutAsync([FromBody] DataSourceUpdateRequest request)
         {
             var dataSource = _mapper.Map<DataSourceUpdateRequest, Data.Domain.DataSource>(request);
             await _dataSourceService.UpdateAsync(dataSource);

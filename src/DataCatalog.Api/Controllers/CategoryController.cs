@@ -31,7 +31,7 @@ namespace DataCatalog.Api.Controllers
         /// <returns>A list of all categories</returns>
 
         [HttpGet]
-        public async Task<IActionResult> GetAllAsync(bool? includeEmpty = false)
+        public async Task<ActionResult<IEnumerable<CategoryResponse>>> GetAllAsync(bool? includeEmpty = false)
         {
             var categories = await _categoryService.ListAsync(includeEmpty ?? true);
 
@@ -50,7 +50,7 @@ namespace DataCatalog.Api.Controllers
         /// <returns>The category</returns>
         [HttpGet]
         [Route("{id}")]
-        public async Task<IActionResult> Get(Guid id)
+        public async Task<ActionResult<CategoryResponse>> Get(Guid id)
         {
             var category = await _categoryService.FindByIdAsync(id);
 
@@ -69,7 +69,7 @@ namespace DataCatalog.Api.Controllers
         /// <returns>The created category</returns>
         [AuthorizeRoles(Role.Admin)]
         [HttpPost]
-        public async Task<IActionResult> PostAsync([FromBody] CategoryCreateRequest request)
+        public async Task<ActionResult<Guid>> PostAsync([FromBody] CategoryCreateRequest request)
         {
             var category = _mapper.Map<CategoryCreateRequest, Data.Domain.Category>(request);
             await _categoryService.SaveAsync(category);
@@ -84,7 +84,7 @@ namespace DataCatalog.Api.Controllers
         /// <returns>The created category</returns>
         [AuthorizeRoles(Role.Admin)]
         [HttpPut]
-        public async Task<IActionResult> PutAsync([FromBody] CategoryUpdateRequest request)
+        public async Task<ActionResult<Guid>> PutAsync([FromBody] CategoryUpdateRequest request)
         {
             var category = _mapper.Map<CategoryUpdateRequest, Data.Domain.Category>(request);
             await _categoryService.UpdateAsync(category);

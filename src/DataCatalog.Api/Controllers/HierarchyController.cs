@@ -29,7 +29,7 @@ namespace DataCatalog.Api.Controllers
         /// </summary>
         /// <returns>A list of all hierarchies</returns>
         [HttpGet]
-        public async Task<IActionResult> GetAllAsync()
+        public async Task<ActionResult<IEnumerable<HierarchyResponse>>> GetAllAsync()
         {
             var hierarchies = await _hierarchyService.ListAsync();
 
@@ -48,7 +48,7 @@ namespace DataCatalog.Api.Controllers
         /// <returns>The hierarchy</returns>
         [HttpGet]
         [Route("{id}")]
-        public async Task<IActionResult> Get(Guid id)
+        public async Task<ActionResult<HierarchyResponse>> Get(Guid id)
         {
             var hierarchy = await _hierarchyService.FindByIdAsync(id);
 
@@ -67,7 +67,7 @@ namespace DataCatalog.Api.Controllers
         /// <returns>The created hierarchy</returns>
         [AuthorizeRoles(Role.Admin)]
         [HttpPost]
-        public async Task<IActionResult> PostAsync([FromBody] HierarchyCreateRequest request)
+        public async Task<ActionResult<Guid>> PostAsync([FromBody] HierarchyCreateRequest request)
         {
             var hierarchy = _mapper.Map<HierarchyCreateRequest, Data.Domain.Hierarchy>(request);
             await _hierarchyService.SaveAsync(hierarchy);
@@ -82,7 +82,7 @@ namespace DataCatalog.Api.Controllers
         /// <returns>The created hierarchy</returns>
         [AuthorizeRoles(Role.Admin)]
         [HttpPut]
-        public async Task<IActionResult> PutAsync([FromBody] HierarchyUpdateRequest request)
+        public async Task<ActionResult<Guid>> PutAsync([FromBody] HierarchyUpdateRequest request)
         {
             var hierarchy = _mapper.Map<HierarchyUpdateRequest, Data.Domain.Hierarchy>(request);
             await _hierarchyService.UpdateAsync(hierarchy);

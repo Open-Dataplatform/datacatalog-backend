@@ -29,7 +29,7 @@ namespace DataCatalog.Api.Controllers
         /// </summary>
         /// <returns>A list of all durations</returns>
         [HttpGet]
-        public async Task<IActionResult> GetAllAsync()
+        public async Task<ActionResult<IEnumerable<DurationResponse>>> GetAllAsync()
         {
             var durations = await _durationService.ListAsync();
 
@@ -48,7 +48,7 @@ namespace DataCatalog.Api.Controllers
         /// <returns>The duration</returns>
         [HttpGet]
         [Route("{id}")]
-        public async Task<IActionResult> Get(Guid id)
+        public async Task<ActionResult<DurationResponse>> Get(Guid id)
         {
             var duration = await _durationService.FindByIdAsync(id);
 
@@ -67,7 +67,7 @@ namespace DataCatalog.Api.Controllers
         /// <returns>The created duration</returns>
         [AuthorizeRoles(Role.Admin)]
         [HttpPost]
-        public async Task<IActionResult> PostAsync([FromBody] DurationCreateRequest request)
+        public async Task<ActionResult<Guid>> PostAsync([FromBody] DurationCreateRequest request)
         {
             var duration = _mapper.Map<DurationCreateRequest, Data.Domain.Duration>(request);
             await _durationService.SaveAsync(duration);
@@ -82,7 +82,7 @@ namespace DataCatalog.Api.Controllers
         /// <returns>The created duration</returns>
         [AuthorizeRoles(Role.Admin)]
         [HttpPut]
-        public async Task<IActionResult> PutAsync([FromBody] DurationUpdateRequest request)
+        public async Task<ActionResult<Guid>> PutAsync([FromBody] DurationUpdateRequest request)
         {
             var duration = _mapper.Map<DurationUpdateRequest, Data.Domain.Duration>(request);
             await _durationService.UpdateAsync(duration);

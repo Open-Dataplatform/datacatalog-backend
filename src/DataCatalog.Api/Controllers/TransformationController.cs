@@ -33,7 +33,7 @@ namespace DataCatalog.Api.Controllers
         /// </summary>
         /// <returns>A list of all transformations</returns>
         [HttpGet]
-        public async Task<IActionResult> GetAllAsync()
+        public async Task<ActionResult<IEnumerable<TransformationResponse>>> GetAllAsync()
         {
             var transformations = await _transformationService.ListAsync();
 
@@ -52,7 +52,7 @@ namespace DataCatalog.Api.Controllers
         /// <returns>The category</returns>
         [HttpGet]
         [Route("{id}")]
-        public async Task<IActionResult> Get(Guid id)
+        public async Task<ActionResult<TransformationResponse>> Get(Guid id)
         {
             var transformation = await _transformationService.FindByIdAsync(id);
 
@@ -90,7 +90,7 @@ namespace DataCatalog.Api.Controllers
         /// <returns>The created transformation</returns>
         [AuthorizeRoles(Role.Admin)]
         [HttpPost]
-        public async Task<IActionResult> PostAsync([FromBody] TransformationCreateRequest request)
+        public async Task<ActionResult<Guid>> PostAsync([FromBody] TransformationCreateRequest request)
         {
             var transformation = _mapper.Map<TransformationCreateRequest, Data.Domain.Transformation>(request);
             await _transformationService.SaveAsync(transformation);
@@ -105,7 +105,7 @@ namespace DataCatalog.Api.Controllers
         /// <returns>The created transformation</returns>
         [AuthorizeRoles(Role.Admin)]
         [HttpPut]
-        public async Task<IActionResult> PutAsync([FromBody] TransformationUpdateRequest request)
+        public async Task<ActionResult<Guid>> PutAsync([FromBody] TransformationUpdateRequest request)
         {
             var transformation = _mapper.Map<TransformationUpdateRequest, Data.Domain.Transformation>(request);
             await _transformationService.UpdateAsync(transformation);
