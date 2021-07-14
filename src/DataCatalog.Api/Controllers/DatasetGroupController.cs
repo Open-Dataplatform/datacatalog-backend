@@ -30,7 +30,7 @@ namespace DataCatalog.Api.Controllers
         /// <returns>A list of all dataset groups</returns>
         /// <remarks>Restricted to only working with the current member's dataset groups</remarks>
         [HttpGet]
-        public async Task<IActionResult> GetAllAsync()
+        public async Task<ActionResult<IEnumerable<DatasetGroupResponse>>> GetAllAsync()
         {
             var datasetGroups = await _datasetGroupService.ListAsync();
 
@@ -68,7 +68,7 @@ namespace DataCatalog.Api.Controllers
         /// <returns>The created dataset group</returns>
         [AuthorizeRoles(Role.Admin, Role.DataSteward)]
         [HttpPost]
-        public async Task<IActionResult> PostAsync([FromBody] DatasetGroupCreateRequest request)
+        public async Task<ActionResult<DatasetGroupResponse>> PostAsync([FromBody] DatasetGroupCreateRequest request)
         {
             var datasetGroup = _mapper.Map<DatasetGroupCreateRequest, Data.Domain.DatasetGroup>(request);
             var newDatasetGroup = await _datasetGroupService.SaveAsync(datasetGroup);
@@ -84,7 +84,7 @@ namespace DataCatalog.Api.Controllers
         /// <remarks>Restricted to only working with the current member's dataset groups</remarks>
         [AuthorizeRoles(Role.Admin, Role.DataSteward)]
         [HttpPut]
-        public async Task<IActionResult> PutAsync([FromBody] DatasetGroupUpdateRequest request)
+        public async Task<ActionResult<DatasetGroupResponse>> PutAsync([FromBody] DatasetGroupUpdateRequest request)
         {
             var datasetGroup = _mapper.Map<DatasetGroupUpdateRequest, Data.Domain.DatasetGroup>(request);
             var updatedDatasetGroup = await _datasetGroupService.UpdateAsync(datasetGroup);

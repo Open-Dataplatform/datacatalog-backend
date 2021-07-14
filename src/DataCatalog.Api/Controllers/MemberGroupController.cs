@@ -32,7 +32,7 @@ namespace DataCatalog.Api.Controllers
         /// </summary>
         /// <returns>A list of all member groups</returns>
         [HttpGet]
-        public async Task<IActionResult> GetAllAsync()
+        public async Task<ActionResult<IEnumerable<MemberGroupResponse>>> GetAllAsync()
         {
             var memberGroups = await _memberGroupService.ListAsync();
 
@@ -51,7 +51,7 @@ namespace DataCatalog.Api.Controllers
         /// <returns>The member group</returns>
         [HttpGet]
         [Route("{id}")]
-        public async Task<IActionResult> Get(Guid id)
+        public async Task<ActionResult<MemberGroupResponse>> Get(Guid id)
         {
             var memberGroup = await _memberGroupService.FindByIdAsync(id);
 
@@ -70,7 +70,7 @@ namespace DataCatalog.Api.Controllers
         /// <returns>The member groups</returns>
         [HttpGet]
         [Route("membergroups/{id}")]
-        public async Task<IActionResult> GetMemberGroups(Guid id)
+        public async Task<ActionResult<IEnumerable<MemberGroupResponse>>> GetMemberGroups(Guid id)
         {
             var memberGroups = await _memberGroupService.GetMemberGroups(id);
 
@@ -86,7 +86,7 @@ namespace DataCatalog.Api.Controllers
         /// <returns>The created member group</returns>
         [AuthorizeRoles(Role.Admin)]
         [HttpPost]
-        public async Task<IActionResult> PostAsync([FromBody] MemberGroupCreateRequest request)
+        public async Task<ActionResult<Guid>> PostAsync([FromBody] MemberGroupCreateRequest request)
         {
             var memberGroup = _mapper.Map<MemberGroupCreateRequest, Data.Domain.MemberGroup>(request);
             await _memberGroupService.SaveAsync(memberGroup);
