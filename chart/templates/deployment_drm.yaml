@@ -1,7 +1,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "datacatalog-backend.fullname" . }}
+  name: {{ include "datacatalog-backend.fullname" . }}-drm
   labels:
     {{- include "datacatalog-backend.labels" . | nindent 4 }}
 spec:
