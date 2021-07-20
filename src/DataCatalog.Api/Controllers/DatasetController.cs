@@ -66,7 +66,7 @@ namespace DataCatalog.Api.Controllers
         /// </summary>
         /// <returns>A list of dataset summaries</returns>
         [HttpGet]
-        public async Task<ActionResult<DatasetSummaryResponse[]>> GetAllAsync()
+        public async Task<ActionResult<IEnumerable<DatasetResponse>>> GetAllAsync()
         {
             var onlyPublished = _current.Roles.Contains(Role.User) && !_current.Roles.Contains(Role.Admin) && !_current.Roles.Contains(Role.DataSteward);
 
@@ -98,6 +98,7 @@ namespace DataCatalog.Api.Controllers
         [HttpPut]
         public async Task<ActionResult<DatasetResponse>> PutAsync(DatasetUpdateRequest request)
         {
+            var oldConfidentiality = (await _datasetService.FindByIdAsync(request.Id)).Confidentiality;
             var dataset = await _datasetService.UpdateAsync(request);
 
             var directoryMetadata = await _storageService.GetDirectoryMetadataAsync(request.Id.ToString());
@@ -108,13 +109,16 @@ namespace DataCatalog.Api.Controllers
 
                 if (readerGroupId != null)
                 {
-                    var memberOperationTask = request.Confidentiality == Confidentiality.Public
-                        ? _groupService.AddGroupMemberAsync(readerGroupId,
-                            _allUsersGroupProvider.GetAllUsersGroup())
-                        : _groupService.RemoveGroupMemberAsync(readerGroupId,
-                            _allUsersGroupProvider.GetAllUsersGroup());
-
-                    await memberOperationTask;
+                    if (oldConfidentiality == Confidentiality.Public && request.Confidentiality != Confidentiality.Public)
+                    {
+                        // Updated from public to non-public -> Remove AllUsersGroup
+                        await _groupService.RemoveGroupMemberAsync(readerGroupId, _allUsersGroupProvider.GetAllUsersGroup());
+                    }
+                    else if (oldConfidentiality != Confidentiality.Public && request.Confidentiality == Confidentiality.Public)
+                    {
+                        // Updated from non-public to public -> Add AllUsersGroup
+                        await _groupService.AddGroupMemberAsync(readerGroupId, _allUsersGroupProvider.GetAllUsersGroup());
+                    }
                 }
             }
 
@@ -142,7 +146,7 @@ namespace DataCatalog.Api.Controllers
         /// <returns>A list of dataset summaries</returns>
         [HttpPost]
         [Route("search/category")]
-        public async Task<ActionResult<DatasetSummaryResponse[]>> GetByCategoryAsync(DatasetSearchByCategoryRequest request)
+        public async Task<ActionResult<IEnumerable<DatasetSummaryResponse>>> GetByCategoryAsync(DatasetSearchByCategoryRequest request)
         {
             var filterUnpublished = _current.Roles.Contains(Role.User) && !_current.Roles.Contains(Role.Admin) && !_current.Roles.Contains(Role.DataSteward);
             var datasets = await _datasetService.GetDatasetByCategoryAsync(request.CategoryId, request.SortType, request.Take, request.PageSize, request.PageIndex, filterUnpublished);
@@ -176,7 +180,7 @@ namespace DataCatalog.Api.Controllers
         /// <remarks>A blank search term will return all datasets</remarks>
         [HttpPost]
         [Route("search/predictive")]
-        public async Task<ActionResult<DatasetPredictiveSearchResponse[]>> GetNameBySearchTermAsync(DatasetSearchByTermRequest request)
+        public async Task<ActionResult<IEnumerable<DatasetResponse>>> GetNameBySearchTermAsync(DatasetSearchByTermRequest request)
         {
             var filterUnpublished = _current.Roles.Contains(Role.User) && !_current.Roles.Contains(Role.Admin) && !_current.Roles.Contains(Role.DataSteward);
             var datasets = await _datasetService.GetDatasetsBySearchTermAsync(request.SearchTerm, request.SortType, request.Take, request.PageSize, request.PageIndex, filterUnpublished);

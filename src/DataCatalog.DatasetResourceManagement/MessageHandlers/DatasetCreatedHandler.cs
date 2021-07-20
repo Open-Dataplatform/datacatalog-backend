@@ -2,19 +2,21 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using DataCatalog.Api.Messages;
+using DataCatalog.Common.Rebus;
 using DataCatalog.Common.Utils;
 using DataCatalog.DatasetResourceManagement.Commands.AccessControlList;
+using DataCatalog.DatasetResourceManagement.Common;
 using DataCatalog.DatasetResourceManagement.Common.ServiceInterfaces.ActiveDirectory;
 using DataCatalog.DatasetResourceManagement.Common.ServiceInterfaces.Storage;
 using DataCatalog.DatasetResourceManagement.Messages;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Rebus.Bus;
-using Rebus.Handlers;
 using IAllUsersGroupProvider = DataCatalog.Common.Interfaces.IAllUsersGroupProvider;
 
 namespace DataCatalog.DatasetResourceManagement.MessageHandlers
 {
-    public class DatasetCreatedHandler : IHandleMessages<DatasetCreatedMessage>
+    public class DatasetCreatedHandler : AbstractMessageHandler<DatasetCreatedMessage>
     {
         private readonly ILogger<DatasetCreatedHandler> _logger;
         private readonly IStorageService _storageService;
@@ -32,7 +34,8 @@ namespace DataCatalog.DatasetResourceManagement.MessageHandlers
             IActiveDirectoryGroupProvider activeDirectoryGroupProvider, 
             IActiveDirectoryRootGroupProvider activeDirectoryRootGroupProvider, 
             IAllUsersGroupProvider allUsersGroupProvider, 
-            IBus bus)
+            IBus bus,
+            IOptions<RebusOptions> rebusOptions) : base(logger, rebusOptions, bus)
         {
             _logger = logger;
             _storageService = storageService;
@@ -44,36 +47,35 @@ namespace DataCatalog.DatasetResourceManagement.MessageHandlers
             _bus = bus;
         }
 
-        public async Task Handle(DatasetCreatedMessage datasetCreatedMessage)
+        public override async Task Handle(DatasetCreatedMessage datasetCreatedMessage)
         {
             try
             {
-
-                const string container = "datasets";
                 var path = datasetCreatedMessage.DatasetId.ToString();
 
                 var rootGroupId = await _activeDirectoryRootGroupProvider.ProvideGroupAsync(
-                    $"DataPlatform-{container}-Zone-{EnvironmentUtil.GetCurrentEnvironment()}-Reader",
-                    $"Root reader group for the {container} zone", container);
+                    $"DataPlatform-{Constants.Container}-Zone-{EnvironmentUtil.GetCurrentEnvironment()}-Reader",
+                    $"Root reader group for the {Constants.Container} zone", Constants.Container);
 
-                await _storageService.CreateDirectoryIfNeeded(container, path);
+                await _storageService.CreateDirectoryIfNeeded(Constants.Container, path);
 
                 string readerGroupId;
                 string writerGroupId;
 
-                await using (var lease = await _storageService.AcquireLeaseAsync(container, path))
+                await using (var lease = await _storageService.AcquireLeaseAsync(Constants.Container, path))
                 {
                     readerGroupId = await _activeDirectoryGroupProvider.ProvideGroupAsync(
-                        $"DataPlatform-DataSet_{datasetCreatedMessage.DatasetId}-{EnvironmentUtil.GetCurrentEnvironment()}-Reader",
-                        $"Reader group with id {datasetCreatedMessage.DatasetId} and name at creation {datasetCreatedMessage.DatasetName}", new[] { datasetCreatedMessage.Owner });
+                        GenerateGroupDisplayName(datasetCreatedMessage.DatasetId, ReadWriteGroup.Read),
+                        GenerateGroupDescription(datasetCreatedMessage, ReadWriteGroup.Read), 
+                        new[] { datasetCreatedMessage.Owner });
 
                     writerGroupId = await _activeDirectoryGroupProvider.ProvideGroupAsync(
-                        $"DataPlatform-DataSet_{datasetCreatedMessage.DatasetId}-{EnvironmentUtil.GetCurrentEnvironment()}-Writer",
-                        $"Writer group with id {datasetCreatedMessage.DatasetId} and name at creation {datasetCreatedMessage.DatasetName}");
+                        GenerateGroupDisplayName(datasetCreatedMessage.DatasetId, ReadWriteGroup.Write),
+                        GenerateGroupDescription(datasetCreatedMessage, ReadWriteGroup.Write));
 
                     await _accessControlListService.SetGroupsInAccessControlListAsync(new CreateGroupsInAccessControlList
                     {
-                        StorageContainer = container,
+                        StorageContainer = Constants.Container,
                         Path = path,
                         GroupEntries = new List<AccessControlListGroupEntry>
                     {
@@ -84,7 +86,7 @@ namespace DataCatalog.DatasetResourceManagement.MessageHandlers
                     }
                     }, lease.LeaseId);
 
-                    await _storageService.SetDirectoryMetadata(container, path,
+                    await _storageService.SetDirectoryMetadata(Constants.Container, path,
                         new Dictionary<string, string>
                         {
                         { "ReaderGroupId", readerGroupId },
@@ -92,7 +94,7 @@ namespace DataCatalog.DatasetResourceManagement.MessageHandlers
                         { "RootDirectoryDatasetId", datasetCreatedMessage.DatasetId.ToString() }
                         }, lease.LeaseId);
 
-                    await _accessControlListService.RemoveGroupFromAccessControlListAsync(container, path, rootGroupId, lease.LeaseId);
+                    await _accessControlListService.RemoveGroupFromAccessControlListAsync(Constants.Container, path, rootGroupId, lease.LeaseId);
                 }
 
                 await _activeDirectoryGroupService.AddGroupMember(rootGroupId, readerGroupId);
@@ -114,5 +116,35 @@ namespace DataCatalog.DatasetResourceManagement.MessageHandlers
                 throw;
             }
         }
+
+        private static string GenerateGroupDisplayName(Guid datasetId, ReadWriteGroup groupType)
+        {
+            return groupType switch
+            {
+                ReadWriteGroup.Read =>
+                    $"DataPlatform-DataSet_{datasetId}-{EnvironmentUtil.GetCurrentEnvironment()}-Reader",
+                ReadWriteGroup.Write =>
+                    $"DataPlatform-DataSet_{datasetId}-{EnvironmentUtil.GetCurrentEnvironment()}-Writer",
+                _ => throw new ArgumentOutOfRangeException(nameof(groupType), groupType, "group type must be reader or writer")
+            };
+        }
+        
+        private static string GenerateGroupDescription(DatasetCreatedMessage datasetCreatedMessage, ReadWriteGroup groupType)
+        {
+            return groupType switch
+            {
+                ReadWriteGroup.Read =>
+                    $"Reader group with id {datasetCreatedMessage.DatasetId} and name at creation {datasetCreatedMessage.DatasetName}",
+                ReadWriteGroup.Write =>
+                    $"Writer group with id {datasetCreatedMessage.DatasetId} and name at creation {datasetCreatedMessage.DatasetName}",
+                _ => throw new ArgumentOutOfRangeException(nameof(groupType), groupType, "group type must be reader or writer")
+            };
+        }
+    }
+
+    internal enum ReadWriteGroup
+    {
+        Read,
+        Write
     }
 }

@@ -21,6 +21,7 @@ using DataCatalog.DatasetResourceManagement.Messages;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Versioning;
 using Microsoft.EntityFrameworkCore;
@@ -55,6 +56,12 @@ namespace DataCatalog.Api
         {
             if (!EnvironmentUtil.IsProduction())
                 services.AddSwagger();
+
+            services.Configure<ForwardedHeadersOptions>(options =>
+            {
+                options.ForwardedHeaders =
+                    ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
+            });
 
             AddServicesAndDbContext(services);
 
@@ -146,6 +153,8 @@ namespace DataCatalog.Api
 
         public void Configure(IApplicationBuilder app, DataCatalogContext db)
         {
+            app.UseForwardedHeaders();
+
             // Use IEnvironment to check what environment the web app is running in
             if (EnvironmentUtil.IsDevelopment())
             {
@@ -271,7 +280,10 @@ namespace DataCatalog.Api
             conn.ValidateConfiguration("ConnectionStrings:DataCatalog");
             services.AddDbContext<DataCatalogContext>(o => o.UseSqlServer(conn));
             
-            services.AddRebusWithSubscription<DatasetProvisionedHandler>(Configuration, conn);
+            services.AddRebusWithSubscription<DatasetProvisionedHandler>(Configuration, conn, new[]
+            {
+                typeof(DatasetProvisionedMessage)
+            });
 
             if (EnvironmentUtil.IsLocal())
             {

@@ -14,6 +14,7 @@ using Microsoft.AspNetCore.Mvc;
 using Moq;
 using Shouldly;
 using Xunit;
+using DataCatalog.Api.Data.Domain;
 
 namespace DataCatalog.Api.UnitTests.Controllers
 {
@@ -35,39 +36,40 @@ namespace DataCatalog.Api.UnitTests.Controllers
 
             // Assert
             result.Result.ShouldBeOfType(typeof(OkObjectResult));
-            var okResult = (OkObjectResult)result.Result;
-            var value = (Guid)okResult.Value;
-            value.ShouldBe(request.Id);
             datasetServiceMock.Verify(x => x.UpdateAsync(request), Times.Once);
             storageServiceMock.Verify(x => x.GetDirectoryMetadataAsync(request.Id.ToString()), Times.Once);
         }
 
         [Theory]
-        [MapperAutoMoq]
-        public async Task Correctly_Add_All_Users_Group_When_Confidentiality_Is_Public(
+        [MapperInlineAutoMoq(Confidentiality.Internal)]
+        [MapperInlineAutoMoq(Confidentiality.Confidential)]
+        [MapperInlineAutoMoq(Confidentiality.StrictlyConfidential)]
+        public async Task Correctly_Add_All_Users_Group_When_Confidentiality_Is_Updated_To_Public(
+            Confidentiality confidentiality,
             DatasetUpdateRequest request,
             IDictionary<string, string> metadata,
+            Dataset oldDataset,
             string readerGroupId,
             string allUsersGroupId,
             [Frozen] Mock<IGroupService> activeDirectoryGroupServiceMock,
             [Frozen] Mock<IAllUsersGroupProvider> allUsersProviderMock,
             [Frozen] Mock<IStorageService> storageServiceMock,
+            [Frozen] Mock<IDatasetService> datasetServiceMock,
             [Greedy] DatasetController sut)
         {
             // Arrange
             request.Confidentiality = Confidentiality.Public;
+            oldDataset.Confidentiality = confidentiality;
             allUsersProviderMock.Setup(x => x.GetAllUsersGroup()).Returns(allUsersGroupId);
             metadata.Add(GroupConstants.ReaderGroup, readerGroupId);
             storageServiceMock.Setup(x => x.GetDirectoryMetadataAsync(request.Id.ToString())).ReturnsAsync(metadata);
-
+            datasetServiceMock.Setup(x => x.FindByIdAsync(request.Id)).ReturnsAsync(oldDataset);
+            
             // Act
             var result = await sut.PutAsync(request);
 
             // Assert
             result.Result.ShouldBeOfType(typeof(OkObjectResult));
-            var okResult = (OkObjectResult)result.Result;
-            var value = (Guid)okResult.Value;
-            value.ShouldBe(request.Id);
 
             activeDirectoryGroupServiceMock.Verify(x => x.AddGroupMemberAsync(readerGroupId, allUsersGroupId), Times.Once);
         }
@@ -80,27 +82,28 @@ namespace DataCatalog.Api.UnitTests.Controllers
             Confidentiality confidentiality,
             DatasetUpdateRequest request,
             IDictionary<string, string> metadata,
+            Dataset oldDataset,
             string readerGroupId,
             string allUsersGroupId,
             [Frozen] Mock<IGroupService> activeDirectoryGroupServiceMock,
             [Frozen] Mock<IAllUsersGroupProvider> allUsersProviderMock,
             [Frozen] Mock<IStorageService> storageServiceMock,
+            [Frozen] Mock<IDatasetService> datasetServiceMock,
             [Greedy] DatasetController sut)
         {
             // Arrange
             request.Confidentiality = confidentiality;
+            oldDataset.Confidentiality = Confidentiality.Public;
             allUsersProviderMock.Setup(x => x.GetAllUsersGroup()).Returns(allUsersGroupId);
             metadata.Add(GroupConstants.ReaderGroup, readerGroupId);
             storageServiceMock.Setup(x => x.GetDirectoryMetadataAsync(request.Id.ToString())).ReturnsAsync(metadata);
+            datasetServiceMock.Setup(x => x.FindByIdAsync(request.Id)).ReturnsAsync(oldDataset);
 
             // Act
             var result = await sut.PutAsync(request);
 
             // Assert
             result.Result.ShouldBeOfType(typeof(OkObjectResult));
-            var okResult = (OkObjectResult)result.Result;
-            var value = (Guid)okResult.Value;
-            value.ShouldBe(request.Id);
 
             activeDirectoryGroupServiceMock.Verify(x => x.RemoveGroupMemberAsync(readerGroupId, allUsersGroupId), Times.Once);
         }

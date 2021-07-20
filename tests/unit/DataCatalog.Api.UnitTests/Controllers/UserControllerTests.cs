@@ -4,6 +4,7 @@ using DataCatalog.Common.Enums;
 using FluentAssertions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Shouldly;
 using System;
 using System.Linq;
 using System.Security.Claims;
@@ -38,8 +39,8 @@ namespace DataCatalog.Api.UnitTests.Controllers
             var result = userController.GetUserInfo();
 
             // ASSERT
-            result.Should().NotBeNull("because the endpoint must return user info");
-            var okResult = ((OkObjectResult)result);
+            result.Result.ShouldBeOfType(typeof(OkObjectResult));
+            var okResult = (OkObjectResult)result.Result;
             okResult.Should().NotBeNull("because the call should succeed");
             var user = (Data.Domain.User)okResult.Value;
             user.Should().NotBeNull("because the endpoint must return a object of type Data.Domain.User");

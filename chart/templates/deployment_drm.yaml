@@ -1,16 +1,16 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "datacatalog-backend.fullname" . }}
+  name: {{ include "datacatalog-backend.fullname" . }}-drm
   labels:
-    {{- include "datacatalog-backend.labels" . | nindent 4 }}
+    {{- include "datacatalog-backend-drm.labels" . | nindent 4 }}
 spec:
   {{- if not .Values.drmDeployment.autoscaling.enabled }}
   replicas: {{ .Values.drmDeployment.replicaCount }}
   {{- end }}
   selector:
     matchLabels:
-      {{- include "datacatalog-backend.selectorLabels" . | nindent 6 }}
+      {{- include "datacatalog-backend-drm.selectorLabels" . | nindent 6 }}
   template:
     metadata:
       annotations:
@@ -37,7 +37,7 @@ spec:
       {{- toYaml . | nindent 8 }}
       {{- end }}
       labels:
-        {{- include "datacatalog-backend.selectorLabels" . | nindent 8 }}
+        {{- include "datacatalog-backend-drm.selectorLabels" . | nindent 8 }}
     spec:
       {{- with .Values.drmDeployment.imagePullSecrets }}
       imagePullSecrets:

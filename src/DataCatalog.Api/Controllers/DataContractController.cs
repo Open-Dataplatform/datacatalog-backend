@@ -31,7 +31,7 @@ namespace DataCatalog.Api.Controllers
         /// </summary>
         /// <returns>All data contracts</returns>
         [HttpGet]
-        public async Task<IActionResult> GetAllAsync()
+        public async Task<ActionResult<IEnumerable<DataContractResponse>>> GetAllAsync()
         {
             var dataContracts = await _dataContractService.ListAsync();
 
@@ -50,7 +50,7 @@ namespace DataCatalog.Api.Controllers
         /// <returns>A data contract</returns>
         [HttpGet]
         [Route("{id}")]
-        public async Task<IActionResult> GetAsync(Guid id)
+        public async Task<ActionResult<DataContractResponse>> GetAsync(Guid id)
         {
             var dataContract = await _dataContractService.FindByIdAsync(id);
 
@@ -107,7 +107,7 @@ namespace DataCatalog.Api.Controllers
         /// <returns>The created data contract</returns>
         [AuthorizeRoles(Role.Admin)]
         [HttpPost]
-        public async Task<IActionResult> PostAsync([FromBody] DataContractCreateRequest request)
+        public async Task<ActionResult<Guid>> PostAsync([FromBody] DataContractCreateRequest request)
         {
             if (!ModelState.IsValid)
                 return StatusCode((int)HttpStatusCode.BadRequest, ModelState.GetErrorMessages());
@@ -125,7 +125,7 @@ namespace DataCatalog.Api.Controllers
         /// <returns>The updated data contract</returns>
         [AuthorizeRoles(Role.Admin)]
         [HttpPut]
-        public async Task<IActionResult> PutAsync([FromBody] DataContractUpdateRequest request)
+        public async Task<ActionResult<Guid>> PutAsync([FromBody] DataContractUpdateRequest request)
         {
             if (!ModelState.IsValid)
                 return StatusCode((int)HttpStatusCode.BadRequest, ModelState.GetErrorMessages());

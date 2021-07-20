@@ -23,9 +23,9 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataCatalog.Api.Messages", 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataCatalog.DatasetResourceManagement.Messages", "src\DataCatalog.DatasetResourceManagement.Messages\DataCatalog.DatasetResourceManagement.Messages.csproj", "{DF963884-0EF4-43BB-AEA0-C1801E7092CF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataCatalog.DatasetResourceManagement.UnitTests", "src\DataCatalog.DatasetResourceManagement.UnitTests\DataCatalog.DatasetResourceManagement.UnitTests.csproj", "{5689BAD4-5ECC-4177-B1D3-4D282F98F696}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataCatalog.DatasetResourceManagement.UnitTests", "tests\unit\DataCatalog.DatasetResourceManagement.UnitTests\DataCatalog.DatasetResourceManagement.UnitTests.csproj", "{5689BAD4-5ECC-4177-B1D3-4D282F98F696}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataCatalog.Common.UnitTests", "src\DataCatalog.Common.UnitTests\DataCatalog.Common.UnitTests.csproj", "{74021BC2-D22E-4098-B236-B6333A37D16E}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataCatalog.Common.UnitTests", "tests\unit\DataCatalog.Common.UnitTests\DataCatalog.Common.UnitTests.csproj", "{74021BC2-D22E-4098-B236-B6333A37D16E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

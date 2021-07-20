@@ -4,8 +4,8 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using DataCatalog.DatasetResourceManagement.Commands.Group;
 using DataCatalog.DatasetResourceManagement.Common.ServiceInterfaces.ActiveDirectory;
-using Energinet.DataPlatform.DataSetResourceManagement.Application.Responses.Group;
-using Energinet.DataPlatform.DataSetResourceManagement.Infrastructure.Services.ActiveDirectory.Dto;
+using DataCatalog.DatasetResourceManagement.Responses.Group;
+using DataCatalog.DatasetResourceManagement.Services.ActiveDirectory.DTO;
 using Microsoft.Extensions.Logging;
 using Microsoft.Graph;
 using Newtonsoft.Json;
@@ -26,9 +26,9 @@ namespace DataCatalog.DatasetResourceManagement.Services.ActiveDirectory
             ILogger<AzureActiveDirectoryGroupService> logger, 
             IGraphServiceClient graphServiceClient)
         {
-            _httpClient = httpClient ?? throw new ArgumentNullException(nameof(httpClient));
-            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
-            _graphServiceClient = graphServiceClient ?? throw new ArgumentNullException(nameof(graphServiceClient));
+            _httpClient = httpClient;
+            _logger = logger;
+            _graphServiceClient = graphServiceClient;
             _retryPolicy = Policy
                 .Handle<ServiceException>()
                 .RetryAsync(100, (e, r) => Task.Delay(500));

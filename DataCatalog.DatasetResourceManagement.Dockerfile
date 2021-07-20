@@ -16,4 +16,4 @@ RUN dotnet publish "DataCatalog.DatasetResourceManagement/DataCatalog.DatasetRes
 FROM base
 COPY --from=publish /app/publish .
 ENV project="DataCatalog.DatasetResourceManagement"
-ENTRYPOINT /app/DataCatalog.Api
+ENTRYPOINT /app/DataCatalog.DatasetResourceManagement

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using DataCatalog.DatasetResourceManagement.Commands.AccessControlList;
 using DataCatalog.DatasetResourceManagement.Commands.Group;
+using DataCatalog.DatasetResourceManagement.Common;
 using DataCatalog.DatasetResourceManagement.Common.ServiceInterfaces.ActiveDirectory;
 using DataCatalog.DatasetResourceManagement.Common.ServiceInterfaces.Storage;
 
@@ -19,18 +20,18 @@ namespace DataCatalog.DatasetResourceManagement.Services.ActiveDirectory
             IAccessControlListService accessControlListService,
             IStorageService storageService)
         {
-            _activeDirectoryGroupService = activeDirectoryGroupService ?? throw new ArgumentNullException(nameof(activeDirectoryGroupService));
-            _accessControlListService = accessControlListService ?? throw new ArgumentNullException(nameof(accessControlListService));
-            _storageService = storageService ?? throw new ArgumentNullException(nameof(storageService));
+            _activeDirectoryGroupService = activeDirectoryGroupService;
+            _accessControlListService = accessControlListService;
+            _storageService = storageService;
         }
 
         public async Task<string> ProvideGroupAsync(string displayName, string description, string leaseContainer)
         {
-            var group = await _activeDirectoryGroupService.GetGroupAsync($"SEC-A-ENDK-{displayName}");
+            var group = await _activeDirectoryGroupService.GetGroupAsync($"{Constants.SecurityGroupPrefix}{displayName}");
 
             if (group == null)
             {
-                var groupId = "";
+                string groupId;
                 await using (await _storageService.AcquireLeaseAsync(leaseContainer))
                 {
                     groupId = await CreateGroup(displayName, description);
