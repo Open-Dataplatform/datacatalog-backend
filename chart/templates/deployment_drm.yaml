@@ -23,8 +23,8 @@ spec:
           {{`{
             "GroupManagementClientId": "{{ .Data.data.group_management_client_id }}",
             "GroupManagementClientSecret": "{{ .Data.data.group_management_client_secret }}",
-            "DataLakeClientId": "{{ .Data.data.data_lake_client_id }}",
-            "DataLakeClientSecret": "{{ .Data.data.data_lake_client_secret }}",
+            "DataLakeClientId": "{{ .Data.data.DrmDataLakeClientId }}",
+            "DataLakeClientSecret": "{{ .Data.data.DrmDataLakeClientSecret }}",
             "ConnectionStrings": {
               "DataCatalog": "{{ .Data.data.connection_string }}"
             },
