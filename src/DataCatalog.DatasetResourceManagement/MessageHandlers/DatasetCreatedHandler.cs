@@ -12,6 +12,7 @@ using DataCatalog.DatasetResourceManagement.Messages;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Rebus.Bus;
+using Rebus.Retry.Simple;
 using IAllUsersGroupProvider = DataCatalog.Common.Interfaces.IAllUsersGroupProvider;
 
 namespace DataCatalog.DatasetResourceManagement.MessageHandlers
@@ -106,7 +107,7 @@ namespace DataCatalog.DatasetResourceManagement.MessageHandlers
                 await _bus.Publish(new DatasetProvisionedMessage
                     {
                         DatasetId = datasetCreatedMessage.DatasetId, 
-                        Status = "succeeded"
+                        Status = "Succeeded"
                     }
                 );
             }
@@ -115,6 +116,16 @@ namespace DataCatalog.DatasetResourceManagement.MessageHandlers
                 _logger.LogError(e, "Error occurred during processing of dataset created event");
                 throw;
             }
+        }
+
+        protected override async void ActionExecutedUponMessageDeadLettered(IFailed<DatasetCreatedMessage> datasetCreatedMessage)
+        {
+            await _bus.Publish(new DatasetProvisionedMessage
+                {
+                    DatasetId = datasetCreatedMessage.Message.DatasetId,
+                    Status = "Failed"
+                }
+            );
         }
 
         private static string GenerateGroupDisplayName(Guid datasetId, ReadWriteGroup groupType)
