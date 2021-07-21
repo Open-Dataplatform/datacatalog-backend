@@ -115,6 +115,8 @@ running in development will allow all urls for CORS.
 #### Storage
 The only current implementation of a storage provider is using the Azure storage provider for storing data.
 It uses Azure's own DataLakeServiceClient to access the data.
+The DataCatalog needs only the role of  _Storage Blob Data Reader_ since it only needs to read the meta data of the blobs. 
+The DRM on the other hand needs write access since it needs to create the storage folder where the dataset resides. 
 
 Creating a new implementation should be fairly straightforward. Just make a new implementation of the interface IStorageService
 and configure it in Startup.cs instead of the azure version. Remember to disable azure setup by setting the AzureAD:Enabled to
