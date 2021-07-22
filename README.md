@@ -139,14 +139,14 @@ to Microsoft Graph API. It is used to check user and group information.
 - `DataLakeClientSecret`: Matching secret for the service principal.
 
 ##### DataCatalog.DatasetResourceManagement
-- `GroupManagementClientId`: As for the Api, this id points towards a service principal which is responsible for doing group management.
+- `DrmGroupManagementClientId`: As for the Api, this id points towards a service principal which is responsible for doing group management.
   The difference is that the DRM assumes the presence of an external service which can help provision groups and service principals for datasets. 
   This is done via a HTTP call using a token obtained using this group management app registration. Thus the registration needs a secret 
   AND a scope for calling the external service. If you prefer to have the DRM to it all, cut the http calls, and instead provision in Azure within the DRM.
-- `GroupManagementClientSecret`: Matching secret for the service principal (created in the app registration).
-- `DataLakeClientId`: App registration for accessing the DataLake storage account. The DRM needs ownership in order to provision the storage folders properly,
+- `DrmGroupManagementClientSecret`: Matching secret for the service principal (created in the app registration).
+- `DrmDataLakeClientId`: App registration for accessing the DataLake storage account. The DRM needs ownership in order to provision the storage folders properly,
   so ensure that it is given the role of _Storage Blob Data Owner_.
-- `DataLakeClientSecret`: Matching secret for the service principal.
+- `DrmDataLakeClientSecret`: Matching secret for the service principal.
 
 #### Storage
 The only current implementation of a storage provider is using the Azure storage provider for storing data.
