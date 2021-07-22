@@ -139,20 +139,18 @@ to Microsoft Graph API. It is used to check user and group information.
 - `DataLakeClientSecret`: Matching secret for the service principal.
 
 ##### DataCatalog.DatasetResourceManagement
-- `DrmGroupManagementClientId`: As for the Api, this id points towards a service principal which is responsible for doing group management.
+- `GroupManagementClientId`: As for the Api, this id points towards a service principal which is responsible for doing group management.
   The difference is that the DRM assumes the presence of an external service which can help provision groups and service principals for datasets. 
   This is done via a HTTP call using a token obtained using this group management app registration. Thus the registration needs a secret 
   AND a scope for calling the external service. If you prefer to have the DRM to it all, cut the http calls, and instead provision in Azure within the DRM.
-- `DrmGroupManagementClientSecret`: Matching secret for the service principal (created in the app registration).
-- `DrmDataLakeClientId`: App registration for accessing the DataLake storage account. The DRM needs ownership in order to provision the storage folders properly,
+- `GroupManagementClientSecret`: Matching secret for the service principal (created in the app registration).
+- `DataLakeClientId`: App registration for accessing the DataLake storage account. The DRM needs ownership in order to provision the storage folders properly,
   so ensure that it is given the role of _Storage Blob Data Owner_.
-- `DrmDataLakeClientSecret`: Matching secret for the service principal.
+- `DataLakeClientSecret`: Matching secret for the service principal.
 
 #### Storage
 The only current implementation of a storage provider is using the Azure storage provider for storing data.
 It uses Azure's own DataLakeServiceClient to access the data.
-The DataCatalog needs only the role of  _Storage Blob Data Reader_ since it only needs to read the meta data of the blobs. 
-The DRM on the other hand needs write access since it needs to create the storage folder where the dataset resides. 
 
 Creating a new implementation should be fairly straightforward. Just make a new implementation of the interface IStorageService
 and configure it in Startup.cs instead of the azure version. Remember to disable azure setup by setting the AzureAD:Enabled to
@@ -160,8 +158,10 @@ false in the appsettings.json.
 
 #### Identity Provider
 Since we use the standardized OAuth2.0/OpenId Connect flow, you just have to configure the OAuth section in the appsettings.json
-to your choice of Identity Provider. The only requirement is that the identity provider is able to provide a role claim which you
-should configure the name of within the Roles section in appsettings.json.
+to your choice of Identity Provider. The only requirement is that the identity provider is able to provide role claims with the values of:
+- User
+- DataSteward
+- Admin
 
 ### Migrations and Seeding
 Generating and applying database migrations are handled by EF Core. The history is located at [src/DataCatalog.Data/](src/DataCatalog.Data/Migrations).
