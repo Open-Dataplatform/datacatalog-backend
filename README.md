@@ -112,6 +112,42 @@ running in development will allow all urls for CORS.
 
 ### Implementation Details
 
+#### Azure Roles & Permissions
+If you are using Azure as your cloud provider for storage, user manangement and Identity provider, then check this section 
+for thorough documentation as to which roles various service principals should have.
+Values listed in the below sections are Id's and secrets which should be provided to the application either through the appsettings,
+or injected using a secrets provider such as Hashicorps Vault or Azure's KeyVault. Note that you should create different service principals 
+for the Api and DRM respectively as this provides a more secure setup.
+
+##### DataCatalog.Api
+- `OAuth:Audience`: The audience is used by the OAuth2.0 protocol to determine if a token is valid or not. 
+  Azure should contain a service principal (enterprise application) with an audience value of "api://{service-principal-id}". 
+  The app registration for that service principal should be configured to allow SPA redirect-URI's towards the data catalog frontend,
+  and should also be given any scopes that you deem necessary. 
+  Finally, the app registration should have configured roles with the following values:
+  - User
+  - DataSteward 
+  - Admin
+  
+  Remember that the roles should be given to either users or groups within the Enterprise application.
+  It is also this service principal that the frontend should refer to as the access point for users.
+- `GroupManagementClientId`: This Id refers to a service principal which is responsible for allowing access
+to Microsoft Graph API. It is used to check user and group information.
+- `GroupManagementClientSecret`: Matching secret for the service principal (created in the app registration).
+- `DataLakeClientId`: App registration for accessing the DataLake storage account. The Api only requires read access since it 
+  only needs to read meta data about the storage folders, so ensure that the app registration is given the role of _Storage Blob Data Reader_. 
+- `DataLakeClientSecret`: Matching secret for the service principal.
+
+##### DataCatalog.DatasetResourceManagement
+- `GroupManagementClientId`: As for the Api, this id points towards a service principal which is responsible for doing group management.
+  The difference is that the DRM assumes the presence of an external service which can help provision groups and service principals for datasets. 
+  This is done via a HTTP call using a token obtained using this group management app registration. Thus the registration needs a secret 
+  AND a scope for calling the external service. If you prefer to have the DRM to it all, cut the http calls, and instead provision in Azure within the DRM.
+- `GroupManagementClientSecret`: Matching secret for the service principal (created in the app registration).
+- `DataLakeClientId`: App registration for accessing the DataLake storage account. The DRM needs ownership in order to provision the storage folders properly,
+  so ensure that it is given the role of _Storage Blob Data Owner_.
+- `DataLakeClientSecret`: Matching secret for the service principal.
+
 #### Storage
 The only current implementation of a storage provider is using the Azure storage provider for storing data.
 It uses Azure's own DataLakeServiceClient to access the data.
