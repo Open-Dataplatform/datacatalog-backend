@@ -28,7 +28,7 @@ namespace DataCatalog.DatasetResourceManagement.Services.Storage
         {
             var fileSystemClient = _dataLakeServiceClient.GetFileSystemClient(storageContainer.ToLower());
             var dirClient = fileSystemClient.GetDirectoryClient(path);
-            
+
             _logger.LogInformation("Creating: {StorageContainer}/{Path} if needed", storageContainer, path);
             await dirClient.CreateIfNotExistsAsync();
         }
