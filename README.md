@@ -1,24 +1,31 @@
 # Datacatalog API <!-- omit in toc --><!-- omit in toc -->
 - [Purpose](#purpose)
-- [Project Structure](#project-structure) 
+- [Project Structure](#project-structure)
+- [Architecture](#architecture)
 - [Development](#development)
   - [Environment](#environment)
-    - [Local](#local)
-	    - [Running locally](#running-locally)
-    - [Development/Test/Prod](#Development/Test/Prod)
+    - [Database](#database)
+    - [Rebus](#rebus)
+  - [Local](#local)
+    - [Running Locally](#running-locally)
+  - [Development/Test/Prod](#developmenttestprod)
   - [Implementation Details](#implementation-details)
+    - [Azure Roles & Permissions](#azure-roles--permissions)
+      - [DataCatalog.Api](#datacatalogapi)
+      - [DataCatalog.DatasetResourceManagement](#datacatalogdatasetresourcemanagement)
     - [Storage](#storage)
     - [Identity Provider](#identity-provider)
   - [Migrations and Seeding](#migrations-and-seeding)
-- [Tests](#tests)
+  - [Tests](#tests)
 - [API Documentation](#api-documentation)
 - [API Versioning](#api-versioning)
-	- [Deprecation a API Version](#deprecation-a-api-version)
-	- [Adding Documentation for a new API Version](#adding-documentation-for-a-new-api-version)
+  - [Deprecating an API Version](#deprecating-an-api-version)
+  - [Adding Documentation for a new API Version](#adding-documentation-for-a-new-api-version)
 - [Kubernetes](#kubernetes)
+  - [Migrator](#migrator)
 
 ## Purpose
-The Data catalog api is a backend service for the data catalog frontend which can show various datasets and categories of those.
+The Data catalog api is a backend service for the [Data Catalog frontend](https://github.com/Open-Dataplatform/datacatalog-frontend) which can show various datasets and categories of those.
 A dataset is conceptually a set of data points which has a number of properties attached to it. Among these we find an owner,
 a category and a list of people which have some type of access to the data.
 
@@ -28,13 +35,13 @@ but rather is fetched and stored elsewhere (e.g. within Azure).
 The backend service api can be used to define new datasets and categories of datasets along with multiple other metadata.
 Furthermore it is responsible for controlling access to those datasets.
 
-## Project structure
-There are four projects within the repository:
+## Project Structure
+There are multiple projects within the repository:
 - DataCatalog.Api: The actual Api responsible for running the logic of managing datasets
-- DataCatalog.Migrator: A command line tool able to run migrations when needed. Uses the Entity Framework as the migration tool
+- DataCatalog.Migrator: A command line tool able to run migrations and seeding the database when needed. Uses the Entity Framework as the migration tool. Seeding contains Energinet specific data.
 - DataCatalog.Common: Shared code between the other projects
 - DataCatalog.Common.Rebus: Shared code between projects which needs to utilize the Rebus message bus
-- DataCatalog.Data: Initial data required for the skeleton to function. Contains Energinet specific data structures
+- DataCatalog.Data: Models, DBContext and migrations used by Entity Framework. Contains Energinet specific data structures
 - DataCatalog.Api.Messages: Messages that the data catalog api will publish
 - DataCatalog.DatasetResourceManagement: Handles how dataset are provisioned
 - DataCatalog.DatasetResourceManagement.Messages: Messages that the DRM will publish.
@@ -75,7 +82,7 @@ Rebus has support for most popular databases, so choosing another for this purpo
 Look within the DataCatalog.Common.Rebus project.
 
 ### Local
-To run the Api locally, you need to set the environment variable _ASPNETCORE_ENVIRONMENT_ to "Local". This will do the following:
+To run the Api locally, you need to set the environment variable _ASPNETCORE_ENVIRONMENT_ to "Development". This will do the following:
 
 - Disable all security requirements and allow anonymous access to the entire Api with all roles granted.
 - Use a dummy implementation of IStorageService which always finds the path required and sets reader and write capabilities for that path.
@@ -83,25 +90,25 @@ To run the Api locally, you need to set the environment variable _ASPNETCORE_ENV
 - Use a dummy middleware which ensures that the dummy user has a corresponding member within the database and sets the current user.
 - Use dummy message handlers for messages out of the system. 
 
-#### Running locally
+#### Running Locally
 Since we want all services to communicate via the same database, we suggest you run the following docker image:
 
 ```powershell
 docker run -e 'ACCEPT_EULA=Y' -e 'SA_PASSWORD=Test1234' -p 1433:1433 -d --name mssql mcr.microsoft.com/mssql/server:2017-CU8-ubuntu
 ```
 
-Then modify the connection strings in appsettings.local.json for all projects needing access to the database to:
+Then modify the connection strings in appsettings.json for all projects needing access to the database to:
 
 `Data Source=localhost,1433;Initial Catalog=Datacatalog;User Id=sa;Password=Test1234`
 
 This includes the migrator project since you now want to run that project to create the database and the data foundation:
 ```powershell
-cd src/DataCatalog.Migrator/;set ASPNETCORE_ENVIRONMENT="Local"; dotnet run
+cd src/DataCatalog.Migrator/; dotnet run
 ```
 
 To launch the API from the command line run from the project root:
 ```powershell
-cd src/DataCatalog.Api/;set ASPNETCORE_ENVIRONMENT="Local"; dotnet run
+cd src/DataCatalog.Api/; dotnet run
 ```
 
 Alternatively all C# compatible IDE's should be able to load the project using the .sln file.
@@ -265,15 +272,21 @@ And adding a new swagger endpoint in the same SwaggerExtensions class.
 
 ## Kubernetes
 Helm charts have been created to easily deploy to kubernetes. These are found within the chart folder.
-The [Dockerfile](Dockerfile) needs to be build with the following command:
-`docker build -t datacatalog-backend .`
+Three docker images needs to be build in order to install the chart. This can achieved with the following commands:
+``` bash
+docker build -t datacatalog-backend . 
+docker build -t datacatalog-migrator -f DataCatalog.Migrator.Dockerfile . 
+docker build -t datacatalog-drm -f DataCatalog.DatasetResourceManagement.Dockerfile . 
+```
 
-Update the image repository within the chart/values.yaml file to 'datacatalog-backend' or whichever value you tagged it with.
 To then deploy a release to kubernetes, run:
 
 ``` bash
-helm install datacatalog-backend chart/
+helm install datacatalog-backend chart/ --set apiDeployment.image.repository="datacatalog-backend",job.image.repository="datacatalog-migrator",drmDeployment.image.repository="datacatalog-drm"
 ```
 
 If you touch nothing, the chosen environment will be Development. 
 The [Values](chart/values.yaml) file will indicate which values are available for configuration.
+
+### Migrator
+[Chart Hooks](https://helm.sh/docs/topics/charts_hooks/) are used to execute the migrator app as a Kubernetes Job before the API is started. This ensures that the database schema is up to date when deploying a new API version. Further it ensures that the migrations are only applied once even if the API is configured to have multiple replicas.
