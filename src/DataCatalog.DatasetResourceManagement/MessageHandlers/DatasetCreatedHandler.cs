@@ -98,12 +98,18 @@ namespace DataCatalog.DatasetResourceManagement.MessageHandlers
                     await _accessControlListService.RemoveGroupFromAccessControlListAsync(Constants.Container, path, rootGroupId, lease.LeaseId);
                 }
 
+                _logger.LogDebug("Adding reader and writer groups with ids {ReaderGroupId}, {WriterGroupId}", readerGroupId, writerGroupId);
                 await _activeDirectoryGroupService.AddGroupMember(rootGroupId, readerGroupId);
                 await _activeDirectoryGroupService.AddGroupMember(rootGroupId, writerGroupId);
-                
-                if (datasetCreatedMessage.Public)
-                    await _activeDirectoryGroupService.AddGroupMember(readerGroupId, _allUsersGroupProvider.GetAllUsersGroup());
 
+                if (datasetCreatedMessage.Public)
+                {
+                    _logger.LogInformation("New dataset is set to public, so we add the all users group to the reader group");
+                    await _activeDirectoryGroupService.AddGroupMember(readerGroupId,
+                        _allUsersGroupProvider.GetAllUsersGroup());
+                }
+
+                _logger.LogInformation("Successfully provisioned the dataset with Id {Id}", datasetCreatedMessage.DatasetId);
                 await _bus.Publish(new DatasetProvisionedMessage
                     {
                         DatasetId = datasetCreatedMessage.DatasetId, 
@@ -120,6 +126,7 @@ namespace DataCatalog.DatasetResourceManagement.MessageHandlers
 
         protected override async void ActionExecutedUponMessageDeadLettered(IFailed<DatasetCreatedMessage> datasetCreatedMessage)
         {
+            _logger.LogError("Failed to provision the dataset. Informing the world about this via a failed DatasetProvisionedMessage. Error description: {ErrorDescription}", datasetCreatedMessage.ErrorDescription);
             await _bus.Publish(new DatasetProvisionedMessage
                 {
                     DatasetId = datasetCreatedMessage.Message.DatasetId,

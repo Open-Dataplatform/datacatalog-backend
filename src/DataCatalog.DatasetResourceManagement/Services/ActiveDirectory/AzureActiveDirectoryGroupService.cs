@@ -57,7 +57,7 @@ namespace DataCatalog.DatasetResourceManagement.Services.ActiveDirectory
                 if (!response.IsSuccessStatusCode)
                 {
                     var content = await response.Content.ReadAsStringAsync();
-                    _logger.LogError($"Error creating group {createGroup.DisplayName} with error message {content}");
+                    _logger.LogError("Error creating group {GroupName} with error message {ErrorMessage}", createGroup.DisplayName, content);
                     return null;
                 }
 
@@ -72,7 +72,7 @@ namespace DataCatalog.DatasetResourceManagement.Services.ActiveDirectory
                 }
                 catch (ServiceException e)
                 {
-                    _logger.LogError(e, $"ServiceException caught when creating AD group {createGroup.DisplayName}");
+                    _logger.LogError(e, "ServiceException caught when creating AD group {GroupName}", createGroup.DisplayName);
                     throw;
                 }
 
@@ -80,7 +80,7 @@ namespace DataCatalog.DatasetResourceManagement.Services.ActiveDirectory
             }
             catch (Exception e)
             {
-                _logger.LogError(e, $"Error sending request for group {createGroup.DisplayName}");
+                _logger.LogError(e, "Error sending request for group {GroupName}", createGroup.DisplayName);
                 throw;
             }
         }
