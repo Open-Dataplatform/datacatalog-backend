@@ -99,7 +99,7 @@ docker run -e 'ACCEPT_EULA=Y' -e 'SA_PASSWORD=Test1234' -p 1433:1433 -d --name m
 
 Then modify the connection strings in appsettings.json for all projects needing access to the database to:
 
-`Data Source=localhost,1433;Initial Catalog=Datacatalog;User Id=sa;Password=Test1234`
+`Data Source=host.docker.internal,1433;Initial Catalog=Datacatalog;User Id=sa;Password=Test1234`
 
 This includes the migrator project since you now want to run that project to create the database and the data foundation:
 ```powershell
