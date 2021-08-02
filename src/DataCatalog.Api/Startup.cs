@@ -135,7 +135,7 @@ namespace DataCatalog.Api
                     builder => builder.WithOrigins(dataCatalogUrl, dataCatalogProdUrl, ingressApiUrl, egressApiUrl).AllowAnyHeader().AllowAnyMethod());
             });
 
-            if (EnvironmentUtil.IsLocal())
+            if (EnvironmentUtil.IsDevelopment())
             {
                 services.RemoveAll(typeof(IAuthorizationHandler));
                 services.AddSingleton<IAuthorizationHandler, AllowAnonymousAuthorizationHandler>();
@@ -188,7 +188,7 @@ namespace DataCatalog.Api
 
             app.UseSerilogRequestLogging(config => config.MessageTemplate = "HTTP {RequestMethod} {RequestPath} responded {StatusCode} in {Elapsed:0.0000} ms from user {UserName}");
 
-            if (EnvironmentUtil.IsLocal())
+            if (EnvironmentUtil.IsDevelopment())
             {
                 app.UseMiddleware<LocalCurrentUserInitializationMiddleware>();
             }
@@ -285,7 +285,7 @@ namespace DataCatalog.Api
                 typeof(DatasetProvisionedMessage)
             });
 
-            if (EnvironmentUtil.IsLocal())
+            if (EnvironmentUtil.IsDevelopment())
             {
                 services.AddTransient<IGroupService, LocalGroupService>();
                 services.AddTransient<IStorageService, LocalStorageService>();

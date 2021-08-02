@@ -19,7 +19,7 @@ spec:
         vault.hashicorp.com/auth-path: "auth/kubernetes-{{ .Values.environment }}"
         vault.hashicorp.com/agent-inject-secret-appsettings.secrets.json: "{{ .Values.secretName }}/data/credentials"
         vault.hashicorp.com/agent-inject-template-appsettings.secrets.json: |
-          {{`{{-`}} with secret "{{ .Values.secretName }}/data/credentials" {{`-}}`}}
+          {{`{{-`}} with secret "{{ .Values.secretName }}/data/drm_credentials" {{`-}}`}}
           {{`{
             "GroupManagementClientId": "{{ .Data.data.group_management_client_id }}",
             "GroupManagementClientSecret": "{{ .Data.data.group_management_client_secret }}",

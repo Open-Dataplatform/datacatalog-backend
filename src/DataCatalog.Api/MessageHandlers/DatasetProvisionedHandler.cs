@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using DataCatalog.Api.Repositories;
 using DataCatalog.Common.Enums;
+using DataCatalog.Common.Extensions;
 using DataCatalog.Common.Rebus;
 using DataCatalog.DatasetResourceManagement.Messages;
 using Microsoft.Extensions.Logging;
@@ -25,7 +26,7 @@ namespace DataCatalog.Api.MessageHandlers
 
         public override async Task Handle(DatasetProvisionedMessage message)
         {
-            var parseSuccess = Enum.TryParse(message.Status, out ProvisionDatasetStatusEnum status);
+            var parseSuccess = Enum.TryParse(message.Status.FirstCharToUpper(), out ProvisionDatasetStatusEnum status);
             if (!parseSuccess)
             {
                 throw new Exception($"Could not parse status to a ProvisionDatasetStatusEnum in field 'Status' with the value: {message.Status}");
