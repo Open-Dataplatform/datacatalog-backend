@@ -3,13 +3,26 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OpenApi.Models;
 using System.Collections.Generic;
-using System.IO;
-using Microsoft.AspNetCore.Mvc.Abstractions;
+using NJsonSchema;
 
 namespace DataCatalog.Api.Extensions
 {
     public static class SwaggerExtension
     {
+        internal class CustomTypeNameGenerator : DefaultTypeNameGenerator, ITypeNameGenerator
+        {
+            public override string Generate(JsonSchema schema, string typeNameHint, IEnumerable<string> reservedTypeNames)
+            {
+                var typeName = base.Generate(schema, typeNameHint, reservedTypeNames);
+
+                // Remove trailing 'Response' from type names
+                if (typeName.EndsWith("Response"))
+                    typeName = typeName.Replace("Response", "");
+
+                return typeName;
+            }
+        }
+
         /// <summary>
         /// Initial swagger setup
         /// </summary>
@@ -61,6 +74,7 @@ namespace DataCatalog.Api.Extensions
                         Email = "dataplatform@energinet.dk",
                     };
                 };
+                config.TypeNameGenerator = new CustomTypeNameGenerator();
             });
         }
 
