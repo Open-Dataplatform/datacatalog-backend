@@ -36,12 +36,16 @@ namespace DataCatalog.Common.Rebus
                 {
                     _logger.LogError("Unable to deliver message. Forwarding message to the error queue");
                 }
+
+                ActionExecutedUponMessageDeadLettered(message);
                 return _bus.Advanced.TransportMessage.Deadletter($"Failed after {deferCount} deferrals\n\n{message.ErrorDescription}");
             }
             
             // if message failed to process, defer processing for _options.RetryInMinutes minutes and try again
             return DeferMessageAsync(message, deferCount);
         }
+
+        protected virtual void ActionExecutedUponMessageDeadLettered(IFailed<T> message) { }
         
         private async Task DeferMessageAsync(IFailed<T> message, int currentAttempt)
         {

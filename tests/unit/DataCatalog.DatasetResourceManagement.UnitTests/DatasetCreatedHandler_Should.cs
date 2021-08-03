@@ -36,7 +36,7 @@ namespace DataCatalog.DatasetResourceManagement.UnitTests
             busMock.Verify(
                 x => x.Publish(It.Is<DatasetProvisionedMessage>(a =>
                     Equals(a.DatasetId, datasetCreated.DatasetId) &&
-                    Equals(a.Status, "succeeded")), null), Times.Once);
+                    Equals(a.Status, "Succeeded")), null), Times.Once);
         }
 
         [Theory]

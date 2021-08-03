@@ -12,28 +12,16 @@ namespace DataCatalog.Common.Utils
         }
 
         /// <summary>
-        /// Returns whether or not the environment is a Local environment (e.g. without security)
-        /// </summary>
-        /// <returns><c>True</c>, to indicate the environment is a Local environment, otherwise <c>false</c>.</returns>
-        public static bool IsLocal() => IsEnvironment("Local");
-        
-        /// <summary>
-        /// Returns whether or not the environment is a development environment.
+        /// Returns whether or not the environment is a development environment. (i.e. without security)
         /// </summary>
         /// <returns><c>True</c>, to indicate the environment is a development environment, otherwise <c>false</c>.</returns>
-        public static bool IsDevelopment() => !IsTesting() && !IsPreProduction() && !IsProduction();
+        public static bool IsDevelopment() => !IsTesting() && !IsProduction();
 
         /// <summary>
         /// Returns whether or not the environment is a testing environment.
         /// </summary>
         /// <returns><c>True</c>, to indicate the environment is a testing environment, otherwise <c>false</c>.</returns>
         public static bool IsTesting() => IsEnvironment("Testing") || IsEnvironment("Test");
-
-        /// <summary>
-        /// Returns whether or not the environment is a pre-production environment.
-        /// </summary>
-        /// <returns><c>True</c>, to indicate the environment is a pre-production environment, otherwise <c>false</c>.</returns>
-        public static bool IsPreProduction() => IsEnvironment("PreProduction") || IsEnvironment("PreProd");
 
         /// <summary>
         /// Returns whether or not the environment is a production environment.

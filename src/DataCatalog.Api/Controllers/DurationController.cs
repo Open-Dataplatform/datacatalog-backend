@@ -91,7 +91,7 @@ namespace DataCatalog.Api.Controllers
         }
 
         /// <summary>
-        /// Delete a data source
+        /// Delete a Duration
         /// </summary>
         /// <param name="id">The id of the duration to delete</param>
         [AuthorizeRoles(Role.Admin)]

@@ -6,15 +6,18 @@ using Azure.Storage.Files.DataLake;
 using Azure.Storage.Files.DataLake.Models;
 using DataCatalog.DatasetResourceManagement.Commands.AccessControlList;
 using DataCatalog.DatasetResourceManagement.Common.ServiceInterfaces.Storage;
+using Microsoft.Extensions.Logging;
 
 namespace DataCatalog.DatasetResourceManagement.Services.Storage
 {
     public class AccessControlListService : IAccessControlListService
     {
+        private readonly ILogger<AccessControlListService> _logger;
         private readonly DataLakeServiceClient _dataLakeServiceClient;
         
-        public AccessControlListService(DataLakeServiceClient dataLakeServiceClient)
+        public AccessControlListService(ILogger<AccessControlListService> logger, DataLakeServiceClient dataLakeServiceClient)
         {
+            _logger = logger;
             _dataLakeServiceClient = dataLakeServiceClient ?? throw new ArgumentNullException(nameof(dataLakeServiceClient));
         }
 
@@ -28,6 +31,7 @@ namespace DataCatalog.DatasetResourceManagement.Services.Storage
             var newAccessControlList =
                 accessControlList.Value.AccessControlList.Where(x => !Equals(x.EntityId, groupId));
 
+            _logger.LogInformation("Removing the group {GroupId} from the directory with path {Path}", groupId, path);
             await directoryClient.SetAccessControlListAsync(newAccessControlList.ToList(),conditions:new DataLakeRequestConditions {LeaseId = leaseId });
         }
 
@@ -57,6 +61,7 @@ namespace DataCatalog.DatasetResourceManagement.Services.Storage
                 Permissions = PathAccessControlExtensions.ParseSymbolicRolePermissions("rwx")
             });
 
+            _logger.LogInformation("Setting access control list for path {Path} to 'rwx'", createGroupsInAccessControlList.Path);
             return leaseId != null
                 ? directoryClient.SetAccessControlListAsync(entries, null, null,
                     new DataLakeRequestConditions {LeaseId = leaseId})

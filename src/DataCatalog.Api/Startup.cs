@@ -21,6 +21,7 @@ using DataCatalog.DatasetResourceManagement.Messages;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Versioning;
 using Microsoft.EntityFrameworkCore;
@@ -55,6 +56,12 @@ namespace DataCatalog.Api
         {
             if (!EnvironmentUtil.IsProduction())
                 services.AddSwagger();
+
+            services.Configure<ForwardedHeadersOptions>(options =>
+            {
+                options.ForwardedHeaders =
+                    ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
+            });
 
             AddServicesAndDbContext(services);
 
@@ -128,7 +135,7 @@ namespace DataCatalog.Api
                     builder => builder.WithOrigins(dataCatalogUrl, dataCatalogProdUrl, ingressApiUrl, egressApiUrl).AllowAnyHeader().AllowAnyMethod());
             });
 
-            if (EnvironmentUtil.IsLocal())
+            if (EnvironmentUtil.IsDevelopment())
             {
                 services.RemoveAll(typeof(IAuthorizationHandler));
                 services.AddSingleton<IAuthorizationHandler, AllowAnonymousAuthorizationHandler>();
@@ -146,6 +153,8 @@ namespace DataCatalog.Api
 
         public void Configure(IApplicationBuilder app, DataCatalogContext db)
         {
+            app.UseForwardedHeaders();
+
             // Use IEnvironment to check what environment the web app is running in
             if (EnvironmentUtil.IsDevelopment())
             {
@@ -179,7 +188,7 @@ namespace DataCatalog.Api
 
             app.UseSerilogRequestLogging(config => config.MessageTemplate = "HTTP {RequestMethod} {RequestPath} responded {StatusCode} in {Elapsed:0.0000} ms from user {UserName}");
 
-            if (EnvironmentUtil.IsLocal())
+            if (EnvironmentUtil.IsDevelopment())
             {
                 app.UseMiddleware<LocalCurrentUserInitializationMiddleware>();
             }
@@ -276,7 +285,7 @@ namespace DataCatalog.Api
                 typeof(DatasetProvisionedMessage)
             });
 
-            if (EnvironmentUtil.IsLocal())
+            if (EnvironmentUtil.IsDevelopment())
             {
                 services.AddTransient<IGroupService, LocalGroupService>();
                 services.AddTransient<IStorageService, LocalStorageService>();

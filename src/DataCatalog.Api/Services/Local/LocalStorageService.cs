@@ -11,7 +11,7 @@ namespace DataCatalog.Api.Services.Local
     {
         public LocalStorageService()
         {
-            if (!EnvironmentUtil.IsLocal())
+            if (!EnvironmentUtil.IsDevelopment())
             {
                 throw new InvalidOperationException("This class cannot be used unless the environment is local");
             }

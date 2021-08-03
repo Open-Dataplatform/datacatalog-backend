@@ -8,6 +8,7 @@ using DataCatalog.Common.UnitTests.Extensions;
 using DataCatalog.DatasetResourceManagement.Commands.AccessControlList;
 using DataCatalog.DatasetResourceManagement.Services.Storage;
 using DataCatalog.DatasetResourceManagement.UnitTests.AutoMoqData;
+using Microsoft.Extensions.Logging;
 using Moq;
 using Shouldly;
 using Xunit;
@@ -20,6 +21,7 @@ namespace DataCatalog.DatasetResourceManagement.UnitTests.Services.Storage
         [Theory]
         [AutoMoqInfrastructure]
         public async Task Correctly_Remove_Group_In_Acl(
+            Mock<ILogger<AccessControlListService>> loggerMock,
             Mock<DataLakeDirectoryClient> dataLakeDirectoryClientMock,
             Mock<DataLakeFileSystemClient> dataLakeFileSystemClientMock,
             Mock<DataLakeServiceClient> dataLakeServiceClientMock,
@@ -43,7 +45,7 @@ namespace DataCatalog.DatasetResourceManagement.UnitTests.Services.Storage
             dataLakeDirectoryClientMock.Setup(x => x.GetAccessControlAsync(null, null, default))
                 .ReturnsAsync(responseMock.Object);
             
-            var sut = new AccessControlListService(dataLakeServiceClientMock.Object);
+            var sut = new AccessControlListService(loggerMock.Object, dataLakeServiceClientMock.Object);
 
             // Act
             await sut.RemoveGroupFromAccessControlListAsync(storageContainer, path, entityToRemove, leaseId);
@@ -58,6 +60,7 @@ namespace DataCatalog.DatasetResourceManagement.UnitTests.Services.Storage
         [Theory]
         [AutoMoqInfrastructure]
         public async Task Correctly_Set_Group_In_Acl_With_Lease(
+            Mock<ILogger<AccessControlListService>> loggerMock,
             Mock<DataLakeDirectoryClient> dataLakeDirectoryClientMock,
             Mock<DataLakeFileSystemClient> dataLakeFileSystemClientMock,
             Mock<DataLakeServiceClient> dataLakeServiceClientMock,
@@ -78,7 +81,7 @@ namespace DataCatalog.DatasetResourceManagement.UnitTests.Services.Storage
                         It.IsAny<DataLakeRequestConditions>(), default))
                 .Returns(Task.FromResult<Response<PathInfo>>(null));
 
-            var sut = new AccessControlListService(dataLakeServiceClientMock.Object);
+            var sut = new AccessControlListService(loggerMock.Object, dataLakeServiceClientMock.Object);
 
             // Act
             await sut.SetGroupsInAccessControlListAsync(createGroupsInAccessControlList, leaseId);
@@ -123,6 +126,7 @@ namespace DataCatalog.DatasetResourceManagement.UnitTests.Services.Storage
         [Theory]
         [AutoMoqInfrastructure]
         public async Task Correctly_Set_Group_In_Acl_Without_Lease(
+            Mock<ILogger<AccessControlListService>> loggerMock,
             Mock<DataLakeDirectoryClient> dataLakeDirectoryClientMock,
             Mock<DataLakeFileSystemClient> dataLakeFileSystemClientMock,
             Mock<DataLakeServiceClient> dataLakeServiceClientMock,
@@ -141,7 +145,7 @@ namespace DataCatalog.DatasetResourceManagement.UnitTests.Services.Storage
                     x.SetAccessControlListAsync(It.IsAny<IList<PathAccessControlItem>>(), null, null, null, default))
                 .Returns(Task.FromResult<Response<PathInfo>>(null));
 
-            var sut = new AccessControlListService(dataLakeServiceClientMock.Object);
+            var sut = new AccessControlListService(loggerMock.Object, dataLakeServiceClientMock.Object);
 
             // Act
             await sut.SetGroupsInAccessControlListAsync(createGroupsInAccessControlList);
@@ -183,6 +187,7 @@ namespace DataCatalog.DatasetResourceManagement.UnitTests.Services.Storage
         [Theory]
         [AutoMoqInfrastructure]
         public async Task Return_True_If_Group_Is_In_Acl(
+            Mock<ILogger<AccessControlListService>> loggerMock,
             Mock<DataLakeDirectoryClient> dataLakeDirectoryClientMock,
             Mock<DataLakeFileSystemClient> dataLakeFileSystemClientMock,
             Mock<DataLakeServiceClient> dataLakeServiceClientMock,
@@ -215,7 +220,7 @@ namespace DataCatalog.DatasetResourceManagement.UnitTests.Services.Storage
             dataLakeDirectoryClientMock.Setup(x => x.GetAccessControlAsync(null, null, default))
                 .ReturnsAsync(responseMock.Object);
 
-            var sut = new AccessControlListService(dataLakeServiceClientMock.Object);
+            var sut = new AccessControlListService(loggerMock.Object, dataLakeServiceClientMock.Object);
 
             // Act
             var isGroupInAcl = await sut.IsGroupInAccessControlListAsync(groupId, container, path);
@@ -227,6 +232,7 @@ namespace DataCatalog.DatasetResourceManagement.UnitTests.Services.Storage
         [Theory]
         [AutoMoqInfrastructure]
         public async Task Return_False_If_Group_Is_Not_In_Acl(
+            Mock<ILogger<AccessControlListService>> loggerMock,
             Mock<DataLakeDirectoryClient> dataLakeDirectoryClientMock,
             Mock<DataLakeFileSystemClient> dataLakeFileSystemClientMock,
             Mock<DataLakeServiceClient> dataLakeServiceClientMock,
@@ -250,7 +256,7 @@ namespace DataCatalog.DatasetResourceManagement.UnitTests.Services.Storage
             dataLakeDirectoryClientMock.Setup(x => x.GetAccessControlAsync(null, null, default))
                 .ReturnsAsync(responseMock.Object);
 
-            var sut = new AccessControlListService(dataLakeServiceClientMock.Object);
+            var sut = new AccessControlListService(loggerMock.Object, dataLakeServiceClientMock.Object);
 
             // Act
             var isGroupInAcl = await sut.IsGroupInAccessControlListAsync(groupId, container, path);
