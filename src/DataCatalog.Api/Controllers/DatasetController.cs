@@ -27,11 +27,11 @@ namespace DataCatalog.Api.Controllers
         private readonly IAllUsersGroupProvider _allUsersGroupProvider;
 
         public DatasetController(
-            IDatasetService datasetService, 
-            IMapper mapper, 
-            Current current, 
-            IGroupService groupService, 
-            IStorageService storageService, 
+            IDatasetService datasetService,
+            IMapper mapper,
+            Current current,
+            IGroupService groupService,
+            IStorageService storageService,
             IAllUsersGroupProvider allUsersGroupProvider)
         {
             _datasetService = datasetService;
@@ -68,9 +68,7 @@ namespace DataCatalog.Api.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<DatasetResponse>>> GetAllAsync()
         {
-            var onlyPublished = _current.Roles.Contains(Role.User) && !_current.Roles.Contains(Role.Admin) && !_current.Roles.Contains(Role.DataSteward);
-
-            var datasets = await _datasetService.GetAllSummariesAsync(onlyPublished);
+            var datasets = await _datasetService.GetAllSummariesAsync();
             var result = _mapper.Map<IEnumerable<Data.Domain.Dataset>, IEnumerable<DatasetResponse>>(datasets);
 
             return Ok(result);
@@ -148,8 +146,7 @@ namespace DataCatalog.Api.Controllers
         [Route("search/category")]
         public async Task<ActionResult<IEnumerable<DatasetSummaryResponse>>> GetByCategoryAsync(DatasetSearchByCategoryRequest request)
         {
-            var filterUnpublished = _current.Roles.Contains(Role.User) && !_current.Roles.Contains(Role.Admin) && !_current.Roles.Contains(Role.DataSteward);
-            var datasets = await _datasetService.GetDatasetByCategoryAsync(request.CategoryId, request.SortType, request.Take, request.PageSize, request.PageIndex, filterUnpublished);
+            var datasets = await _datasetService.GetDatasetByCategoryAsync(request.CategoryId, request.SortType, request.Take, request.PageSize, request.PageIndex);
             var result = _mapper.Map<IEnumerable<Data.Domain.Dataset>, IEnumerable<DatasetSummaryResponse>>(datasets);
 
             return Ok(result);
@@ -165,8 +162,7 @@ namespace DataCatalog.Api.Controllers
         [Route("search/term")]
         public async Task<ActionResult<DatasetSummaryResponse[]>> GetBySearchTermAsync(DatasetSearchByTermRequest request)
         {
-            var filterUnpublished = _current.Roles.Contains(Role.User) && !_current.Roles.Contains(Role.Admin) && !_current.Roles.Contains(Role.DataSteward);
-            var datasets = await _datasetService.GetDatasetsBySearchTermAsync(request.SearchTerm, request.SortType, request.Take, request.PageSize, request.PageIndex, filterUnpublished);
+            var datasets = await _datasetService.GetDatasetsBySearchTermAsync(request.SearchTerm, request.SortType, request.Take, request.PageSize, request.PageIndex);
             var result = _mapper.Map<IEnumerable<Data.Domain.Dataset>, IEnumerable<DatasetSummaryResponse>>(datasets);
 
             return Ok(result);
@@ -182,8 +178,7 @@ namespace DataCatalog.Api.Controllers
         [Route("search/predictive")]
         public async Task<ActionResult<IEnumerable<DatasetResponse>>> GetNameBySearchTermAsync(DatasetSearchByTermRequest request)
         {
-            var filterUnpublished = _current.Roles.Contains(Role.User) && !_current.Roles.Contains(Role.Admin) && !_current.Roles.Contains(Role.DataSteward);
-            var datasets = await _datasetService.GetDatasetsBySearchTermAsync(request.SearchTerm, request.SortType, request.Take, request.PageSize, request.PageIndex, filterUnpublished);
+            var datasets = await _datasetService.GetDatasetsBySearchTermAsync(request.SearchTerm, request.SortType, request.Take, request.PageSize, request.PageIndex);
             var result = _mapper.Map<IEnumerable<Data.Domain.Dataset>, IEnumerable<DatasetResponse>>(datasets);
 
             return Ok(result);

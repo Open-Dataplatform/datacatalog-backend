@@ -29,20 +29,22 @@ namespace DataCatalog.Api.Services
         private readonly IUnitOfWork _unitOfWork;
         private readonly Current _current;
         private readonly IMapper _mapper;
+        private readonly IPermissionUtils _permissionUtils;
 
         public DatasetService(
-            IDatasetRepository datasetRepository, 
-            IHierarchyRepository hierarchyRepository, 
-            ITransformationRepository transformationRepository, 
-            ITransformationDatasetRepository transformationDatasetRepository, 
-            IDatasetDurationRepository datasetDurationRepository, 
-            IDurationRepository durationRepository, 
-            IDatasetChangeLogRepository datasetChangeLogRepository, 
+            IDatasetRepository datasetRepository,
+            IHierarchyRepository hierarchyRepository,
+            ITransformationRepository transformationRepository,
+            ITransformationDatasetRepository transformationDatasetRepository,
+            IDatasetDurationRepository datasetDurationRepository,
+            IDurationRepository durationRepository,
+            IDatasetChangeLogRepository datasetChangeLogRepository,
             IDataSourceRepository dataSourceRepository,
-            IMapper mapper, 
+            IMapper mapper,
             IUnitOfWork unitOfWork,
-            Current current, 
-            IBus bus)
+            Current current,
+            IBus bus, 
+            IPermissionUtils permissionUtils)
         {
             _datasetRepository = datasetRepository;
             _hierarchyRepository = hierarchyRepository;
@@ -56,6 +58,7 @@ namespace DataCatalog.Api.Services
             _current = current;
             _bus = bus;
             _mapper = mapper;
+            _permissionUtils = permissionUtils;
         }
 
         public async Task<Dataset> FindByIdAsync(Guid id)
@@ -68,9 +71,9 @@ namespace DataCatalog.Api.Services
             return null;
         }
 
-        public async Task<IEnumerable<Dataset>> GetAllSummariesAsync(bool onlyPublished)
+        public async Task<IEnumerable<Dataset>> GetAllSummariesAsync()
         {
-            var datasets = await _datasetRepository.ListSummariesAsync(onlyPublished);
+            var datasets = await _datasetRepository.ListSummariesAsync();
             return datasets.Select(x => _mapper.Map<Dataset>(x));
         }
 
@@ -164,15 +167,15 @@ namespace DataCatalog.Api.Services
             await _unitOfWork.CompleteAsync();
         }
 
-        public async Task<IEnumerable<Dataset>> GetDatasetByCategoryAsync(Guid categoryId, SortType sortType, int take, int pageSize, int pageIndex, bool filterUnpublished)
+        public async Task<IEnumerable<Dataset>> GetDatasetByCategoryAsync(Guid categoryId, SortType sortType, int take, int pageSize, int pageIndex)
         {
-            var datasets = await _datasetRepository.GetDatasetByCategoryAsync(categoryId, sortType, take, pageSize, pageIndex, filterUnpublished);
+            var datasets = await _datasetRepository.GetDatasetByCategoryAsync(categoryId, sortType, take, pageSize, pageIndex);
             return _mapper.Map<IEnumerable<Dataset>>(datasets);
         }
 
-        public async Task<IEnumerable<Dataset>> GetDatasetsBySearchTermAsync(string searchTerm, SortType sortType, int take, int pageSize, int pageIndex, bool filterUnpublished)
+        public async Task<IEnumerable<Dataset>> GetDatasetsBySearchTermAsync(string searchTerm, SortType sortType, int take, int pageSize, int pageIndex)
         {
-            var datasets = await _datasetRepository.GetDatasetsBySearchTermQueryAsync(searchTerm, sortType, take, pageSize, pageIndex, filterUnpublished);
+            var datasets = await _datasetRepository.GetDatasetsBySearchTermQueryAsync(searchTerm, sortType, take, pageSize, pageIndex);
             return _mapper.Map<IEnumerable<Dataset>>(datasets);
         }
 

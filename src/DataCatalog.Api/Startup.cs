@@ -274,6 +274,7 @@ namespace DataCatalog.Api
             services.AddTransient<IMemberService, MemberService>();
 
             services.AddTransient<ITransformationService, TransformationService>();
+            services.AddScoped<IPermissionUtils, PermissionUtils>();
 
             // Db Context
             var conn = Configuration.GetConnectionString("DataCatalog");
