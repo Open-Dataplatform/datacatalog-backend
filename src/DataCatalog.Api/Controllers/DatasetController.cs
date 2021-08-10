@@ -11,6 +11,7 @@ using DataCatalog.Common.Data;
 using DataCatalog.Common.Interfaces;
 using DataCatalog.Api.Services.AD;
 using DataCatalog.Api.Services.Storage;
+using DataCatalog.Api.Extensions;
 
 namespace DataCatalog.Api.Controllers
 {
@@ -96,7 +97,7 @@ namespace DataCatalog.Api.Controllers
         [HttpPut]
         public async Task<ActionResult<DatasetResponse>> PutAsync(DatasetUpdateRequest request)
         {
-            var oldConfidentiality = (await _datasetService.FindByIdAsync(request.Id)).Confidentiality;
+            var dbDataset = (await _datasetService.FindByIdAsync(request.Id));
             var dataset = await _datasetService.UpdateAsync(request);
 
             var directoryMetadata = await _storageService.GetDirectoryMetadataAsync(request.Id.ToString());
@@ -105,14 +106,17 @@ namespace DataCatalog.Api.Controllers
             {
                 directoryMetadata.TryGetValue(GroupConstants.ReaderGroup, out var readerGroupId);
 
+                var datasetHadAllUsersBefore = dbDataset.ShouldHaveAllUsersGroup();
+                var datasetShouldHaveAllUsersNow = dataset.ShouldHaveAllUsersGroup();
+
                 if (readerGroupId != null)
                 {
-                    if (oldConfidentiality == Confidentiality.Public && request.Confidentiality != Confidentiality.Public)
+                    if (datasetHadAllUsersBefore && !datasetShouldHaveAllUsersNow)
                     {
                         // Updated from public to non-public -> Remove AllUsersGroup
                         await _groupService.RemoveGroupMemberAsync(readerGroupId, _allUsersGroupProvider.GetAllUsersGroup());
                     }
-                    else if (oldConfidentiality != Confidentiality.Public && request.Confidentiality == Confidentiality.Public)
+                    else if (!datasetHadAllUsersBefore && datasetShouldHaveAllUsersNow)
                     {
                         // Updated from non-public to public -> Add AllUsersGroup
                         await _groupService.AddGroupMemberAsync(readerGroupId, _allUsersGroupProvider.GetAllUsersGroup());
@@ -122,6 +126,8 @@ namespace DataCatalog.Api.Controllers
 
             return Ok(_mapper.Map<DatasetResponse>(dataset));
         }
+
+       
 
         /// <summary>
         /// Delete a dataset

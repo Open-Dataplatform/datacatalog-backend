@@ -289,7 +289,7 @@ namespace DataCatalog.DatasetResourceManagement.UnitTests
             DatasetCreatedHandler sut)
         {
             // Arrange
-            datasetCreated.Public = true;
+            datasetCreated.AddAllUsersGroup = true;
 
             allUsersGroupProviderMock.Setup(x => x.GetAllUsersGroup()).Returns(allUsersGroupId);
             
@@ -318,7 +318,7 @@ namespace DataCatalog.DatasetResourceManagement.UnitTests
             DatasetCreatedHandler sut)
         {
             // Arrange
-            datasetCreated.Public = false;
+            datasetCreated.AddAllUsersGroup = false;
 
             allUsersGroupProviderMock.Setup(x => x.GetAllUsersGroup()).Returns(allUsersGroupId);
 

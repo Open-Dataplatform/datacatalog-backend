@@ -102,7 +102,7 @@ namespace DataCatalog.DatasetResourceManagement.MessageHandlers
                 await _activeDirectoryGroupService.AddGroupMember(rootGroupId, readerGroupId);
                 await _activeDirectoryGroupService.AddGroupMember(rootGroupId, writerGroupId);
 
-                if (datasetCreatedMessage.Public)
+                if (datasetCreatedMessage.AddAllUsersGroup)
                 {
                     _logger.LogInformation("New dataset is set to public, so we add the all users group to the reader group");
                     await _activeDirectoryGroupService.AddGroupMember(readerGroupId,

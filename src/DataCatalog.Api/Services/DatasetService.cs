@@ -12,6 +12,7 @@ using DataCatalog.Api.Exceptions;
 using DataCatalog.Api.Messages;
 using DataCatalog.Api.Repositories;
 using Rebus.Bus;
+using DataCatalog.Api.Extensions;
 
 namespace DataCatalog.Api.Services
 {
@@ -97,26 +98,28 @@ namespace DataCatalog.Api.Services
 
             await _unitOfWork.CompleteAsync();
 
+            return await PublishDatasetCreated(dbDataset);
+        }
+
+        private async Task<Dataset> PublishDatasetCreated(DataCatalog.Data.Model.Dataset dbDataset)
+        {
             var hierarchy = await _hierarchyRepository.FindByIdAsync(dbDataset.HierarchyId);
-            
+            var dataset = _mapper.Map<Dataset>(dbDataset);
+
             // Publish a message that the dataset has been created.
             var datasetCreatedMessage = new DatasetCreatedMessage
             {
-                DatasetId = dbDataset.Id,
-                Container = request.RefinementLevel switch
-                {
-                    RefinementLevel.Raw => "RAW",
-                    RefinementLevel.Stock => "STOCK",
-                    _ => "REFINED"
-                },
-                DatasetName = dbDataset.Name,
-                Owner = request.Owner,
+                DatasetId = dataset.Id,
+                Container = dataset.GetContainerName(),
+                DatasetName = dataset.Name,
+                Owner = dataset.Owner,
                 Hierarchy = $"{GetHierarchyName(hierarchy).ToLower()}",
-                Public = request.Confidentiality == Confidentiality.Public
+                AddAllUsersGroup = dataset.ShouldHaveAllUsersGroup()
             };
+
             await _bus.Publish(datasetCreatedMessage);
 
-            return _mapper.Map<Dataset>(dbDataset);
+            return dataset;
         }
 
         public async Task<Dataset> UpdateAsync(DatasetUpdateRequest request)

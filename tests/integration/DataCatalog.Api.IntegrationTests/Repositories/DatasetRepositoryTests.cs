@@ -85,7 +85,7 @@ namespace DataCatalog.Api.IntegrationTests.Repositories
                 MemberId = Guid.NewGuid(),
                 Roles = new List<Role>
                 {
-                    Role.Admin
+                    Role.User
                 }
             };
             _userPermissionUtils = new PermissionUtils(userCurrent);
