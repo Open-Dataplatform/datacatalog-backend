@@ -14,13 +14,15 @@ namespace DataCatalog.Api.Extensions
         /// </summary>
         internal class CustomTypeNameGenerator : DefaultTypeNameGenerator, ITypeNameGenerator
         {
+            const string SuffixToRemove = "Response";
+
             public override string Generate(JsonSchema schema, string typeNameHint, IEnumerable<string> reservedTypeNames)
             {
                 var typeName = base.Generate(schema, typeNameHint, reservedTypeNames);
 
                 // Remove trailing 'Response' from type names
-                if (typeName.EndsWith("Response"))
-                    typeName = typeName.Replace("Response", "");
+                if (typeName.EndsWith(SuffixToRemove))
+                    typeName = typeName.Substring(0, (typeName.Length - SuffixToRemove.Length));
 
                 return typeName;
             }
