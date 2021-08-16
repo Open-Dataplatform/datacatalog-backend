@@ -97,7 +97,7 @@ namespace DataCatalog.Api.Controllers
         [HttpPut]
         public async Task<ActionResult<DatasetResponse>> PutAsync(DatasetUpdateRequest request)
         {
-            var dbDataset = (await _datasetService.FindByIdAsync(request.Id));
+            var dbDataset = await _datasetService.FindByIdAsync(request.Id);
             var dataset = await _datasetService.UpdateAsync(request);
 
             var directoryMetadata = await _storageService.GetDirectoryMetadataAsync(request.Id.ToString());
