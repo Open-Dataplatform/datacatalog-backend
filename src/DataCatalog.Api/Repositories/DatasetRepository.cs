@@ -8,26 +8,29 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using DataCatalog.Data;
+using DataCatalog.Api.Services;
 
 namespace DataCatalog.Api.Repositories
 {
     public class DatasetRepository : BaseRepository, IDatasetRepository
     {
-        public DatasetRepository(DataCatalogContext context) : base(context)
-        { }
+        private readonly IPermissionUtils _permissionUtils;
+        public DatasetRepository(DataCatalogContext context, IPermissionUtils permissionUtils) : base(context)
+        {
+            _permissionUtils = permissionUtils;
+        }
 
         public async Task<Dataset> FindByIdAsync(Guid id)
         {
-            var dataset = await _context.Datasets
+            var dataset = GetIncludeQueryable()
                 .Include(a => a.DataFields)
                 .Include(a => a.Contact)
-                .Include(a => a.DatasetCategories).ThenInclude(a => a.Category)
                 .Include(a => a.DatasetDurations).ThenInclude(a => a.Duration)
                 .Include(a => a.DatasetChangeLogs).ThenInclude(a => a.Member)
                 .Include(a => a.Hierarchy).ThenInclude(a => a.ParentHierarchy)
                 .Include(a => a.DataContracts).ThenInclude(a => a.DataSource)
-                .FirstOrDefaultAsync(a => a.Id == id);
-
+                .FirstOrDefault(a => a.Id == id);
+          
             //Only load source transformation and related datasets
             await _context.TransformationDatasets.Include(a => a.Transformation)
                 .ThenInclude(a => a.TransformationDatasets).ThenInclude(a => a.Dataset)
@@ -37,23 +40,23 @@ namespace DataCatalog.Api.Repositories
             return dataset;
         }
 
-        public async Task<IEnumerable<Dataset>> ListSummariesAsync(bool onlyPublished)
+        public async Task<IEnumerable<Dataset>> ListSummariesAsync()
         {
-            return await GetIncludeQueryable(onlyPublished).ToArrayAsync();
+            return await GetIncludeQueryable().ToArrayAsync();
         }
 
-        public async Task<IEnumerable<Dataset>> GetDatasetByCategoryAsync(Guid categoryId, SortType sortType, int take, int pageSize, int pageIndex, bool onlyPublished)
+        public async Task<IEnumerable<Dataset>> GetDatasetByCategoryAsync(Guid categoryId, SortType sortType, int take, int pageSize, int pageIndex)
         {
-            var query = GetIncludeQueryable(onlyPublished).Where(a => a.DatasetCategories.Any(b => b.CategoryId == categoryId));
+            var query = GetIncludeQueryable().Where(a => a.DatasetCategories.Any(b => b.CategoryId == categoryId));
             
             query = GetOrderedAndChunkedQuery(query, sortType, take, pageSize, pageIndex);
 
             return await query.ToArrayAsync();
         }
 
-        public async Task<IEnumerable<Dataset>> GetDatasetsBySearchTermQueryAsync(string searchTerm, SortType sortType, int take, int pageSize, int pageIndex, bool onlyPublished)
+        public async Task<IEnumerable<Dataset>> GetDatasetsBySearchTermQueryAsync(string searchTerm, SortType sortType, int take, int pageSize, int pageIndex)
         {
-            var query = GetIncludeQueryable(onlyPublished);
+            var query = GetIncludeQueryable();
 
             if (!string.IsNullOrWhiteSpace(searchTerm))
             {
@@ -96,11 +99,11 @@ namespace DataCatalog.Api.Repositories
             dataset.ProvisionStatus = status;
         }
 
-        private IQueryable<Dataset> GetIncludeQueryable(bool filterUnpublished)
+        private IQueryable<Dataset> GetIncludeQueryable()
         {
             var query = _context.Datasets.AsQueryable();
 
-            if (filterUnpublished)
+            if (_permissionUtils.FilterUnpublishedDatasets)
                 query = query.Where(a => a.Status == DatasetStatus.Published);
 
             query = query.Include(a => a.DatasetCategories).ThenInclude(a => a.Category);

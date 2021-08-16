@@ -13,6 +13,7 @@ using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
 using Xunit;
 using DataCatalog.Data;
+using DataCatalog.Api.Services;
 
 namespace DataCatalog.Api.IntegrationTests.Repositories
 {
@@ -22,6 +23,8 @@ namespace DataCatalog.Api.IntegrationTests.Repositories
         private readonly DataCatalogContext _context;
         private readonly List<Dataset> _datasets;
         private readonly Category _commonCategory;
+        private readonly PermissionUtils _adminPermissionUtils;
+        private readonly PermissionUtils _userPermissionUtils;
 
         public DatasetRepositoryTests()
         {
@@ -66,6 +69,26 @@ namespace DataCatalog.Api.IntegrationTests.Repositories
             _datasets.ForEach(d => d.DatasetCategories = new List<DatasetCategory> { new DatasetCategory { Category = _commonCategory } });
             _datasets.ForEach(c => _context.Datasets.Add(c));
             _context.SaveChanges();
+
+            var adminCurrent = new Current
+            {
+                MemberId = Guid.NewGuid(),
+                Roles = new List<Role>
+                {
+                    Role.Admin
+                }
+            };
+            _adminPermissionUtils = new PermissionUtils(adminCurrent);
+            
+            var userCurrent = new Current
+            {
+                MemberId = Guid.NewGuid(),
+                Roles = new List<Role>
+                {
+                    Role.User
+                }
+            };
+            _userPermissionUtils = new PermissionUtils(userCurrent);
         }
 
         public void Dispose()
@@ -77,7 +100,7 @@ namespace DataCatalog.Api.IntegrationTests.Repositories
         public async Task FindByIdAsync_InvalidId_ShouldReturnNull()
         {
             // ARRANGE
-            var datasetRepository = new DatasetRepository(_context);
+            var datasetRepository = new DatasetRepository(_context, _adminPermissionUtils);
             var invalidId = Guid.NewGuid();
 
             // ACT
@@ -91,7 +114,7 @@ namespace DataCatalog.Api.IntegrationTests.Repositories
         public async Task FindByIdAsync_ValidId_ShouldReturnDataset()
         {
             // ARRANGE
-            var datasetRepository = new DatasetRepository(_context);
+            var datasetRepository = new DatasetRepository(_context, _adminPermissionUtils);
             var dataset = _datasets[0];
 
             // ACT
@@ -132,10 +155,10 @@ namespace DataCatalog.Api.IntegrationTests.Repositories
         public async Task ListSummariesAsync_All_ShouldReturnAllDatasets()
         {
             // ARRANGE
-            var datasetRepository = new DatasetRepository(_context);
+            var datasetRepository = new DatasetRepository(_context, _adminPermissionUtils);
 
             // ACT
-            var result = await datasetRepository.ListSummariesAsync(false);
+            var result = await datasetRepository.ListSummariesAsync();
 
             // ASSERT
             var enumerable = result as Dataset[] ?? result.ToArray();
@@ -147,10 +170,10 @@ namespace DataCatalog.Api.IntegrationTests.Repositories
         public async Task ListSummariesAsync_OnlyPublished_ShouldReturnAllDatasets()
         {
             // ARRANGE
-            var datasetRepository = new DatasetRepository(_context);
+            var datasetRepository = new DatasetRepository(_context, _userPermissionUtils);
 
             // ACT
-            var result = await datasetRepository.ListSummariesAsync(true);
+            var result = await datasetRepository.ListSummariesAsync();
 
             // ASSERT
             var enumerable = result as Dataset[] ?? result.ToArray();
@@ -162,10 +185,10 @@ namespace DataCatalog.Api.IntegrationTests.Repositories
         public async Task GetDatasetByCategoryAsync_SortByNameAsc_ShouldReturnSortedDatasets()
         {
             // ARRANGE
-            var datasetRepository = new DatasetRepository(_context);
+            var datasetRepository = new DatasetRepository(_context, _adminPermissionUtils);
 
             // ACT
-            var result = await datasetRepository.GetDatasetByCategoryAsync(_commonCategory.Id, SortType.ByNameAscending, 0, 0, 0, false);
+            var result = await datasetRepository.GetDatasetByCategoryAsync(_commonCategory.Id, SortType.ByNameAscending, 0, 0, 0);
 
             // ASSERT
             var enumerable = result as Dataset[] ?? result.ToArray();
@@ -179,10 +202,10 @@ namespace DataCatalog.Api.IntegrationTests.Repositories
         public async Task GetDatasetByCategoryAsync_SortByNameDesc_ShouldReturnSortedDatasets()
         {
             // ARRANGE
-            var datasetRepository = new DatasetRepository(_context);
+            var datasetRepository = new DatasetRepository(_context, _adminPermissionUtils);
 
             // ACT
-            var result = await datasetRepository.GetDatasetByCategoryAsync(_commonCategory.Id, SortType.ByNameDescending, 0, 0, 0, false);
+            var result = await datasetRepository.GetDatasetByCategoryAsync(_commonCategory.Id, SortType.ByNameDescending, 0, 0, 0);
 
             // ASSERT
             var enumerable = result as Dataset[] ?? result.ToArray();
@@ -196,10 +219,10 @@ namespace DataCatalog.Api.IntegrationTests.Repositories
         public async Task GetDatasetByCategoryAsync_SortByCreatedDateAsc_ShouldReturnSortedDatasets()
         {
             // ARRANGE
-            var datasetRepository = new DatasetRepository(_context);
+            var datasetRepository = new DatasetRepository(_context, _adminPermissionUtils);
 
             // ACT
-            var result = await datasetRepository.GetDatasetByCategoryAsync(_commonCategory.Id, SortType.ByCreatedDateAscending, 0, 0, 0, false);
+            var result = await datasetRepository.GetDatasetByCategoryAsync(_commonCategory.Id, SortType.ByCreatedDateAscending, 0, 0, 0);
 
             // ASSERT
             var enumerable = result as Dataset[] ?? result.ToArray();
@@ -213,10 +236,10 @@ namespace DataCatalog.Api.IntegrationTests.Repositories
         public async Task GetDatasetByCategoryAsync_SortByCreatedDateDesc_ShouldReturnSortedDatasets()
         {
             // ARRANGE
-            var datasetRepository = new DatasetRepository(_context);
+            var datasetRepository = new DatasetRepository(_context, _adminPermissionUtils);
 
             // ACT
-            var result = await datasetRepository.GetDatasetByCategoryAsync(_commonCategory.Id, SortType.ByCreatedDateDescending, 0, 0, 0, false);
+            var result = await datasetRepository.GetDatasetByCategoryAsync(_commonCategory.Id, SortType.ByCreatedDateDescending, 0, 0, 0);
 
             // ASSERT
             var enumerable = result as Dataset[] ?? result.ToArray();
@@ -230,10 +253,10 @@ namespace DataCatalog.Api.IntegrationTests.Repositories
         public async Task GetDatasetByCategoryAsync_SortByModifiedDateAscending_ShouldReturnSortedDatasets()
         {
             // ARRANGE
-            var datasetRepository = new DatasetRepository(_context);
+            var datasetRepository = new DatasetRepository(_context, _adminPermissionUtils);
 
             // ACT
-            var result = await datasetRepository.GetDatasetByCategoryAsync(_commonCategory.Id, SortType.ByModifiedDateAscending, 0, 0, 0, false);
+            var result = await datasetRepository.GetDatasetByCategoryAsync(_commonCategory.Id, SortType.ByModifiedDateAscending, 0, 0, 0);
 
             // ASSERT
             var enumerable = result as Dataset[] ?? result.ToArray();
@@ -247,10 +270,10 @@ namespace DataCatalog.Api.IntegrationTests.Repositories
         public async Task GetDatasetByCategoryAsync_SortByModifiedDateDescending_ShouldReturnSortedDatasets()
         {
             // ARRANGE
-            var datasetRepository = new DatasetRepository(_context);
+            var datasetRepository = new DatasetRepository(_context, _adminPermissionUtils);
 
             // ACT
-            var result = await datasetRepository.GetDatasetByCategoryAsync(_commonCategory.Id, SortType.ByModifiedDateDescending, 0, 0, 0, false);
+            var result = await datasetRepository.GetDatasetByCategoryAsync(_commonCategory.Id, SortType.ByModifiedDateDescending, 0, 0, 0);
 
             // ASSERT
             var enumerable = result as Dataset[] ?? result.ToArray();
@@ -264,12 +287,12 @@ namespace DataCatalog.Api.IntegrationTests.Repositories
         public async Task GetDatasetByCategoryAsync_UsePageSize_ShouldReturnSortedDatasets()
         {
             // ARRANGE
-            var datasetRepository = new DatasetRepository(_context);
+            var datasetRepository = new DatasetRepository(_context, _adminPermissionUtils);
             var pageSize = 2;
             var pageIndex = 1;
 
             // ACT
-            var result = await datasetRepository.GetDatasetByCategoryAsync(_commonCategory.Id, SortType.ByNameAscending, 0, pageSize, pageIndex, false);
+            var result = await datasetRepository.GetDatasetByCategoryAsync(_commonCategory.Id, SortType.ByNameAscending, 0, pageSize, pageIndex);
 
             // ASSERT
             var enumerable = result as Dataset[] ?? result.ToArray();
@@ -284,11 +307,11 @@ namespace DataCatalog.Api.IntegrationTests.Repositories
         public async Task GetDatasetByCategoryAsync_UseTake_ShouldReturnSortedDatasets()
         {
             // ARRANGE
-            var datasetRepository = new DatasetRepository(_context);
+            var datasetRepository = new DatasetRepository(_context, _adminPermissionUtils);
             var take = 5;
 
             // ACT
-            var result = await datasetRepository.GetDatasetByCategoryAsync(_commonCategory.Id, SortType.ByNameAscending, take, 0, 0,false);
+            var result = await datasetRepository.GetDatasetByCategoryAsync(_commonCategory.Id, SortType.ByNameAscending, take, 0, 0);
 
             // ASSERT
             var enumerable = result as Dataset[] ?? result.ToArray();
@@ -303,10 +326,10 @@ namespace DataCatalog.Api.IntegrationTests.Repositories
         public async Task GetDatasetsBySearchTermQuery_SearchDraft_ShouldReturnDraftDatasets()
         {
             // ARRANGE
-            var datasetRepository = new DatasetRepository(_context);
+            var datasetRepository = new DatasetRepository(_context, _adminPermissionUtils);
 
             // ACT
-            var result = await datasetRepository.GetDatasetsBySearchTermQueryAsync(" drAft  ", SortType.ByNameAscending, 0, 0, 0, false);
+            var result = await datasetRepository.GetDatasetsBySearchTermQueryAsync(" drAft  ", SortType.ByNameAscending, 0, 0, 0);
 
             // ASSERT
             var enumerable = result as Dataset[] ?? result.ToArray();
@@ -318,10 +341,10 @@ namespace DataCatalog.Api.IntegrationTests.Repositories
         public async Task GetDatasetsBySearchTermQuery_SearchPublished_ShouldReturnPublishedDatasets()
         {
             // ARRANGE
-            var datasetRepository = new DatasetRepository(_context);
+            var datasetRepository = new DatasetRepository(_context, _adminPermissionUtils);
 
             // ACT
-            var result = await datasetRepository.GetDatasetsBySearchTermQueryAsync("published  ", SortType.ByNameAscending, 0, 0, 0, false);
+            var result = await datasetRepository.GetDatasetsBySearchTermQueryAsync("published  ", SortType.ByNameAscending, 0, 0, 0);
 
             // ASSERT
             var enumerable = result as Dataset[] ?? result.ToArray();
@@ -333,10 +356,10 @@ namespace DataCatalog.Api.IntegrationTests.Repositories
         public async Task GetDatasetsBySearchTermQuery_SearchArchived_ShouldReturnArchivedDatasets()
         {
             // ARRANGE
-            var datasetRepository = new DatasetRepository(_context);
+            var datasetRepository = new DatasetRepository(_context, _adminPermissionUtils);
 
             // ACT
-            var result = await datasetRepository.GetDatasetsBySearchTermQueryAsync(" archiVed", SortType.ByNameAscending, 0, 0, 0, false);
+            var result = await datasetRepository.GetDatasetsBySearchTermQueryAsync(" archiVed", SortType.ByNameAscending, 0, 0, 0);
 
             // ASSERT
             var enumerable = result as Dataset[] ?? result.ToArray();
@@ -348,10 +371,10 @@ namespace DataCatalog.Api.IntegrationTests.Repositories
         public async Task GetDatasetsBySearchTermQuery_SearchOtherTerm_ShouldReturnArchivedDatasets()
         {
             // ARRANGE
-            var datasetRepository = new DatasetRepository(_context);
+            var datasetRepository = new DatasetRepository(_context, _adminPermissionUtils);
 
             // ACT
-            var result = await datasetRepository.GetDatasetsBySearchTermQueryAsync("el", SortType.ByNameAscending, 0, 0, 0, false);
+            var result = await datasetRepository.GetDatasetsBySearchTermQueryAsync("el", SortType.ByNameAscending, 0, 0, 0);
 
             // ASSERT
             var enumerable = result as Dataset[] ?? result.ToArray();
@@ -363,7 +386,7 @@ namespace DataCatalog.Api.IntegrationTests.Repositories
         public async Task AddAsync_ShouldAddDataset()
         {
             // ARRANGE
-            var datasetRepository = new DatasetRepository(_context);
+            var datasetRepository = new DatasetRepository(_context, _adminPermissionUtils);
             var datasetEntity = _fixture.Create<Dataset>();
             
             // ACT
@@ -371,7 +394,7 @@ namespace DataCatalog.Api.IntegrationTests.Repositories
             await _context.SaveChangesAsync();
 
             // ASSERT
-            var datasets = await datasetRepository.ListSummariesAsync(false);
+            var datasets = await datasetRepository.ListSummariesAsync();
             var datasetArray = datasets as Dataset[] ?? datasets.ToArray();
             datasetArray.Should().NotBeNull();
             datasetArray.Length.Should().Be(13);
@@ -382,7 +405,7 @@ namespace DataCatalog.Api.IntegrationTests.Repositories
         public async Task Remove_ShouldBeRemoved()
         {
             // ARRANGE
-            var datasetRepository = new DatasetRepository(_context);
+            var datasetRepository = new DatasetRepository(_context, _adminPermissionUtils);
             var theDatasetToRemove = await datasetRepository.FindByIdAsync(_datasets[0].Id);
 
             // ACT
@@ -398,7 +421,7 @@ namespace DataCatalog.Api.IntegrationTests.Repositories
         public async Task UpdateProvisioningStatusAsync_ShouldChangeStatus()
         {
             // ARRANGE
-            var datasetRepository = new DatasetRepository(_context);
+            var datasetRepository = new DatasetRepository(_context, _adminPermissionUtils);
             _datasets[0].ProvisionStatus = ProvisionDatasetStatusEnum.Pending;
             var datasetToChange = await datasetRepository.FindByIdAsync(_datasets[0].Id);
 
