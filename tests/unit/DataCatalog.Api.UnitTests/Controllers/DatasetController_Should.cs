@@ -37,7 +37,7 @@ namespace DataCatalog.Api.UnitTests.Controllers
             // Assert
             result.Result.ShouldBeOfType(typeof(OkObjectResult));
             datasetServiceMock.Verify(x => x.UpdateAsync(request), Times.Once);
-            storageServiceMock.Verify(x => x.GetDirectoryMetadataAsync(request.Id.ToString()), Times.Once);
+            storageServiceMock.Verify(x => x.GetDirectoryMetadataWithRetry(request.Id.ToString()), Times.Once);
         }
 
         [Theory]
@@ -62,7 +62,7 @@ namespace DataCatalog.Api.UnitTests.Controllers
             oldDataset.Confidentiality = confidentiality;
             allUsersProviderMock.Setup(x => x.GetAllUsersGroup()).Returns(allUsersGroupId);
             metadata.Add(GroupConstants.ReaderGroup, readerGroupId);
-            storageServiceMock.Setup(x => x.GetDirectoryMetadataAsync(request.Id.ToString())).ReturnsAsync(metadata);
+            storageServiceMock.Setup(x => x.GetDirectoryMetadataWithRetry(request.Id.ToString())).ReturnsAsync(metadata);
             datasetServiceMock.Setup(x => x.FindByIdAsync(request.Id)).ReturnsAsync(oldDataset);
             
             // Act
@@ -96,7 +96,7 @@ namespace DataCatalog.Api.UnitTests.Controllers
             oldDataset.Confidentiality = Confidentiality.Public;
             allUsersProviderMock.Setup(x => x.GetAllUsersGroup()).Returns(allUsersGroupId);
             metadata.Add(GroupConstants.ReaderGroup, readerGroupId);
-            storageServiceMock.Setup(x => x.GetDirectoryMetadataAsync(request.Id.ToString())).ReturnsAsync(metadata);
+            storageServiceMock.Setup(x => x.GetDirectoryMetadataWithRetry(request.Id.ToString())).ReturnsAsync(metadata);
             datasetServiceMock.Setup(x => x.FindByIdAsync(request.Id)).ReturnsAsync(oldDataset);
 
             // Act

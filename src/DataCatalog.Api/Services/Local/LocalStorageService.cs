@@ -17,7 +17,7 @@ namespace DataCatalog.Api.Services.Local
             }
         }
         
-        public Task<IDictionary<string, string>> GetDirectoryMetadataAsync(string path)
+        public Task<IDictionary<string, string>> GetDirectoryMetadataWithRetry(string path)
         {
             IDictionary<string, string> directory = new Dictionary<string, string>();
             directory.Add(GroupConstants.ReaderGroup, path);

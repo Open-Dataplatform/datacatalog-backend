@@ -101,7 +101,7 @@ namespace DataCatalog.Api.Controllers
             var oldConfidentiality = (await _datasetService.FindByIdAsync(request.Id)).Confidentiality;
             var dataset = await _datasetService.UpdateAsync(request);
 
-            var directoryMetadata = await _storageService.GetDirectoryMetadataAsync(request.Id.ToString());
+            var directoryMetadata = await _storageService.GetDirectoryMetadataWithRetry(request.Id.ToString());
 
             if (directoryMetadata != null)
             {

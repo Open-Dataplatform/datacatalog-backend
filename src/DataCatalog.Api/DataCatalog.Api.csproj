@@ -12,45 +12,46 @@
     <DefineConstants>TRACE;MY_DATASET_CONTROLLER</DefineConstants>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Remove="Model\**" />
-    <Content Remove="Model\**" />
-    <EmbeddedResource Remove="Model\**" />
-    <None Remove="Model\**" />
+    <Compile Remove="Model\**"/>
+    <Content Remove="Model\**"/>
+    <EmbeddedResource Remove="Model\**"/>
+    <None Remove="Model\**"/>
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="AutoMapper" Version="10.1.1" />
-    <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="8.1.1" />
-    <PackageReference Include="Azure.Identity" Version="1.3.0" />
-    <PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="10.1.0" />
-    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="5.0.5" />
-    <PackageReference Include="Microsoft.AspNetCore.Mvc.Versioning" Version="5.0.0" />
-    <PackageReference Include="Microsoft.Azure.Storage.Blob" Version="11.2.3" />
-    <PackageReference Include="Azure.Storage.Files.DataLake" Version="12.6.1" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="5.0.5" />
+    <PackageReference Include="AutoMapper" Version="10.1.1"/>
+    <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="8.1.1"/>
+    <PackageReference Include="Azure.Identity" Version="1.3.0"/>
+    <PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="10.1.0"/>
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="5.0.5"/>
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.Versioning" Version="5.0.0"/>
+    <PackageReference Include="Microsoft.Azure.Storage.Blob" Version="11.2.3"/>
+    <PackageReference Include="Azure.Storage.Files.DataLake" Version="12.6.1"/>
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="5.0.5"/>
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="5.0.5">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="5.0.5" />
-    <PackageReference Include="MySql.EntityFrameworkCore" Version="5.0.3.1" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="5.0.5" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="5.0.5"/>
+    <PackageReference Include="MySql.EntityFrameworkCore" Version="5.0.3.1"/>
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="5.0.5"/>
     <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="5.0.5">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="System.Data.SQLite" Version="1.0.114.4" />
-    <PackageReference Include="Microsoft.OpenApi" Version="1.2.2" />
-    <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.10.9" />
-    <PackageReference Include="Swashbuckle.AspNetCore" Version="5.5.1" />
-    <PackageReference Include="Swashbuckle.AspNetCore.Swagger" Version="5.5.1" />
-    <PackageReference Include="Microsoft.Graph.Auth" Version="1.0.0-preview.6" />
-    <PackageReference Include="Microsoft.Graph.Beta" Version="0.35.0-preview" />
+    <PackageReference Include="System.Data.SQLite" Version="1.0.114.4"/>
+    <PackageReference Include="Microsoft.OpenApi" Version="1.2.2"/>
+    <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.10.9"/>
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="5.5.1"/>
+    <PackageReference Include="Swashbuckle.AspNetCore.Swagger" Version="5.5.1"/>
+    <PackageReference Include="Microsoft.Graph.Auth" Version="1.0.0-preview.6"/>
+    <PackageReference Include="Microsoft.Graph.Beta" Version="0.35.0-preview"/>
+    <PackageReference Include="Polly" Version="7.2.2"/>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\DataCatalog.Api.Messages\DataCatalog.Api.Messages.csproj" />
-    <ProjectReference Include="..\DataCatalog.Common.Rebus\DataCatalog.Common.Rebus.csproj" />
-    <ProjectReference Include="..\DataCatalog.Data\DataCatalog.Data.csproj" />
-    <ProjectReference Include="..\DataCatalog.Common\DataCatalog.Common.csproj" />
-    <ProjectReference Include="..\DataCatalog.DatasetResourceManagement.Messages\DataCatalog.DatasetResourceManagement.Messages.csproj" />
+    <ProjectReference Include="..\DataCatalog.Api.Messages\DataCatalog.Api.Messages.csproj"/>
+    <ProjectReference Include="..\DataCatalog.Common.Rebus\DataCatalog.Common.Rebus.csproj"/>
+    <ProjectReference Include="..\DataCatalog.Data\DataCatalog.Data.csproj"/>
+    <ProjectReference Include="..\DataCatalog.Common\DataCatalog.Common.csproj"/>
+    <ProjectReference Include="..\DataCatalog.DatasetResourceManagement.Messages\DataCatalog.DatasetResourceManagement.Messages.csproj"/>
   </ItemGroup>
 </Project>
