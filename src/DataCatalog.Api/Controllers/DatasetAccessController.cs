@@ -40,7 +40,7 @@ namespace DataCatalog.Api.Controllers
         [Route("{id}/access")]
         public async Task<ActionResult<DatasetAccessListResponse>> GetAccessList(Guid id)
         {
-            var directoryMetadata = await _storageService.GetDirectoryMetadataAsync(id.ToString());
+            var directoryMetadata = await _storageService.GetDirectoryMetadataWithRetry(id.ToString());
 
             if (directoryMetadata == null)
                 return NotFound();
@@ -104,7 +104,7 @@ namespace DataCatalog.Api.Controllers
 
         private async Task<IActionResult> RemoveMember(string accessGroupType, Guid datasetId, Guid memberId)
         {
-            var directoryMetadata = await _storageService.GetDirectoryMetadataAsync(datasetId.ToString());
+            var directoryMetadata = await _storageService.GetDirectoryMetadataWithRetry(datasetId.ToString());
 
             if (directoryMetadata == null)
                 return NotFound();
@@ -121,7 +121,7 @@ namespace DataCatalog.Api.Controllers
 
         private async Task<ActionResult<DataAccessEntry>> AddMember(string accessGroupType, Guid datasetId, Guid memberId)
         {
-            var directoryMetadata = await _storageService.GetDirectoryMetadataAsync(datasetId.ToString());
+            var directoryMetadata = await _storageService.GetDirectoryMetadataWithRetry(datasetId.ToString());
 
             if (directoryMetadata == null)
                 return NotFound();

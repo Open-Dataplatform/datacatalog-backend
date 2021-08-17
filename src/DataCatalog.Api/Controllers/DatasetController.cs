@@ -100,7 +100,7 @@ namespace DataCatalog.Api.Controllers
             var dbDataset = await _datasetService.FindByIdAsync(request.Id);
             var dataset = await _datasetService.UpdateAsync(request);
 
-            var directoryMetadata = await _storageService.GetDirectoryMetadataAsync(request.Id.ToString());
+            var directoryMetadata = await _storageService.GetDirectoryMetadataWithRetry(request.Id.ToString());
 
             if (directoryMetadata != null)
             {
