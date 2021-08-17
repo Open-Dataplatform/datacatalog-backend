@@ -98,7 +98,7 @@ namespace DataCatalog.Api.Controllers
         /// Add member to member group
         /// </summary>
         /// <param name="request">The member group and member to match</param>
-        [HttpPost]
+        [HttpPost("AddMember")]
         public async Task<IActionResult> AddMemberAsync([FromBody] MemberGroupAddRequest request)
         {
             if (_current.MemberId == request.MemberId)
@@ -115,7 +115,7 @@ namespace DataCatalog.Api.Controllers
         /// Remove member from member group
         /// </summary>
         /// <param name="request">The member group and member to match</param>
-        [HttpPost]
+        [HttpPost("RemoveMember")]
         public async Task<IActionResult> RemoveMemberAsync([FromBody] MemberGroupRemoveRequest request)
         {
             if (_current.MemberId == request.MemberId)

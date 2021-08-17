@@ -41,11 +41,10 @@
     <PackageReference Include="System.Data.SQLite" Version="1.0.114.4"/>
     <PackageReference Include="Microsoft.OpenApi" Version="1.2.2"/>
     <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.10.9"/>
-    <PackageReference Include="Swashbuckle.AspNetCore" Version="5.5.1"/>
-    <PackageReference Include="Swashbuckle.AspNetCore.Swagger" Version="5.5.1"/>
+    <PackageReference Include="Polly" Version="7.2.2"/>
     <PackageReference Include="Microsoft.Graph.Auth" Version="1.0.0-preview.6"/>
     <PackageReference Include="Microsoft.Graph.Beta" Version="0.35.0-preview"/>
-    <PackageReference Include="Polly" Version="7.2.2"/>
+    <PackageReference Include="NSwag.AspNetCore" Version="13.11.3"/>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\DataCatalog.Api.Messages\DataCatalog.Api.Messages.csproj"/>

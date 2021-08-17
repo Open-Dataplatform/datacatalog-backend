@@ -89,28 +89,6 @@ namespace DataCatalog.Api.UnitTests.Services
             dataset.Id.Should().Be(datasetEntity.Id);
         }
 
-        [Theory]
-        [InlineData(true)]
-        [InlineData(false)]
-        public async Task GetAllSummariesAsync_ShouldReturnCorrectFiltering(bool onlyPublished)
-        {
-            // Arrange
-            var datasetRepositoryMock = new Mock<IDatasetRepository>();
-            var datasetEntities = _fixture.Create<List<Dataset>>();
-            datasetRepositoryMock.Setup(x => x.ListSummariesAsync(onlyPublished)).ReturnsAsync(datasetEntities);
-            datasetRepositoryMock.Setup(x => x.ListSummariesAsync(!onlyPublished)).ReturnsAsync(new List<Dataset>());
-            _fixture.Inject(datasetRepositoryMock.Object);
-            _fixture.Freeze<IDatasetRepository>();
-            var datasetService = _fixture.Create<DatasetService>();
-
-            // Act
-            var datasets = await datasetService.GetAllSummariesAsync(onlyPublished);
-
-            // Assert
-            var datasetsArray = datasets as Data.Domain.Dataset[] ?? datasets.ToArray();
-            datasetsArray.Should().NotBeNull();
-            datasetsArray.Length.Should().Be(datasetEntities.Count);
-        }
 
         [Fact]
         public void SaveAsync_MissingCategories_ShouldThrowException()
@@ -336,13 +314,13 @@ namespace DataCatalog.Api.UnitTests.Services
         {
             // Arrange
             var datasetRepositoryMock = new Mock<IDatasetRepository>();
-            datasetRepositoryMock.Setup(x => x.GetDatasetByCategoryAsync(It.IsAny<Guid>(), It.IsAny<SortType>(), 0, 0, 0, false)).ReturnsAsync(new List<Dataset>());
+            datasetRepositoryMock.Setup(x => x.GetDatasetByCategoryAsync(It.IsAny<Guid>(), It.IsAny<SortType>(), 0, 0, 0)).ReturnsAsync(new List<Dataset>());
             _fixture.Inject(datasetRepositoryMock.Object);
             _fixture.Freeze<IDatasetRepository>();
             var datasetService = _fixture.Create<DatasetService>();
 
             // Act
-            var result = await datasetService.GetDatasetByCategoryAsync(Guid.Empty, SortType.ByNameAscending, 0, 0, 0, false);
+            var result = await datasetService.GetDatasetByCategoryAsync(Guid.Empty, SortType.ByNameAscending, 0, 0, 0); 
 
             // Assert
             var resultArray = result as Data.Domain.Dataset[] ?? result.ToArray();
@@ -354,13 +332,13 @@ namespace DataCatalog.Api.UnitTests.Services
         public async Task GetDatasetByCategoryAsync_NotEmptySet_MustReturnList()
         {
             var datasetRepositoryMock = new Mock<IDatasetRepository>();
-            datasetRepositoryMock.Setup(x => x.GetDatasetByCategoryAsync(It.IsAny<Guid>(), It.IsAny<SortType>(), 0, 0, 0, false)).ReturnsAsync(new List<Dataset> { new Dataset() });
+            datasetRepositoryMock.Setup(x => x.GetDatasetByCategoryAsync(It.IsAny<Guid>(), It.IsAny<SortType>(), 0, 0, 0)).ReturnsAsync(new List<Dataset> { new Dataset() });
             _fixture.Inject(datasetRepositoryMock.Object);
             _fixture.Freeze<IDatasetRepository>();
             var datasetService = _fixture.Create<DatasetService>();
 
             // Act
-            var result = await datasetService.GetDatasetByCategoryAsync(Guid.Empty, SortType.ByNameAscending, 0, 0, 0, false);
+            var result = await datasetService.GetDatasetByCategoryAsync(Guid.Empty, SortType.ByNameAscending, 0, 0, 0);
 
             // Assert
             var resultArray = result as Data.Domain.Dataset[] ?? result.ToArray();
@@ -373,13 +351,13 @@ namespace DataCatalog.Api.UnitTests.Services
         {
             // Arrange
             var datasetRepositoryMock = new Mock<IDatasetRepository>();
-            datasetRepositoryMock.Setup(x => x.GetDatasetsBySearchTermQueryAsync("", It.IsAny<SortType>(), 0, 0, 0, false)).ReturnsAsync(new List<Dataset>());
+            datasetRepositoryMock.Setup(x => x.GetDatasetsBySearchTermQueryAsync("", It.IsAny<SortType>(), 0, 0, 0)).ReturnsAsync(new List<Dataset>());
             _fixture.Inject(datasetRepositoryMock.Object);
             _fixture.Freeze<IDatasetRepository>();
             var datasetService = _fixture.Create<DatasetService>();
 
             // Act
-            var result = await datasetService.GetDatasetsBySearchTermAsync("", SortType.ByNameAscending, 0, 0, 0, false);
+            var result = await datasetService.GetDatasetsBySearchTermAsync("", SortType.ByNameAscending, 0, 0, 0);
 
             // Assert
             var resultArray = result as Data.Domain.Dataset[] ?? result.ToArray();
@@ -392,13 +370,13 @@ namespace DataCatalog.Api.UnitTests.Services
         {
             // Arrange
             var datasetRepositoryMock = new Mock<IDatasetRepository>();
-            datasetRepositoryMock.Setup(x => x.GetDatasetsBySearchTermQueryAsync("", It.IsAny<SortType>(), 0, 0, 0, false)).ReturnsAsync(new List<Dataset> { new Dataset() });
+            datasetRepositoryMock.Setup(x => x.GetDatasetsBySearchTermQueryAsync("", It.IsAny<SortType>(), 0, 0, 0)).ReturnsAsync(new List<Dataset> { new Dataset() });
             _fixture.Inject(datasetRepositoryMock.Object);
             _fixture.Freeze<IDatasetRepository>();
             var datasetService = _fixture.Create<DatasetService>();
 
             // Act
-            var result = await datasetService.GetDatasetsBySearchTermAsync("", SortType.ByNameAscending, 0, 0, 0, false);
+            var result = await datasetService.GetDatasetsBySearchTermAsync("", SortType.ByNameAscending, 0, 0, 0);
 
             // Assert
             var resultArray = result as Data.Domain.Dataset[] ?? result.ToArray();

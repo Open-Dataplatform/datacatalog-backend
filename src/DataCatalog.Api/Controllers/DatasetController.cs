@@ -11,6 +11,7 @@ using DataCatalog.Common.Data;
 using DataCatalog.Common.Interfaces;
 using DataCatalog.Api.Services.AD;
 using DataCatalog.Api.Services.Storage;
+using DataCatalog.Api.Extensions;
 
 namespace DataCatalog.Api.Controllers
 {
@@ -27,11 +28,11 @@ namespace DataCatalog.Api.Controllers
         private readonly IAllUsersGroupProvider _allUsersGroupProvider;
 
         public DatasetController(
-            IDatasetService datasetService, 
-            IMapper mapper, 
-            Current current, 
-            IGroupService groupService, 
-            IStorageService storageService, 
+            IDatasetService datasetService,
+            IMapper mapper,
+            Current current,
+            IGroupService groupService,
+            IStorageService storageService,
             IAllUsersGroupProvider allUsersGroupProvider)
         {
             _datasetService = datasetService;
@@ -68,9 +69,7 @@ namespace DataCatalog.Api.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<DatasetResponse>>> GetAllAsync()
         {
-            var onlyPublished = _current.Roles.Contains(Role.User) && !_current.Roles.Contains(Role.Admin) && !_current.Roles.Contains(Role.DataSteward);
-
-            var datasets = await _datasetService.GetAllSummariesAsync(onlyPublished);
+            var datasets = await _datasetService.GetAllSummariesAsync();
             var result = _mapper.Map<IEnumerable<Data.Domain.Dataset>, IEnumerable<DatasetResponse>>(datasets);
 
             return Ok(result);
@@ -98,7 +97,7 @@ namespace DataCatalog.Api.Controllers
         [HttpPut]
         public async Task<ActionResult<DatasetResponse>> PutAsync(DatasetUpdateRequest request)
         {
-            var oldConfidentiality = (await _datasetService.FindByIdAsync(request.Id)).Confidentiality;
+            var dbDataset = await _datasetService.FindByIdAsync(request.Id);
             var dataset = await _datasetService.UpdateAsync(request);
 
             var directoryMetadata = await _storageService.GetDirectoryMetadataWithRetry(request.Id.ToString());
@@ -107,14 +106,17 @@ namespace DataCatalog.Api.Controllers
             {
                 directoryMetadata.TryGetValue(GroupConstants.ReaderGroup, out var readerGroupId);
 
+                var datasetHadAllUsersBefore = dbDataset.ShouldHaveAllUsersGroup();
+                var datasetShouldHaveAllUsersNow = dataset.ShouldHaveAllUsersGroup();
+
                 if (readerGroupId != null)
                 {
-                    if (oldConfidentiality == Confidentiality.Public && request.Confidentiality != Confidentiality.Public)
+                    if (datasetHadAllUsersBefore && !datasetShouldHaveAllUsersNow)
                     {
                         // Updated from public to non-public -> Remove AllUsersGroup
                         await _groupService.RemoveGroupMemberAsync(readerGroupId, _allUsersGroupProvider.GetAllUsersGroup());
                     }
-                    else if (oldConfidentiality != Confidentiality.Public && request.Confidentiality == Confidentiality.Public)
+                    else if (!datasetHadAllUsersBefore && datasetShouldHaveAllUsersNow)
                     {
                         // Updated from non-public to public -> Add AllUsersGroup
                         await _groupService.AddGroupMemberAsync(readerGroupId, _allUsersGroupProvider.GetAllUsersGroup());
@@ -124,6 +126,8 @@ namespace DataCatalog.Api.Controllers
 
             return Ok(_mapper.Map<DatasetResponse>(dataset));
         }
+
+       
 
         /// <summary>
         /// Delete a dataset
@@ -148,8 +152,7 @@ namespace DataCatalog.Api.Controllers
         [Route("search/category")]
         public async Task<ActionResult<IEnumerable<DatasetSummaryResponse>>> GetByCategoryAsync(DatasetSearchByCategoryRequest request)
         {
-            var filterUnpublished = _current.Roles.Contains(Role.User) && !_current.Roles.Contains(Role.Admin) && !_current.Roles.Contains(Role.DataSteward);
-            var datasets = await _datasetService.GetDatasetByCategoryAsync(request.CategoryId, request.SortType, request.Take, request.PageSize, request.PageIndex, filterUnpublished);
+            var datasets = await _datasetService.GetDatasetByCategoryAsync(request.CategoryId, request.SortType, request.Take, request.PageSize, request.PageIndex);
             var result = _mapper.Map<IEnumerable<Data.Domain.Dataset>, IEnumerable<DatasetSummaryResponse>>(datasets);
 
             return Ok(result);
@@ -165,8 +168,7 @@ namespace DataCatalog.Api.Controllers
         [Route("search/term")]
         public async Task<ActionResult<DatasetSummaryResponse[]>> GetBySearchTermAsync(DatasetSearchByTermRequest request)
         {
-            var filterUnpublished = _current.Roles.Contains(Role.User) && !_current.Roles.Contains(Role.Admin) && !_current.Roles.Contains(Role.DataSteward);
-            var datasets = await _datasetService.GetDatasetsBySearchTermAsync(request.SearchTerm, request.SortType, request.Take, request.PageSize, request.PageIndex, filterUnpublished);
+            var datasets = await _datasetService.GetDatasetsBySearchTermAsync(request.SearchTerm, request.SortType, request.Take, request.PageSize, request.PageIndex);
             var result = _mapper.Map<IEnumerable<Data.Domain.Dataset>, IEnumerable<DatasetSummaryResponse>>(datasets);
 
             return Ok(result);
@@ -182,8 +184,7 @@ namespace DataCatalog.Api.Controllers
         [Route("search/predictive")]
         public async Task<ActionResult<IEnumerable<DatasetResponse>>> GetNameBySearchTermAsync(DatasetSearchByTermRequest request)
         {
-            var filterUnpublished = _current.Roles.Contains(Role.User) && !_current.Roles.Contains(Role.Admin) && !_current.Roles.Contains(Role.DataSteward);
-            var datasets = await _datasetService.GetDatasetsBySearchTermAsync(request.SearchTerm, request.SortType, request.Take, request.PageSize, request.PageIndex, filterUnpublished);
+            var datasets = await _datasetService.GetDatasetsBySearchTermAsync(request.SearchTerm, request.SortType, request.Take, request.PageSize, request.PageIndex);
             var result = _mapper.Map<IEnumerable<Data.Domain.Dataset>, IEnumerable<DatasetResponse>>(datasets);
 
             return Ok(result);

@@ -10,12 +10,12 @@ namespace DataCatalog.Api.Services
     public interface IDatasetService
     {
         Task<Dataset> FindByIdAsync(Guid id);
-        Task<IEnumerable<Dataset>> GetAllSummariesAsync(bool onlyPublished);
+        Task<IEnumerable<Dataset>> GetAllSummariesAsync();
         Task<Dataset> SaveAsync(DatasetCreateRequest datasetCreateRequest);
         Task<Dataset> UpdateAsync(DatasetUpdateRequest datasetUpdateRequest);
         Task DeleteAsync(Guid id);
-        Task<IEnumerable<Dataset>> GetDatasetByCategoryAsync(Guid categoryId, SortType sortType, int take, int pageSize, int pageIndex, bool filterUnpublished);
-        Task<IEnumerable<Dataset>> GetDatasetsBySearchTermAsync(string searchTerm, SortType sortType, int take, int pageSize, int pageIndex, bool filterUnpublished);
+        Task<IEnumerable<Dataset>> GetDatasetByCategoryAsync(Guid categoryId, SortType sortType, int take, int pageSize, int pageIndex);
+        Task<IEnumerable<Dataset>> GetDatasetsBySearchTermAsync(string searchTerm, SortType sortType, int take, int pageSize, int pageIndex);
         Task<string> GetDatasetLocationAsync(Guid? hierarchyId, string name);
         Task<LineageDataset> GetDatasetLineageAsync(Guid id);
         Task<Dataset> CopyDatasetInRawAsync(Guid id);
