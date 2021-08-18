@@ -1,9 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using DataCatalog.Api.Repositories;
 using DataCatalog.Api.Services.AD;
 using DataCatalog.Api.Services.Storage;
+using DataCatalog.Common.Enums;
 using DataCatalog.Common.Utils;
+using Polly;
 
 namespace DataCatalog.Api.Services.Local
 {
@@ -16,13 +19,14 @@ namespace DataCatalog.Api.Services.Local
                 throw new InvalidOperationException("This class cannot be used unless the environment is local");
             }
         }
-        
-        public Task<IDictionary<string, string>> GetDirectoryMetadataWithRetry(string path)
+
+        public Task<IDictionary<string, string>> GetDirectoryMetadataWithRetry(Guid datasetId)
         {
             IDictionary<string, string> directory = new Dictionary<string, string>();
-            directory.Add(GroupConstants.ReaderGroup, path);
-            directory.Add(GroupConstants.WriterGroup, path);
+            directory.Add(GroupConstants.ReaderGroup, datasetId.ToString());
+            directory.Add(GroupConstants.WriterGroup, datasetId.ToString());
             return Task.FromResult(directory);
         }
+       
     }
 }

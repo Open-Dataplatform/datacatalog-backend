@@ -140,5 +140,13 @@ namespace DataCatalog.Api.Repositories
 
             return returnQuery;
         }
+
+        public async Task<ProvisionDatasetStatusEnum?> GetProvisioningStatusAsync(Guid id)
+        {
+            return await GetIncludeQueryable()
+                .Where(ds => ds.Id == id)
+                .Select(ds => ds.ProvisionStatus)
+                .FirstOrDefaultAsync();
+        }
     }
 }

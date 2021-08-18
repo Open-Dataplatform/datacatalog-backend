@@ -15,5 +15,6 @@ namespace DataCatalog.Api.Repositories
         Task AddAsync(Dataset dataset);
         void Remove(Dataset dataset);
         Task UpdateProvisioningStatusAsync(Guid id, ProvisionDatasetStatusEnum status);
+        Task<ProvisionDatasetStatusEnum?> GetProvisioningStatusAsync(Guid id);
     }
 }

@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Azure.Storage.Files.DataLake;
+using DataCatalog.Api.Repositories;
+using DataCatalog.Common.Enums;
 using Microsoft.Extensions.Logging;
 using Polly;
 
@@ -11,36 +13,47 @@ namespace DataCatalog.Api.Services.Storage
     {
         private readonly DataLakeServiceClient _dataLakeServiceClient;
         private readonly ILogger<AzureStorageService> _logger;
+        private readonly IDatasetRepository _datasetRepository;
 
         public AzureStorageService(
-            DataLakeServiceClient dataLakeServiceClient, 
-            ILogger<AzureStorageService> logger)
+            DataLakeServiceClient dataLakeServiceClient,
+            ILogger<AzureStorageService> logger,
+            IDatasetRepository datasetRepository)
         {
             _dataLakeServiceClient =
                 dataLakeServiceClient ?? throw new ArgumentNullException(nameof(dataLakeServiceClient));
 
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+            _datasetRepository = datasetRepository;
         }
 
-        public async Task<IDictionary<string,string>> GetDirectoryMetadataWithRetry(string path)
+        public async Task<IDictionary<string,string>> GetDirectoryMetadataWithRetry(Guid datasetId)
         {
             try
             {
-                // Use Polly to wait and retry on RequestFailedExceptions.
-                // This is relevant because the meta data is unavailable immediately after creating a new dataset 
-                return await Policy
-                    .Handle<Azure.RequestFailedException>()
+                // Use Polly to wait and retry if dataset provisioning status is Pending.
+                // This is relevant because dataset creation happens asynchronously and the meta data will not be availble until this process is finished
+                var provisionStatus = await Policy
+                    .HandleResult<ProvisionDatasetStatusEnum?>((status) => status.HasValue && status.Value == ProvisionDatasetStatusEnum.Pending)
                     .WaitAndRetryAsync(4, retryAttempt => TimeSpan.FromSeconds(1))
-                    .ExecuteAsync(() => GetDirectoryMetadataAsync(path));
+                    .ExecuteAsync(() => _datasetRepository.GetProvisioningStatusAsync(datasetId));
+
+                return provisionStatus switch
+                {
+                    ProvisionDatasetStatusEnum.Pending => null,
+                    ProvisionDatasetStatusEnum.Failed => throw new Exception("Dataset was not provisioned correctly"),
+                    ProvisionDatasetStatusEnum.Succeeded or null => await GetDirectoryMetadataAsync(datasetId.ToString()),
+                    _ => throw new Exception("Dataset has unknown provisioning status")
+                };
             }
             catch (Azure.RequestFailedException rfe)
             {
-                _logger.LogWarning(rfe, "Failed to request metadata for directory {Path}", path);
+                _logger.LogWarning(rfe, "Failed to request metadata for directory {Path}", datasetId);
                 return null;
             }
             catch (Exception e)
             {
-                _logger.LogError(e, "Unexpected error occurred when loading metadata properties for the path {Path}", path);
+                _logger.LogError(e, "Unexpected error occurred when loading metadata properties for the path {Path}", datasetId);
                 throw;
             }
         }
@@ -51,8 +64,8 @@ namespace DataCatalog.Api.Services.Storage
             var directoryClient = fileSystemClient.GetDirectoryClient(path);
 
             var directoryProperties = await directoryClient.GetPropertiesAsync();
+            
             return directoryProperties.Value.Metadata;
-
         }
     }
 }
