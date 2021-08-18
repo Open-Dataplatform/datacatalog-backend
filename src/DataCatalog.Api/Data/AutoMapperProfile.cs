@@ -171,7 +171,7 @@ namespace DataCatalog.Api.Data
             CreateMap<MemberGroup, MemberGroupResponse>()
                 .ForMember(a => a.Members, b => b.MapFrom(c => c.MemberGroupMembers.Select(d => d.Member)));
 
-            CreateMap<MemberGroupCreateRequest, MemberGroup>()
+            CreateMap<MemberGroupCreateRequest, Data.Domain.MemberGroup>()
                 .ForMember(a => a.MemberGroupMembers, b => b.MapFrom(c => c.Members.Select(d => new MemberGroupMember { MemberId = d.Id })));
 
             CreateMap<MemberGroupUpdateRequest, MemberGroup>()

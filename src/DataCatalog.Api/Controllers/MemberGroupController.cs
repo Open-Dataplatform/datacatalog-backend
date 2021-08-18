@@ -85,7 +85,7 @@ namespace DataCatalog.Api.Controllers
         /// <param name="request">The member group to create</param>
         /// <returns>The created member group</returns>
         [AuthorizeRoles(Role.Admin)]
-        [HttpPost]
+        [HttpPost("create")]
         public async Task<ActionResult<Guid>> PostAsync([FromBody] MemberGroupCreateRequest request)
         {
             var memberGroup = _mapper.Map<MemberGroupCreateRequest, Data.Domain.MemberGroup>(request);
