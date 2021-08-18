@@ -2,10 +2,13 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using AutoFixture;
+using AutoFixture.Xunit2;
 using Azure;
 using Azure.Storage.Files.DataLake;
 using Azure.Storage.Files.DataLake.Models;
+using DataCatalog.Api.Repositories;
 using DataCatalog.Api.Services.Storage;
+using DataCatalog.Common.Enums;
 using DataCatalog.Common.UnitTests.AutoMoqAttribute;
 using Microsoft.Extensions.Logging;
 using Moq;
@@ -24,13 +27,14 @@ namespace DataCatalog.Api.UnitTests.Services.Storage
             Mock<DataLakeFileSystemClient> dataLakeFileSystemClientMock,
             Mock<ILogger<AzureStorageService>> loggerMock,
             Mock<DataLakeServiceClient> dataLakeServiceClientMock,
-            string path)
+            Mock<IDatasetRepository> datasetRepositoryMock,
+            Guid datasetId)
         {
             // Arrange
             var responseMock = CreatePathPropertiesResponseMock();
                 
             dataLakeFileSystemClientMock
-                .Setup(x => x.GetDirectoryClient(path))
+                .Setup(x => x.GetDirectoryClient(datasetId.ToString()))
                 .Returns(dataLakeDirectoryClientMock.Object);
 
             dataLakeServiceClientMock
@@ -39,11 +43,15 @@ namespace DataCatalog.Api.UnitTests.Services.Storage
 
             dataLakeDirectoryClientMock.Setup(x => x.GetPropertiesAsync(null, default))
                 .Returns(Task.FromResult(responseMock.Object));
-            
-            var sut = new AzureStorageService(dataLakeServiceClientMock.Object, loggerMock.Object);
+
+            datasetRepositoryMock
+                .Setup(x => x.GetProvisioningStatusAsync(datasetId))
+                .ReturnsAsync(ProvisionDatasetStatusEnum.Succeeded);
+
+            var sut = new AzureStorageService(dataLakeServiceClientMock.Object, loggerMock.Object, datasetRepositoryMock.Object);
 
             // Act
-            var metaData = await sut.GetDirectoryMetadataWithRetry(path);
+            var metaData = await sut.GetDirectoryMetadataWithRetry(datasetId);
 
             // Assert
             dataLakeDirectoryClientMock.Verify(x => x.GetPropertiesAsync(null, default), Times.Once);
@@ -58,11 +66,12 @@ namespace DataCatalog.Api.UnitTests.Services.Storage
             Mock<ILogger<AzureStorageService>> loggerMock,
             Mock<DataLakeServiceClient> dataLakeServiceClientMock,
             RequestFailedException rfe,
-            string path)
+            Mock<IDatasetRepository> datasetRepositoryMock,
+            Guid datasetId)
         {
             // Arrange
             dataLakeFileSystemClientMock
-                .Setup(x => x.GetDirectoryClient(path))
+                .Setup(x => x.GetDirectoryClient(datasetId.ToString()))
                 .Returns(dataLakeDirectoryClientMock.Object);
 
             dataLakeServiceClientMock
@@ -72,10 +81,14 @@ namespace DataCatalog.Api.UnitTests.Services.Storage
             dataLakeDirectoryClientMock.Setup(x => x.GetPropertiesAsync(null, default))
                 .ThrowsAsync(rfe);
 
-            var sut = new AzureStorageService(dataLakeServiceClientMock.Object, loggerMock.Object);
+            datasetRepositoryMock
+                .Setup(x => x.GetProvisioningStatusAsync(datasetId))
+                .ReturnsAsync(ProvisionDatasetStatusEnum.Succeeded);
+
+            var sut = new AzureStorageService(dataLakeServiceClientMock.Object, loggerMock.Object, datasetRepositoryMock.Object);
 
             // Act
-            var metaData = await sut.GetDirectoryMetadataWithRetry(path);
+            var metaData = await sut.GetDirectoryMetadataWithRetry(datasetId);
 
             // Assert
             dataLakeDirectoryClientMock.Verify(x => x.GetPropertiesAsync(null, default), Times.AtLeastOnce);
@@ -90,11 +103,14 @@ namespace DataCatalog.Api.UnitTests.Services.Storage
             Mock<ILogger<AzureStorageService>> loggerMock,
             Mock<DataLakeServiceClient> dataLakeServiceClientMock,
             Exception e,
-            string path)
+            Mock<IDatasetRepository> datasetRepositoryMock,
+            Guid datasetId)
         {
+            // var datasetRepositoryMock = new Mock<IDatasetRepository>();
+
             // Arrange
             dataLakeFileSystemClientMock
-                .Setup(x => x.GetDirectoryClient(path))
+                .Setup(x => x.GetDirectoryClient(datasetId.ToString()))
                 .Returns(dataLakeDirectoryClientMock.Object);
 
             dataLakeServiceClientMock
@@ -104,10 +120,14 @@ namespace DataCatalog.Api.UnitTests.Services.Storage
             dataLakeDirectoryClientMock.Setup(x => x.GetPropertiesAsync(null, default))
                 .ThrowsAsync(e);
 
-            var sut = new AzureStorageService(dataLakeServiceClientMock.Object, loggerMock.Object);
+            datasetRepositoryMock
+                .Setup(x => x.GetProvisioningStatusAsync(datasetId))
+                .ReturnsAsync(ProvisionDatasetStatusEnum.Succeeded);
+
+            var sut = new AzureStorageService(dataLakeServiceClientMock.Object, loggerMock.Object, datasetRepositoryMock.Object);
 
             // Act
-            var ex = await Assert.ThrowsAsync<Exception>(() => sut.GetDirectoryMetadataWithRetry(path));
+            var ex = await Assert.ThrowsAsync<Exception>(() => sut.GetDirectoryMetadataWithRetry(datasetId));
 
             // Assert
             dataLakeDirectoryClientMock.Verify(x => x.GetPropertiesAsync(null, default), Times.AtLeastOnce);
