@@ -42,7 +42,8 @@ namespace DataCatalog.Api.Services.Storage
                 {
                     ProvisionDatasetStatusEnum.Pending => null,
                     ProvisionDatasetStatusEnum.Failed => throw new Exception("Dataset was not provisioned correctly"),
-                    _ => await GetDirectoryMetadataAsync(datasetId.ToString())
+                    ProvisionDatasetStatusEnum.Succeeded or null => await GetDirectoryMetadataAsync(datasetId.ToString()),
+                    _ => throw new Exception("Dataset has unknown provisioning status")
                 };
             }
             catch (Azure.RequestFailedException rfe)
