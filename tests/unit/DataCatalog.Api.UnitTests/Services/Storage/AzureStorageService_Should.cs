@@ -43,7 +43,7 @@ namespace DataCatalog.Api.UnitTests.Services.Storage
             var sut = new AzureStorageService(dataLakeServiceClientMock.Object, loggerMock.Object);
 
             // Act
-            var metaData = await sut.GetDirectoryMetadataAsync(path);
+            var metaData = await sut.GetDirectoryMetadataWithRetry(path);
 
             // Assert
             dataLakeDirectoryClientMock.Verify(x => x.GetPropertiesAsync(null, default), Times.Once);
@@ -75,10 +75,10 @@ namespace DataCatalog.Api.UnitTests.Services.Storage
             var sut = new AzureStorageService(dataLakeServiceClientMock.Object, loggerMock.Object);
 
             // Act
-            var metaData = await sut.GetDirectoryMetadataAsync(path);
+            var metaData = await sut.GetDirectoryMetadataWithRetry(path);
 
             // Assert
-            dataLakeDirectoryClientMock.Verify(x => x.GetPropertiesAsync(null, default), Times.Once);
+            dataLakeDirectoryClientMock.Verify(x => x.GetPropertiesAsync(null, default), Times.AtLeastOnce);
             metaData.ShouldBeNull();
         }
 
@@ -107,10 +107,10 @@ namespace DataCatalog.Api.UnitTests.Services.Storage
             var sut = new AzureStorageService(dataLakeServiceClientMock.Object, loggerMock.Object);
 
             // Act
-            var ex = await Assert.ThrowsAsync<Exception>(() => sut.GetDirectoryMetadataAsync(path));
+            var ex = await Assert.ThrowsAsync<Exception>(() => sut.GetDirectoryMetadataWithRetry(path));
 
             // Assert
-            dataLakeDirectoryClientMock.Verify(x => x.GetPropertiesAsync(null, default), Times.Once);
+            dataLakeDirectoryClientMock.Verify(x => x.GetPropertiesAsync(null, default), Times.AtLeastOnce);
             ex.ShouldBe(e);
         }
 

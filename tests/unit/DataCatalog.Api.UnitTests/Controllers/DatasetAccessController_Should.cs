@@ -38,7 +38,7 @@ namespace DataCatalog.Api.UnitTests.Controllers
             // Arrange
             metadata.Add(GroupConstants.ReaderGroup, readerGroupId);
             metadata.Add(GroupConstants.WriterGroup, writerGroupId);
-            storageServiceMock.Setup(x => x.GetDirectoryMetadataAsync(datasetId.ToString())).ReturnsAsync(metadata);
+            storageServiceMock.Setup(x => x.GetDirectoryMetadataWithRetry(datasetId.ToString())).ReturnsAsync(metadata);
             activeDirectoryServiceMock.Setup(x => x.GetGroupMembersAsync(readerGroupId)).ReturnsAsync(readers);
             activeDirectoryServiceMock.Setup(x => x.GetGroupMembersAsync(writerGroupId)).ReturnsAsync(writers);
 
@@ -46,7 +46,7 @@ namespace DataCatalog.Api.UnitTests.Controllers
             var result = await sut.GetAccessList(datasetId);
 
             // Assert
-            storageServiceMock.Verify(x => x.GetDirectoryMetadataAsync(datasetId.ToString()), Times.Once());
+            storageServiceMock.Verify(x => x.GetDirectoryMetadataWithRetry(datasetId.ToString()), Times.Once());
             result.Result.ShouldBeOfType(typeof(OkObjectResult));
             var okResult = (OkObjectResult)result.Result;
             var value = (DatasetAccessListResponse)okResult.Value;
@@ -73,13 +73,13 @@ namespace DataCatalog.Api.UnitTests.Controllers
         {
             // Arrange
             IDictionary<string, string> metadata = null;
-            storageServiceMock.Setup(x => x.GetDirectoryMetadataAsync(datasetId.ToString())).ReturnsAsync(metadata);
+            storageServiceMock.Setup(x => x.GetDirectoryMetadataWithRetry(datasetId.ToString())).ReturnsAsync(metadata);
 
             // Act
             var result = await sut.GetAccessList(datasetId);
 
             // Assert
-            storageServiceMock.Verify(x => x.GetDirectoryMetadataAsync(datasetId.ToString()), Times.Once());
+            storageServiceMock.Verify(x => x.GetDirectoryMetadataWithRetry(datasetId.ToString()), Times.Once());
             result.Result.ShouldBeOfType(typeof(NotFoundResult));
         }
 
@@ -96,14 +96,14 @@ namespace DataCatalog.Api.UnitTests.Controllers
         {
             // Arrange
             metadata.Add(GroupConstants.ReaderGroup, readerGroupId);
-            storageServiceMock.Setup(x => x.GetDirectoryMetadataAsync(datasetId.ToString())).ReturnsAsync(metadata);
+            storageServiceMock.Setup(x => x.GetDirectoryMetadataWithRetry(datasetId.ToString())).ReturnsAsync(metadata);
             
             // Act
             var result = await sut.RemoveReadDataAccessMember(datasetId, memberId);
 
             // Assert
             result.ShouldBeOfType(typeof(OkResult));
-            storageServiceMock.Verify(x => x.GetDirectoryMetadataAsync(datasetId.ToString()), Times.Once);
+            storageServiceMock.Verify(x => x.GetDirectoryMetadataWithRetry(datasetId.ToString()), Times.Once);
             activeDirectoryServiceMock.Verify(x => x.RemoveGroupMemberAsync(readerGroupId, memberId.ToString()), Times.Once);
         }
 
@@ -133,14 +133,14 @@ namespace DataCatalog.Api.UnitTests.Controllers
             [Greedy] DatasetAccessController sut)
         {
             // Arrange
-            storageServiceMock.Setup(x => x.GetDirectoryMetadataAsync(datasetId.ToString())).ReturnsAsync(metadata);
+            storageServiceMock.Setup(x => x.GetDirectoryMetadataWithRetry(datasetId.ToString())).ReturnsAsync(metadata);
 
             // Act
             var result = await sut.RemoveReadDataAccessMember(datasetId, memberId);
 
             // Assert
             result.ShouldBeOfType(typeof(NotFoundResult));
-            storageServiceMock.Verify(x => x.GetDirectoryMetadataAsync(datasetId.ToString()), Times.Once);
+            storageServiceMock.Verify(x => x.GetDirectoryMetadataWithRetry(datasetId.ToString()), Times.Once);
         }
 
         [Theory]
@@ -156,14 +156,14 @@ namespace DataCatalog.Api.UnitTests.Controllers
         {
             // Arrange
             metadata.Add(GroupConstants.WriterGroup, writerGroupId);
-            storageServiceMock.Setup(x => x.GetDirectoryMetadataAsync(datasetId.ToString())).ReturnsAsync(metadata);
+            storageServiceMock.Setup(x => x.GetDirectoryMetadataWithRetry(datasetId.ToString())).ReturnsAsync(metadata);
 
             // Act
             var result = await sut.RemoveWriteDataAccessMember(datasetId, memberId);
 
             // Assert
             result.ShouldBeOfType(typeof(OkResult));
-            storageServiceMock.Verify(x => x.GetDirectoryMetadataAsync(datasetId.ToString()), Times.Once);
+            storageServiceMock.Verify(x => x.GetDirectoryMetadataWithRetry(datasetId.ToString()), Times.Once);
             activeDirectoryServiceMock.Verify(x => x.RemoveGroupMemberAsync(writerGroupId, memberId.ToString()), Times.Once);
         }
 
@@ -193,14 +193,14 @@ namespace DataCatalog.Api.UnitTests.Controllers
             [Greedy] DatasetAccessController sut)
         {
             // Arrange
-            storageServiceMock.Setup(x => x.GetDirectoryMetadataAsync(datasetId.ToString())).ReturnsAsync(metadata);
+            storageServiceMock.Setup(x => x.GetDirectoryMetadataWithRetry(datasetId.ToString())).ReturnsAsync(metadata);
 
             // Act
             var result = await sut.RemoveWriteDataAccessMember(datasetId, memberId);
 
             // Assert
             result.ShouldBeOfType(typeof(NotFoundResult));
-            storageServiceMock.Verify(x => x.GetDirectoryMetadataAsync(datasetId.ToString()), Times.Once);
+            storageServiceMock.Verify(x => x.GetDirectoryMetadataWithRetry(datasetId.ToString()), Times.Once);
         }
 
         [Theory]
@@ -217,7 +217,7 @@ namespace DataCatalog.Api.UnitTests.Controllers
         {
             // Arrange
             metadata.Add(GroupConstants.ReaderGroup, readerGroupId);
-            storageServiceMock.Setup(x => x.GetDirectoryMetadataAsync(datasetId.ToString())).ReturnsAsync(metadata);
+            storageServiceMock.Setup(x => x.GetDirectoryMetadataWithRetry(datasetId.ToString())).ReturnsAsync(metadata);
             activeDirectoryServiceMock.Setup(x => x.GetAccessMemberAsync(addDatasetAccessMemberRequest.MemberId.ToString()))
                 .ReturnsAsync(accessMember);
 
@@ -231,7 +231,7 @@ namespace DataCatalog.Api.UnitTests.Controllers
             dataAccessEntryResult.Id.ShouldBe(accessMember.Id);
             dataAccessEntryResult.Name.ShouldBe(accessMember.Name);
             dataAccessEntryResult.MemberType.ShouldBe(accessMember.Type.EnumNameToDescription());
-            storageServiceMock.Verify(x => x.GetDirectoryMetadataAsync(datasetId.ToString()), Times.Once);
+            storageServiceMock.Verify(x => x.GetDirectoryMetadataWithRetry(datasetId.ToString()), Times.Once);
             activeDirectoryServiceMock.Verify(
                 x => x.AddGroupMemberAsync(readerGroupId, addDatasetAccessMemberRequest.MemberId.ToString()),
                 Times.Once);
@@ -251,7 +251,7 @@ namespace DataCatalog.Api.UnitTests.Controllers
         {
             // Arrange
             metadata.Add(GroupConstants.WriterGroup, writerGroupId);
-            storageServiceMock.Setup(x => x.GetDirectoryMetadataAsync(datasetId.ToString())).ReturnsAsync(metadata);
+            storageServiceMock.Setup(x => x.GetDirectoryMetadataWithRetry(datasetId.ToString())).ReturnsAsync(metadata);
             activeDirectoryServiceMock.Setup(x => x.GetAccessMemberAsync(addDatasetAccessMemberRequest.MemberId.ToString()))
                 .ReturnsAsync(accessMember);
 
@@ -265,7 +265,7 @@ namespace DataCatalog.Api.UnitTests.Controllers
             dataAccessEntryResult.Id.ShouldBe(accessMember.Id);
             dataAccessEntryResult.Name.ShouldBe(accessMember.Name);
             dataAccessEntryResult.MemberType.ShouldBe(accessMember.Type.EnumNameToDescription());
-            storageServiceMock.Verify(x => x.GetDirectoryMetadataAsync(datasetId.ToString()), Times.Once);
+            storageServiceMock.Verify(x => x.GetDirectoryMetadataWithRetry(datasetId.ToString()), Times.Once);
             activeDirectoryServiceMock.Verify(
                 x => x.AddGroupMemberAsync(writerGroupId, addDatasetAccessMemberRequest.MemberId.ToString()),
                 Times.Once);
@@ -286,7 +286,7 @@ namespace DataCatalog.Api.UnitTests.Controllers
 
             // Assert
             result.Result.ShouldBeOfType(typeof(NotFoundResult));
-            storageServiceMock.Verify(x => x.GetDirectoryMetadataAsync(datasetId.ToString()), Times.Once);
+            storageServiceMock.Verify(x => x.GetDirectoryMetadataWithRetry(datasetId.ToString()), Times.Once);
         }
 
         [Theory]
@@ -304,7 +304,7 @@ namespace DataCatalog.Api.UnitTests.Controllers
 
             // Assert
             result.Result.ShouldBeOfType(typeof(NotFoundResult));
-            storageServiceMock.Verify(x => x.GetDirectoryMetadataAsync(datasetId.ToString()), Times.Once);
+            storageServiceMock.Verify(x => x.GetDirectoryMetadataWithRetry(datasetId.ToString()), Times.Once);
         }
 
         [Theory]
@@ -317,14 +317,14 @@ namespace DataCatalog.Api.UnitTests.Controllers
             [Greedy] DatasetAccessController sut)
         {
             // Arrange
-            storageServiceMock.Setup(x => x.GetDirectoryMetadataAsync(datasetId.ToString())).ReturnsAsync(metadata);
+            storageServiceMock.Setup(x => x.GetDirectoryMetadataWithRetry(datasetId.ToString())).ReturnsAsync(metadata);
 
             // Act
             var result = await sut.AddReadAccessMember(datasetId, addDatasetAccessMemberRequest);
 
             // Assert
             result.Result.ShouldBeOfType(typeof(NotFoundResult));
-            storageServiceMock.Verify(x => x.GetDirectoryMetadataAsync(datasetId.ToString()), Times.Once);
+            storageServiceMock.Verify(x => x.GetDirectoryMetadataWithRetry(datasetId.ToString()), Times.Once);
         }
 
         [Theory]
@@ -337,14 +337,14 @@ namespace DataCatalog.Api.UnitTests.Controllers
             [Greedy] DatasetAccessController sut)
         {
             // Arrange
-            storageServiceMock.Setup(x => x.GetDirectoryMetadataAsync(datasetId.ToString())).ReturnsAsync(metadata);
+            storageServiceMock.Setup(x => x.GetDirectoryMetadataWithRetry(datasetId.ToString())).ReturnsAsync(metadata);
 
             // Act
             var result = await sut.AddWriteAccessMember(datasetId, addDatasetAccessMemberRequest);
 
             // Assert
             result.Result.ShouldBeOfType(typeof(NotFoundResult));
-            storageServiceMock.Verify(x => x.GetDirectoryMetadataAsync(datasetId.ToString()), Times.Once);
+            storageServiceMock.Verify(x => x.GetDirectoryMetadataWithRetry(datasetId.ToString()), Times.Once);
         }
 
         [Theory]

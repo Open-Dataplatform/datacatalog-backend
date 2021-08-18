@@ -9,6 +9,6 @@ namespace DataCatalog.Api.Messages
         public string Container { get; set; }
         public string Hierarchy { get; set; }
         public string Owner { get; set; }
-        public bool Public { get; set; }
+        public bool AddAllUsersGroup { get; set; }
     }
 }

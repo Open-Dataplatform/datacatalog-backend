@@ -19,8 +19,9 @@ namespace DataCatalog.Api.Services
         private readonly Current _current;
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
+        private readonly IPermissionUtils _permissionUtils;
 
-        public DatasetGroupService(Current current, IDatasetGroupRepository datasetGroupRepository, IMemberRepository memberRepository, IDatasetRepository datasetRepository, IMapper mapper, IUnitOfWork unitOfWork)
+        public DatasetGroupService(Current current, IDatasetGroupRepository datasetGroupRepository, IMemberRepository memberRepository, IDatasetRepository datasetRepository, IMapper mapper, IUnitOfWork unitOfWork, IPermissionUtils permissionUtils)
         {
             _datasetGroupRepository = datasetGroupRepository;
             _memberRepository = memberRepository;
@@ -28,6 +29,7 @@ namespace DataCatalog.Api.Services
             _unitOfWork = unitOfWork;
             _mapper = mapper;
             _current = current;
+            _permissionUtils = permissionUtils;
         }
 
         public async Task<IEnumerable<Data.Domain.DatasetGroup>> ListAsync()

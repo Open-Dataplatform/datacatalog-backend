@@ -5,6 +5,6 @@ namespace DataCatalog.Api.Services.Storage
 {
     public interface IStorageService
     {
-        Task<IDictionary<string, string>> GetDirectoryMetadataAsync(string path);
+        Task<IDictionary<string, string>> GetDirectoryMetadataWithRetry(string path);
     }
 }

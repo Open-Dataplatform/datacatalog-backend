@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Azure.Storage.Files.DataLake;
 using Microsoft.Extensions.Logging;
+using Polly;
 
 namespace DataCatalog.Api.Services.Storage
 {
@@ -21,15 +22,16 @@ namespace DataCatalog.Api.Services.Storage
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
-        public async Task<IDictionary<string,string>> GetDirectoryMetadataAsync(string path)
+        public async Task<IDictionary<string,string>> GetDirectoryMetadataWithRetry(string path)
         {
-            var fileSystemClient = _dataLakeServiceClient.GetFileSystemClient("datasets");
-            var directoryClient = fileSystemClient.GetDirectoryClient(path);
-
             try
             {
-                var directoryProperties = await directoryClient.GetPropertiesAsync();
-                return directoryProperties.Value.Metadata;
+                // Use Polly to wait and retry on RequestFailedExceptions.
+                // This is relevant because the meta data is unavailable immediately after creating a new dataset 
+                return await Policy
+                    .Handle<Azure.RequestFailedException>()
+                    .WaitAndRetryAsync(4, retryAttempt => TimeSpan.FromSeconds(1))
+                    .ExecuteAsync(() => GetDirectoryMetadataAsync(path));
             }
             catch (Azure.RequestFailedException rfe)
             {
@@ -41,6 +43,16 @@ namespace DataCatalog.Api.Services.Storage
                 _logger.LogError(e, "Unexpected error occurred when loading metadata properties for the path {Path}", path);
                 throw;
             }
+        }
+
+        private async Task<IDictionary<string,string>> GetDirectoryMetadataAsync(string path)
+        {
+            var fileSystemClient = _dataLakeServiceClient.GetFileSystemClient("datasets");
+            var directoryClient = fileSystemClient.GetDirectoryClient(path);
+
+            var directoryProperties = await directoryClient.GetPropertiesAsync();
+            return directoryProperties.Value.Metadata;
+
         }
     }
 }

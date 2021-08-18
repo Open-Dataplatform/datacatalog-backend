@@ -37,18 +37,23 @@ namespace DataCatalog.Api.UnitTests.Controllers
             // Assert
             result.Result.ShouldBeOfType(typeof(OkObjectResult));
             datasetServiceMock.Verify(x => x.UpdateAsync(request), Times.Once);
-            storageServiceMock.Verify(x => x.GetDirectoryMetadataAsync(request.Id.ToString()), Times.Once);
+            storageServiceMock.Verify(x => x.GetDirectoryMetadataWithRetry(request.Id.ToString()), Times.Once);
         }
 
         [Theory]
         [MapperInlineAutoMoq(Confidentiality.Internal)]
         [MapperInlineAutoMoq(Confidentiality.Confidential)]
         [MapperInlineAutoMoq(Confidentiality.StrictlyConfidential)]
-        public async Task Correctly_Add_All_Users_Group_When_Confidentiality_Is_Updated_To_Public(
+        [MapperInlineAutoMoq(DatasetStatus.Archived)]
+        [MapperInlineAutoMoq(DatasetStatus.Draft)]
+        [MapperInlineAutoMoq(DatasetStatus.Published)]
+        public async Task Correctly_Add_All_Users_Group_When_Confidentiality_Is_Updated_To_Public_And_Published(
             Confidentiality confidentiality,
+            DatasetStatus status,
             DatasetUpdateRequest request,
             IDictionary<string, string> metadata,
             Dataset oldDataset,
+            Dataset newDataset,
             string readerGroupId,
             string allUsersGroupId,
             [Frozen] Mock<IGroupService> activeDirectoryGroupServiceMock,
@@ -59,11 +64,16 @@ namespace DataCatalog.Api.UnitTests.Controllers
         {
             // Arrange
             request.Confidentiality = Confidentiality.Public;
+            request.Status = DatasetStatus.Published;
+            newDataset.Confidentiality = request.Confidentiality;
+            newDataset.Status = request.Status;
             oldDataset.Confidentiality = confidentiality;
+            oldDataset.Status = status;
             allUsersProviderMock.Setup(x => x.GetAllUsersGroup()).Returns(allUsersGroupId);
             metadata.Add(GroupConstants.ReaderGroup, readerGroupId);
-            storageServiceMock.Setup(x => x.GetDirectoryMetadataAsync(request.Id.ToString())).ReturnsAsync(metadata);
+            storageServiceMock.Setup(x => x.GetDirectoryMetadataWithRetry(request.Id.ToString())).ReturnsAsync(metadata);
             datasetServiceMock.Setup(x => x.FindByIdAsync(request.Id)).ReturnsAsync(oldDataset);
+            datasetServiceMock.Setup(x => x.UpdateAsync(request)).ReturnsAsync(newDataset);
             
             // Act
             var result = await sut.PutAsync(request);
@@ -78,8 +88,12 @@ namespace DataCatalog.Api.UnitTests.Controllers
         [MapperInlineAutoMoq(Confidentiality.Internal)]
         [MapperInlineAutoMoq(Confidentiality.Confidential)]
         [MapperInlineAutoMoq(Confidentiality.StrictlyConfidential)]
+        [MapperInlineAutoMoq(DatasetStatus.Archived)]
+        [MapperInlineAutoMoq(DatasetStatus.Draft)]
+        [MapperInlineAutoMoq(DatasetStatus.Published)]
         public async Task Correctly_Remove_All_Users_Group_When_Confidentiality_Is_Not_Public(
             Confidentiality confidentiality,
+            DatasetStatus status,
             DatasetUpdateRequest request,
             IDictionary<string, string> metadata,
             Dataset oldDataset,
@@ -93,10 +107,12 @@ namespace DataCatalog.Api.UnitTests.Controllers
         {
             // Arrange
             request.Confidentiality = confidentiality;
+            request.Status = status;
             oldDataset.Confidentiality = Confidentiality.Public;
+            oldDataset.Status = DatasetStatus.Published;
             allUsersProviderMock.Setup(x => x.GetAllUsersGroup()).Returns(allUsersGroupId);
             metadata.Add(GroupConstants.ReaderGroup, readerGroupId);
-            storageServiceMock.Setup(x => x.GetDirectoryMetadataAsync(request.Id.ToString())).ReturnsAsync(metadata);
+            storageServiceMock.Setup(x => x.GetDirectoryMetadataWithRetry(request.Id.ToString())).ReturnsAsync(metadata);
             datasetServiceMock.Setup(x => x.FindByIdAsync(request.Id)).ReturnsAsync(oldDataset);
 
             // Act
