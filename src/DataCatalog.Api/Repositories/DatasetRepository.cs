@@ -97,6 +97,7 @@ namespace DataCatalog.Api.Repositories
         {
             var dataset = await _context.Datasets.SingleAsync(d => d.Id == id);
             dataset.ProvisionStatus = status;
+            dataset.ModifiedDate = DateTime.UtcNow;
         }
 
         private IQueryable<Dataset> GetIncludeQueryable()
