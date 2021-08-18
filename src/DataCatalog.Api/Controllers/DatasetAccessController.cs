@@ -43,7 +43,7 @@ namespace DataCatalog.Api.Controllers
             var directoryMetadata = await _storageService.GetDirectoryMetadataWithRetry(id);
 
             if (directoryMetadata == null)
-                return NotFound();
+                return NotFound("Dataset access assignment not ready yet");
             
             directoryMetadata.TryGetValue(GroupConstants.ReaderGroup, out var readerGroupId);
             directoryMetadata.TryGetValue(GroupConstants.WriterGroup, out var writerGroupId);
