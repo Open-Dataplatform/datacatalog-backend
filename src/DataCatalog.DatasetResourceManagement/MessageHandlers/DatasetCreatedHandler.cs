@@ -60,20 +60,21 @@ namespace DataCatalog.DatasetResourceManagement.MessageHandlers
 
                 await _storageService.CreateDirectoryIfNeeded(Constants.Container, path);
 
-                string readerGroupId;
-                string writerGroupId;
+                // Create reader and writer groups in parallel as they are both very slow and independent of each other
+                var readerGroupIdTask = _activeDirectoryGroupProvider.ProvideGroupAsync(
+                    GenerateGroupDisplayName(datasetCreatedMessage.DatasetId, ReadWriteGroup.Read),
+                    GenerateGroupDescription(datasetCreatedMessage, ReadWriteGroup.Read), 
+                    new[] { datasetCreatedMessage.Owner });
+
+                var writerGroupIdTask = _activeDirectoryGroupProvider.ProvideGroupAsync(
+                    GenerateGroupDisplayName(datasetCreatedMessage.DatasetId, ReadWriteGroup.Write),
+                    GenerateGroupDescription(datasetCreatedMessage, ReadWriteGroup.Write));
+
+                var readerGroupId = await readerGroupIdTask;
+                var writerGroupId = await writerGroupIdTask;
 
                 await using (var lease = await _storageService.AcquireLeaseAsync(Constants.Container, path))
                 {
-                    readerGroupId = await _activeDirectoryGroupProvider.ProvideGroupAsync(
-                        GenerateGroupDisplayName(datasetCreatedMessage.DatasetId, ReadWriteGroup.Read),
-                        GenerateGroupDescription(datasetCreatedMessage, ReadWriteGroup.Read), 
-                        new[] { datasetCreatedMessage.Owner });
-
-                    writerGroupId = await _activeDirectoryGroupProvider.ProvideGroupAsync(
-                        GenerateGroupDisplayName(datasetCreatedMessage.DatasetId, ReadWriteGroup.Write),
-                        GenerateGroupDescription(datasetCreatedMessage, ReadWriteGroup.Write));
-
                     await _accessControlListService.SetGroupsInAccessControlListAsync(new CreateGroupsInAccessControlList
                     {
                         StorageContainer = Constants.Container,
