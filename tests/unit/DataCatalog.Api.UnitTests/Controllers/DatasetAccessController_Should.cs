@@ -80,7 +80,7 @@ namespace DataCatalog.Api.UnitTests.Controllers
 
             // Assert
             storageServiceMock.Verify(x => x.GetDirectoryMetadataWithRetry(datasetId), Times.Once());
-            result.Result.ShouldBeOfType(typeof(NotFoundResult));
+            result.Result.ShouldBeOfType(typeof(NotFoundObjectResult));
         }
 
         [Theory]
