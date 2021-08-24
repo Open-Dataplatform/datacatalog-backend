@@ -69,9 +69,6 @@ namespace DataCatalog.Api.Repositories
                     case "published":
                         query = query.Where(a => a.Status == DatasetStatus.Published);
                         break;
-                    case "archived":
-                        query = query.Where(a => a.Status == DatasetStatus.Archived);
-                        break;
                     case "source":
                         query = query.Where(a => a.Status == DatasetStatus.Source);
                         break;
@@ -128,7 +125,7 @@ namespace DataCatalog.Api.Repositories
                    where ds.Name.Contains(t)
                          || t == "draft" && ds.Status == DatasetStatus.Draft
                          || t == "published" && ds.Status == DatasetStatus.Published
-                         || t == "archived" && ds.Status == DatasetStatus.Archived
+                         || t == "source" && ds.Status == DatasetStatus.Source
                          || ds.Description != null && ds.Description.Contains(t)
                          || ds.DatasetCategories.Any(b => b.Category.Name.Contains(t))
                          || ds.DataContracts.Any(b => b.DataSource.Name.Contains(t) || b.DataSource.Description != null && b.DataSource.Description.Contains(t))
