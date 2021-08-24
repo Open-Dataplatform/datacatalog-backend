@@ -138,7 +138,9 @@ namespace DataCatalog.Api.Controllers
         public async Task<ActionResult> DeleteAsync(Guid request)
         {
             await _datasetService.DeleteAsync(request);
-
+            // TODO: KLD: Should be a soft-delete as the first go.
+            // TODO: KLD: When we hard delete we need to also delete data within Azure Storage. Potentially also interact with the AADProvisioner to handle permissions? 
+            // Open problem: How do we delete data from Azure Storage based on a call from a data steward who does not have access to the data? Maybe give caller permissions, then delete, then remove permissions again?
             return Ok();
         }
 
