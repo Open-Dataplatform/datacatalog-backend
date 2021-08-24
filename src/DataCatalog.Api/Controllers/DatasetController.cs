@@ -133,9 +133,8 @@ namespace DataCatalog.Api.Controllers
         /// Delete a dataset
         /// </summary>
         /// <param name="request">The id of the dataset to delete</param>
-        /// <remarks>Datasets are not physically deleted but in stead marked as Archived</remarks>
         [AuthorizeRoles(Role.Admin, Role.DataSteward)]
-        [HttpDelete]
+        [HttpDelete("{request:guid}")]
         public async Task<ActionResult> DeleteAsync(Guid request)
         {
             await _datasetService.DeleteAsync(request);
