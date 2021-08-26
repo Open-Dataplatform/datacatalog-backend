@@ -130,15 +130,15 @@ namespace DataCatalog.Api.Controllers
        
 
         /// <summary>
-        /// Delete a dataset
+        /// (Soft) Delete a dataset
         /// </summary>
         /// <param name="request">The id of the dataset to delete</param>
-        /// <remarks>Datasets are not physically deleted but in stead marked as Archived</remarks>
+        /// <remarks>Datasets are only soft-deleted using this endpoint. This means that neither data nor dataset is removed</remarks>
         [AuthorizeRoles(Role.Admin, Role.DataSteward)]
         [HttpDelete]
         public async Task<ActionResult> DeleteAsync(Guid request)
         {
-            await _datasetService.DeleteAsync(request);
+            await _datasetService.SoftDeleteAsync(request);
 
             return Ok();
         }

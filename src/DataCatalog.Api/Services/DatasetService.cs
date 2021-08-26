@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.Entity.Core;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -164,9 +165,24 @@ namespace DataCatalog.Api.Services
             var existingDataset = await _datasetRepository.FindByIdAsync(id);
 
             if (existingDataset == null)
-                return;
+            {
+                throw new ObjectNotFoundException($"Could not find dataset with id {id}");
+            }
 
             _datasetRepository.Remove(existingDataset);
+            await _unitOfWork.CompleteAsync();
+        }
+
+        public async Task SoftDeleteAsync(Guid id)
+        {
+            var existingDataset = await _datasetRepository.FindByIdAsync(id);
+
+            if (existingDataset == null)
+            {
+                throw new ObjectNotFoundException($"Could not find dataset with id {id}");
+            }
+
+            existingDataset.IsDeleted = true;
             await _unitOfWork.CompleteAsync();
         }
 

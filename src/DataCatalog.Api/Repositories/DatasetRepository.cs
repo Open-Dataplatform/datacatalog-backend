@@ -107,6 +107,7 @@ namespace DataCatalog.Api.Repositories
             if (_permissionUtils.FilterUnpublishedDatasets)
                 query = query.Where(a => a.Status == DatasetStatus.Published);
 
+            query = query.Where(dataset => !dataset.IsDeleted);
             query = query.Include(a => a.DatasetCategories).ThenInclude(a => a.Category);
 
             return query;
