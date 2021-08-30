@@ -61,20 +61,30 @@ namespace DataCatalog.Api.Repositories
             if (!string.IsNullOrWhiteSpace(searchTerm))
             {
                 var term = Regex.Replace(searchTerm, @"\s+", " ").ToLower(); //Replace multiple whitespace characters with single space
-                if (term == "draft")
-                    query = query.Where(a => a.Status == DatasetStatus.Draft);
-                else if (term == "published")
-                    query = query.Where(a => a.Status == DatasetStatus.Published);
-                else if (term == "archived")
-                    query = query.Where(a => a.Status == DatasetStatus.Archived);
-                else
+                switch (term)
                 {
-                    var terms = term.Split(' ').Where(a => !string.IsNullOrWhiteSpace(a)).ToArray();
+                    case "draft":
+                        query = query.Where(a => a.Status == DatasetStatus.Draft);
+                        break;
+                    case "published":
+                        query = query.Where(a => a.Status == DatasetStatus.Published);
+                        break;
+                    case "archived":
+                        query = query.Where(a => a.Status == DatasetStatus.Archived);
+                        break;
+                    case "source":
+                        query = query.Where(a => a.Status == DatasetStatus.Source);
+                        break;
+                    default:
+                    {
+                        var terms = term.Split(' ').Where(a => !string.IsNullOrWhiteSpace(a)).ToArray();
 
-                    var unionQuery = GetSearchTermQuery(query, terms[0]);
-                    for (int i = 1; i < terms.Length; i++)
-                        unionQuery = unionQuery.Union(GetSearchTermQuery(query, terms[i]));
-                    query = unionQuery;
+                        var unionQuery = GetSearchTermQuery(query, terms[0]);
+                        for (int i = 1; i < terms.Length; i++)
+                            unionQuery = unionQuery.Union(GetSearchTermQuery(query, terms[i]));
+                        query = unionQuery;
+                        break;
+                    }
                 }
             }
 

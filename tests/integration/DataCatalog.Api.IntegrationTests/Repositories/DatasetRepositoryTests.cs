@@ -24,6 +24,7 @@ namespace DataCatalog.Api.IntegrationTests.Repositories
         private readonly List<Dataset> _datasets;
         private readonly Category _commonCategory;
         private readonly PermissionUtils _adminPermissionUtils;
+        private readonly PermissionUtils _dataStewardPermissionUtils;
         private readonly PermissionUtils _userPermissionUtils;
 
         public DatasetRepositoryTests()
@@ -33,12 +34,13 @@ namespace DataCatalog.Api.IntegrationTests.Repositories
 
             _fixture.Behaviors.OfType<ThrowingRecursionBehavior>().ToList().ForEach(b => _fixture.Behaviors.Remove(b));
             _fixture.Behaviors.Add(new OmitOnRecursionBehavior());
-            _fixture.RepeatCount = 12;
+            _fixture.RepeatCount = 16;
 
             _datasets = _fixture.Create<IEnumerable<Dataset>>().ToList();
             _datasets.Take(4).ToList().ForEach(d => d.Status = DatasetStatus.Draft);
             _datasets.Skip(4).Take(4).ToList().ForEach(d => d.Status = DatasetStatus.Published);
             _datasets.Skip(8).Take(4).ToList().ForEach(d => d.Status = DatasetStatus.Archived);
+            _datasets.Skip(12).Take(4).ToList().ForEach(d => d.Status = DatasetStatus.Source);
             var date = new DateTime(2020, 11, 20);
             _datasets.Take(4).ToList().ForEach(d => { d.CreatedDate = date; date = date.AddYears(-1); });
             date = new DateTime(2017, 11, 20);
@@ -79,6 +81,16 @@ namespace DataCatalog.Api.IntegrationTests.Repositories
                 }
             };
             _adminPermissionUtils = new PermissionUtils(adminCurrent);
+            
+            var datastewardCurrent = new Current
+            {
+                MemberId = Guid.NewGuid(),
+                Roles = new List<Role>
+                {
+                    Role.DataSteward
+                }
+            };
+            _dataStewardPermissionUtils = new PermissionUtils(datastewardCurrent);
             
             var userCurrent = new Current
             {
@@ -163,7 +175,7 @@ namespace DataCatalog.Api.IntegrationTests.Repositories
             // ASSERT
             var enumerable = result as Dataset[] ?? result.ToArray();
             enumerable.Should().NotBeNull();
-            enumerable.Length.Should().Be(12);
+            enumerable.Length.Should().Be(16);
         }
 
         [Fact]
@@ -368,6 +380,21 @@ namespace DataCatalog.Api.IntegrationTests.Repositories
         }
 
         [Fact]
+        public async Task GetDatasetsBySearchTermQuery_SearchSourceTerm_ShouldReturnSourceDatasets()
+        {
+            // ARRANGE
+            var datasetRepository = new DatasetRepository(_context, _dataStewardPermissionUtils);
+
+            // ACT
+            var result = await datasetRepository.GetDatasetsBySearchTermQueryAsync("sourcE", SortType.ByNameAscending, 0, 0, 0);
+
+            // ASSERT
+            var enumerable = result as Dataset[] ?? result.ToArray();
+            enumerable.Should().NotBeNull();
+            enumerable.Length.Should().Be(4);
+        }
+
+        [Fact]
         public async Task GetDatasetsBySearchTermQuery_SearchOtherTerm_ShouldReturnArchivedDatasets()
         {
             // ARRANGE
@@ -380,6 +407,21 @@ namespace DataCatalog.Api.IntegrationTests.Repositories
             var enumerable = result as Dataset[] ?? result.ToArray();
             enumerable.Should().NotBeNull();
             enumerable.Length.Should().Be(8);
+        }
+        
+        [Fact]
+        public async Task GetDatasetsBySearchTermQuery_SearchSourceTerm_UserAccess_ShouldNotReturnSourceDatasets()
+        {
+            // ARRANGE
+            var datasetRepository = new DatasetRepository(_context, _userPermissionUtils);
+
+            // ACT
+            var result = await datasetRepository.GetDatasetsBySearchTermQueryAsync("sourcE", SortType.ByNameAscending, 0, 0, 0);
+
+            // ASSERT
+            var enumerable = result as Dataset[] ?? result.ToArray();
+            enumerable.Should().NotBeNull();
+            enumerable.Length.Should().Be(0);
         }
 
         [Fact]
@@ -397,7 +439,7 @@ namespace DataCatalog.Api.IntegrationTests.Repositories
             var datasets = await datasetRepository.ListSummariesAsync();
             var datasetArray = datasets as Dataset[] ?? datasets.ToArray();
             datasetArray.Should().NotBeNull();
-            datasetArray.Length.Should().Be(13);
+            datasetArray.Length.Should().Be(17);
             datasetArray.SingleOrDefault(c => c.Id == datasetEntity.Id).Should().NotBeNull();
         }
 
