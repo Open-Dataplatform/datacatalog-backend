@@ -74,6 +74,11 @@ namespace DataCatalog.Api.Repositories
                         break;
                     default:
                     {
+                        if (Guid.TryParse(term, out var guid))
+                        {
+                            query = query.Where(a => a.Id == guid);
+                            break;
+                        }
                         var terms = term.Split(' ').Where(a => !string.IsNullOrWhiteSpace(a)).ToArray();
 
                         var unionQuery = GetSearchTermQuery(query, terms[0]);
