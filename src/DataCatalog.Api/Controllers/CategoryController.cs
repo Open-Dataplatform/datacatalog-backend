@@ -72,6 +72,9 @@ namespace DataCatalog.Api.Controllers
         public async Task<ActionResult<Guid>> PostAsync([FromBody] CategoryCreateRequest request)
         {
             var category = _mapper.Map<CategoryCreateRequest, Data.Domain.Category>(request);
+            category.CreatedDate = DateTime.UtcNow;
+            category.ModifiedDate = DateTime.UtcNow;
+            
             await _categoryService.SaveAsync(category);
 
             return Ok(category.Id);
