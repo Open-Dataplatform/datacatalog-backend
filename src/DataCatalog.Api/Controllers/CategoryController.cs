@@ -69,15 +69,16 @@ namespace DataCatalog.Api.Controllers
         /// <returns>The created category</returns>
         [AuthorizeRoles(Role.Admin)]
         [HttpPost]
-        public async Task<ActionResult<Guid>> PostAsync([FromBody] CategoryCreateRequest request)
+        public async Task<ActionResult<CategoryResponse>> PostAsync([FromBody] CategoryCreateRequest request)
         {
             var category = _mapper.Map<CategoryCreateRequest, Data.Domain.Category>(request);
             category.CreatedDate = DateTime.UtcNow;
             category.ModifiedDate = DateTime.UtcNow;
             
-            await _categoryService.SaveAsync(category);
+            var createdCategory = await _categoryService.SaveAsync(category);
+            var result = _mapper.Map<Data.Domain.Category, CategoryResponse>(category);
 
-            return Ok(category.Id);
+            return Ok(result);
         }
 
         /// <summary>
@@ -87,12 +88,13 @@ namespace DataCatalog.Api.Controllers
         /// <returns>The updated category Id</returns>
         [AuthorizeRoles(Role.Admin)]
         [HttpPut]
-        public async Task<ActionResult<Guid>> PutAsync([FromBody] CategoryUpdateRequest request)
+        public async Task<ActionResult<CategoryResponse>> PutAsync([FromBody] CategoryUpdateRequest request)
         {
             var category = _mapper.Map<CategoryUpdateRequest, Data.Domain.Category>(request);
-            await _categoryService.UpdateAsync(category);
+            var updatedCategory = await _categoryService.UpdateAsync(category);
+            var result = _mapper.Map<Data.Domain.Category, CategoryResponse>(updatedCategory);
 
-            return Ok(category.Id);
+            return Ok(result);
         }
 
         /// <summary>
