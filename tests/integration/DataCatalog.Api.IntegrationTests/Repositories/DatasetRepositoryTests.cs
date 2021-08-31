@@ -34,13 +34,12 @@ namespace DataCatalog.Api.IntegrationTests.Repositories
 
             _fixture.Behaviors.OfType<ThrowingRecursionBehavior>().ToList().ForEach(b => _fixture.Behaviors.Remove(b));
             _fixture.Behaviors.Add(new OmitOnRecursionBehavior());
-            _fixture.RepeatCount = 16;
+            _fixture.RepeatCount = 12;
 
             _datasets = _fixture.Create<IEnumerable<Dataset>>().ToList();
             _datasets.Take(4).ToList().ForEach(d => d.Status = DatasetStatus.Draft);
             _datasets.Skip(4).Take(4).ToList().ForEach(d => d.Status = DatasetStatus.Published);
-            _datasets.Skip(8).Take(4).ToList().ForEach(d => d.Status = DatasetStatus.Archived);
-            _datasets.Skip(12).Take(4).ToList().ForEach(d => d.Status = DatasetStatus.Source);
+            _datasets.Skip(8).Take(4).ToList().ForEach(d => d.Status = DatasetStatus.Source);
             var date = new DateTime(2020, 11, 20);
             _datasets.Take(4).ToList().ForEach(d => { d.CreatedDate = date; date = date.AddYears(-1); });
             date = new DateTime(2017, 11, 20);
@@ -82,7 +81,7 @@ namespace DataCatalog.Api.IntegrationTests.Repositories
             };
             _adminPermissionUtils = new PermissionUtils(adminCurrent);
             
-            var datastewardCurrent = new Current
+            var dataStewardCurrent = new Current
             {
                 MemberId = Guid.NewGuid(),
                 Roles = new List<Role>
@@ -90,7 +89,7 @@ namespace DataCatalog.Api.IntegrationTests.Repositories
                     Role.DataSteward
                 }
             };
-            _dataStewardPermissionUtils = new PermissionUtils(datastewardCurrent);
+            _dataStewardPermissionUtils = new PermissionUtils(dataStewardCurrent);
             
             var userCurrent = new Current
             {
@@ -175,7 +174,7 @@ namespace DataCatalog.Api.IntegrationTests.Repositories
             // ASSERT
             var enumerable = result as Dataset[] ?? result.ToArray();
             enumerable.Should().NotBeNull();
-            enumerable.Length.Should().Be(16);
+            enumerable.Length.Should().Be(12);
         }
 
         [Fact]
@@ -190,6 +189,10 @@ namespace DataCatalog.Api.IntegrationTests.Repositories
             // ASSERT
             var enumerable = result as Dataset[] ?? result.ToArray();
             enumerable.Should().NotBeNull();
+            foreach (var dataset in enumerable)
+            {
+                dataset.Status.Should().Be(DatasetStatus.Published);
+            }
             enumerable.Length.Should().Be(4);
         }
 
@@ -365,21 +368,6 @@ namespace DataCatalog.Api.IntegrationTests.Repositories
         }
 
         [Fact]
-        public async Task GetDatasetsBySearchTermQuery_SearchArchived_ShouldReturnArchivedDatasets()
-        {
-            // ARRANGE
-            var datasetRepository = new DatasetRepository(_context, _adminPermissionUtils);
-
-            // ACT
-            var result = await datasetRepository.GetDatasetsBySearchTermQueryAsync(" archiVed", SortType.ByNameAscending, 0, 0, 0);
-
-            // ASSERT
-            var enumerable = result as Dataset[] ?? result.ToArray();
-            enumerable.Should().NotBeNull();
-            enumerable.ToList().ForEach(d => d.Status.Should().Be(DatasetStatus.Archived));
-        }
-
-        [Fact]
         public async Task GetDatasetsBySearchTermQuery_SearchSourceTerm_ShouldReturnSourceDatasets()
         {
             // ARRANGE
@@ -395,7 +383,7 @@ namespace DataCatalog.Api.IntegrationTests.Repositories
         }
 
         [Fact]
-        public async Task GetDatasetsBySearchTermQuery_SearchOtherTerm_ShouldReturnArchivedDatasets()
+        public async Task GetDatasetsBySearchTermQuery_SearchOtherTerm()
         {
             // ARRANGE
             var datasetRepository = new DatasetRepository(_context, _adminPermissionUtils);
@@ -439,7 +427,7 @@ namespace DataCatalog.Api.IntegrationTests.Repositories
             var datasets = await datasetRepository.ListSummariesAsync();
             var datasetArray = datasets as Dataset[] ?? datasets.ToArray();
             datasetArray.Should().NotBeNull();
-            datasetArray.Length.Should().Be(17);
+            datasetArray.Length.Should().Be(13);
             datasetArray.SingleOrDefault(c => c.Id == datasetEntity.Id).Should().NotBeNull();
         }
 

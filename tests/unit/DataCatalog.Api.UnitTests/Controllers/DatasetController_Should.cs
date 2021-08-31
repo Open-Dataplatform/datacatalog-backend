@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using AutoFixture.Xunit2;
 using DataCatalog.Api.Controllers;
@@ -44,7 +43,6 @@ namespace DataCatalog.Api.UnitTests.Controllers
         [MapperInlineAutoMoq(Confidentiality.Internal)]
         [MapperInlineAutoMoq(Confidentiality.Confidential)]
         [MapperInlineAutoMoq(Confidentiality.StrictlyConfidential)]
-        [MapperInlineAutoMoq(DatasetStatus.Archived)]
         [MapperInlineAutoMoq(DatasetStatus.Draft)]
         [MapperInlineAutoMoq(DatasetStatus.Published)]
         public async Task Correctly_Add_All_Users_Group_When_Confidentiality_Is_Updated_To_Public_And_Published(
@@ -88,7 +86,6 @@ namespace DataCatalog.Api.UnitTests.Controllers
         [MapperInlineAutoMoq(Confidentiality.Internal)]
         [MapperInlineAutoMoq(Confidentiality.Confidential)]
         [MapperInlineAutoMoq(Confidentiality.StrictlyConfidential)]
-        [MapperInlineAutoMoq(DatasetStatus.Archived)]
         [MapperInlineAutoMoq(DatasetStatus.Draft)]
         [MapperInlineAutoMoq(DatasetStatus.Published)]
         public async Task Correctly_Remove_All_Users_Group_When_Confidentiality_Is_Not_Public(

@@ -4,7 +4,6 @@
     {
         Draft,
         Published,
-        Archived,
         Source
     }
 }
