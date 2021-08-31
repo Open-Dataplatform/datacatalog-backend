@@ -163,7 +163,7 @@ namespace DataCatalog.Api.UnitTests.Services
 
             // ACT / ASSERT
             Func<Task> f = async () => await hierarchyService.UpdateAsync(hierarchyToUpdate);
-            f.Should().Throw<Exception>().WithMessage("Cyclic hierarchies are not allowed");
+            f.Should().ThrowAsync<Exception>().WithMessage("Cyclic hierarchies are not allowed");
         }
 
 

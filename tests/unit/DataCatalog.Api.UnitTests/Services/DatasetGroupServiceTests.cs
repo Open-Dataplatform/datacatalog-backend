@@ -136,7 +136,7 @@ namespace DataCatalog.Api.UnitTests.Services
 
             // Act / Assert
             Func<Task> f = async () => await datasetGroupService.SaveAsync(datasetGroup);
-            f.Should().Throw<ValidationExceptionCollection>().WithMessage("*Member not found with id*");
+            f.Should().ThrowAsync<ValidationExceptionCollection>().WithMessage("*Member not found with id*");
         }
 
         [Fact]
@@ -155,7 +155,7 @@ namespace DataCatalog.Api.UnitTests.Services
 
             // Act / Assert
             Func<Task> f = async () => await datasetGroupService.SaveAsync(datasetGroup);
-            f.Should().Throw<ValidationExceptionCollection>().WithMessage("*You can only create DatasetGroups for yourself*");
+            f.Should().ThrowAsync<ValidationExceptionCollection>().WithMessage("*You can only create DatasetGroups for yourself*");
         }
 
         [Fact]
@@ -179,7 +179,7 @@ namespace DataCatalog.Api.UnitTests.Services
 
             // Act / Assert
             Func<Task> f = async () => await datasetGroupService.SaveAsync(datasetGroup);
-            f.Should().Throw<ValidationExceptionCollection>().WithMessage($"*Dataset with id '{datasetGroup.DatasetGroupDatasets.First().DatasetId}'*");
+            f.Should().ThrowAsync<ValidationExceptionCollection>().WithMessage($"*Dataset with id '{datasetGroup.DatasetGroupDatasets.First().DatasetId}'*");
         }
 
         [Fact]
@@ -218,7 +218,7 @@ namespace DataCatalog.Api.UnitTests.Services
 
             // Act / Assert
             Func<Task> f = async () => await datasetGroupService.DeleteAsync(invalidId);
-            f.Should().Throw<NotFoundException>();
+            f.Should().ThrowAsync<NotFoundException>();
         }
 
         [Fact]
