@@ -34,7 +34,7 @@ namespace DataCatalog.Api.IntegrationTests.Repositories
             // We do not use autofixture due to un-needed complexity...
             _datasets = new List<Dataset>
             {
-                new Dataset { Id = Guid.NewGuid() },
+                new Dataset { Id = Guid.NewGuid(), IsDeleted = false},
                 new Dataset { Id = Guid.NewGuid() },
                 new Dataset { Id = Guid.NewGuid() },
                 new Dataset { Id = Guid.NewGuid() },
@@ -50,12 +50,12 @@ namespace DataCatalog.Api.IntegrationTests.Repositories
 
             var transformationDatasets = new List<TransformationDataset>
             {
-                new TransformationDataset { DatasetId = _datasets[0].Id, TransformationId = _transformations[0].Id, TransformationDirection = TransformationDirection.Source },
-                new TransformationDataset { DatasetId = _datasets[1].Id, TransformationId = _transformations[0].Id, TransformationDirection = TransformationDirection.Source },
-                new TransformationDataset { DatasetId = _datasets[2].Id, TransformationId = _transformations[0].Id, TransformationDirection = TransformationDirection.Sink },
-                new TransformationDataset { DatasetId = _datasets[3].Id, TransformationId = _transformations[1].Id, TransformationDirection = TransformationDirection.Source },
-                new TransformationDataset { DatasetId = _datasets[4].Id, TransformationId = _transformations[1].Id, TransformationDirection = TransformationDirection.Source },
-                new TransformationDataset { DatasetId = _datasets[5].Id, TransformationId = _transformations[1].Id, TransformationDirection = TransformationDirection.Sink }
+                new TransformationDataset { DatasetId = _datasets[0].Id, TransformationId = _transformations[0].Id, TransformationDirection = TransformationDirection.Source, Dataset = _datasets[0]},
+                new TransformationDataset { DatasetId = _datasets[1].Id, TransformationId = _transformations[0].Id, TransformationDirection = TransformationDirection.Source, Dataset = _datasets[1] },
+                new TransformationDataset { DatasetId = _datasets[2].Id, TransformationId = _transformations[0].Id, TransformationDirection = TransformationDirection.Sink, Dataset = _datasets[2] },
+                new TransformationDataset { DatasetId = _datasets[3].Id, TransformationId = _transformations[1].Id, TransformationDirection = TransformationDirection.Source, Dataset = _datasets[3] },
+                new TransformationDataset { DatasetId = _datasets[4].Id, TransformationId = _transformations[1].Id, TransformationDirection = TransformationDirection.Source, Dataset = _datasets[4] },
+                new TransformationDataset { DatasetId = _datasets[5].Id, TransformationId = _transformations[1].Id, TransformationDirection = TransformationDirection.Sink, Dataset = _datasets[5] }
             };
 
             _datasets.ForEach(d => _context.Datasets.Add(d));

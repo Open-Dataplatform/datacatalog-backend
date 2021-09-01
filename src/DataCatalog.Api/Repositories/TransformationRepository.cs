@@ -43,6 +43,7 @@ namespace DataCatalog.Api.Repositories
                 from t in _context.Transformations
                 let tds = t.TransformationDatasets.Where(td =>
                     td.TransformationDirection == TransformationDirection.Source
+                    && !td.Dataset.IsDeleted
                     && ids.Contains(td.DatasetId)).Select(a => a.DatasetId)
                 where tds.Any()
                 select new { t.Id, tds }).ToArrayAsync();
