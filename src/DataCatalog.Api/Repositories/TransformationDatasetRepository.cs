@@ -42,7 +42,6 @@ namespace DataCatalog.Api.Repositories
         {
             return await _context.TransformationDatasets
                 .Include(transformationDataset => transformationDataset.Dataset)
-                .Include(transformationDataset => transformationDataset.Dataset)
                 .Where(transformationDataset => !transformationDataset.Dataset.IsDeleted)
                 .Where(transformationDataset => transformationDataset.TransformationId == transformationId && transformationDataset.TransformationDirection == direction).ToArrayAsync();
         }
