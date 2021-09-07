@@ -69,12 +69,16 @@ namespace DataCatalog.Api.Controllers
         /// <returns>The created category</returns>
         [AuthorizeRoles(Role.Admin)]
         [HttpPost]
-        public async Task<ActionResult<Guid>> PostAsync([FromBody] CategoryCreateRequest request)
+        public async Task<ActionResult<CategoryResponse>> PostAsync([FromBody] CategoryCreateRequest request)
         {
             var category = _mapper.Map<CategoryCreateRequest, Data.Domain.Category>(request);
-            await _categoryService.SaveAsync(category);
+            category.CreatedDate = DateTime.UtcNow;
+            category.ModifiedDate = DateTime.UtcNow;
+            
+            var createdCategory = await _categoryService.SaveAsync(category);
+            var result = _mapper.Map<Data.Domain.Category, CategoryResponse>(category);
 
-            return Ok(category.Id);
+            return Ok(result);
         }
 
         /// <summary>
@@ -84,12 +88,13 @@ namespace DataCatalog.Api.Controllers
         /// <returns>The updated category Id</returns>
         [AuthorizeRoles(Role.Admin)]
         [HttpPut]
-        public async Task<ActionResult<Guid>> PutAsync([FromBody] CategoryUpdateRequest request)
+        public async Task<ActionResult<CategoryResponse>> PutAsync([FromBody] CategoryUpdateRequest request)
         {
             var category = _mapper.Map<CategoryUpdateRequest, Data.Domain.Category>(request);
-            await _categoryService.UpdateAsync(category);
+            var updatedCategory = await _categoryService.UpdateAsync(category);
+            var result = _mapper.Map<Data.Domain.Category, CategoryResponse>(updatedCategory);
 
-            return Ok(category.Id);
+            return Ok(result);
         }
 
         /// <summary>
@@ -98,7 +103,7 @@ namespace DataCatalog.Api.Controllers
         /// <param name="id">The id of the category to delete</param>
         /// <remarks>Categories with references to dataset cannot be deleted!</remarks>
         [AuthorizeRoles(Role.Admin)]
-        [HttpDelete]
+        [HttpDelete("{id:guid}")]
         public async Task<IActionResult> DeleteAsync(Guid id)
         {
             await _categoryService.DeleteAsync(id);

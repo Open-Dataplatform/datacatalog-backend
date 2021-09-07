@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.Entity.Core;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
@@ -52,7 +53,7 @@ namespace DataCatalog.Api.Services
             return null;
         }
 
-        public async Task SaveAsync(Category category)
+        public async Task<Category> SaveAsync(Category category)
         {
             var categoryEntity = new DataCatalog.Data.Model.Category 
                                     { 
@@ -67,14 +68,16 @@ namespace DataCatalog.Api.Services
 
             await _categoryRepository.AddAsync(categoryEntity);
             await _unitOfWork.CompleteAsync();
+
+            return _mapper.Map<Category>(categoryEntity);
         }
 
-        public async Task UpdateAsync(Category category)
+        public async Task<Category> UpdateAsync(Category category)
         {
             var existingCategory = await _categoryRepository.FindByIdAsync(category.Id);
 
             if (existingCategory == null)
-                return;
+                throw new ObjectNotFoundException($"Could not find category with id {category.Id}");
 
             existingCategory.Name = category.Name;
             existingCategory.Colour = category.Colour;
@@ -83,6 +86,8 @@ namespace DataCatalog.Api.Services
 
             _categoryRepository.Update(existingCategory);
             await _unitOfWork.CompleteAsync();
+
+            return _mapper.Map<Category>(existingCategory);
         }
 
         public async Task DeleteAsync(Guid id)
@@ -90,11 +95,15 @@ namespace DataCatalog.Api.Services
             var existingCategory = await _categoryRepository.FindByIdAsync(id);
 
             if (existingCategory == null)
-                return;
+            {
+                throw new ObjectNotFoundException($"Could not find category with id {id}");
+            }
 
             var refs = await _datasetCategoryRepository.ListAsync(id);
-            if (refs.Any())
+            if (refs.Any(category => !category.Dataset.IsDeleted))
+            {
                 throw new InvalidOperationException("This category has references to datasets and cannot de deleted");
+            }
 
             _categoryRepository.Remove(existingCategory);
             await _unitOfWork.CompleteAsync();

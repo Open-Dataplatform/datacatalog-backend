@@ -9,8 +9,8 @@ namespace DataCatalog.Api.Services
     {
         Task<IEnumerable<Category>> ListAsync(bool includeEmpty);
         Task<Category> FindByIdAsync(Guid id);
-        Task SaveAsync(Category category);
-        Task UpdateAsync(Category category);
+        Task<Category> SaveAsync(Category category);
+        Task<Category> UpdateAsync(Category category);
         Task DeleteAsync(Guid id);
     }
 }
