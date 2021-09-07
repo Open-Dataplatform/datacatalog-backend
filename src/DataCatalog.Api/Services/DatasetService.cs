@@ -14,6 +14,7 @@ using DataCatalog.Api.Messages;
 using DataCatalog.Api.Repositories;
 using Rebus.Bus;
 using DataCatalog.Api.Extensions;
+using Microsoft.AspNetCore.Http;
 
 namespace DataCatalog.Api.Services
 {
@@ -180,6 +181,13 @@ namespace DataCatalog.Api.Services
             if (existingDataset == null)
             {
                 throw new ObjectNotFoundException($"Could not find dataset with id {id}");
+            }
+
+            var lineageDataset = await GetDatasetLineageAsync(id);
+            if (lineageDataset.SinkTransformations.Any(transformation => transformation.Datasets.Any()))
+            {
+                throw new BadHttpRequestException(
+                    "Cannot delete the dataset since it's a source for others. Delete it's children first");
             }
 
             existingDataset.IsDeleted = true;
