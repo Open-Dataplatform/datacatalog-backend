@@ -93,11 +93,15 @@ namespace DataCatalog.Api.Services
             var existingCategory = await _categoryRepository.FindByIdAsync(id);
 
             if (existingCategory == null)
-                return;
+            {
+                throw new ObjectNotFoundException($"Could not find category with id {id}");
+            }
 
             var refs = await _datasetCategoryRepository.ListAsync(id);
             if (refs.Any())
+            {
                 throw new InvalidOperationException("This category has references to datasets and cannot de deleted");
+            }
 
             _categoryRepository.Remove(existingCategory);
             await _unitOfWork.CompleteAsync();

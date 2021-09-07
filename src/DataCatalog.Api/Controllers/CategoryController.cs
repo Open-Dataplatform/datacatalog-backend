@@ -103,7 +103,7 @@ namespace DataCatalog.Api.Controllers
         /// <param name="id">The id of the category to delete</param>
         /// <remarks>Categories with references to dataset cannot be deleted!</remarks>
         [AuthorizeRoles(Role.Admin)]
-        [HttpDelete]
+        [HttpDelete("{id:guid}")]
         public async Task<IActionResult> DeleteAsync(Guid id)
         {
             await _categoryService.DeleteAsync(id);
