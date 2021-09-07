@@ -67,7 +67,7 @@ namespace DataCatalog.Api.Controllers
         /// </summary> 
         /// <param name="request">The category to create</param>
         /// <returns>The created category</returns>
-        [AuthorizeRoles(Role.Admin)]
+        [AuthorizeRoles(Role.Admin, Role.DataSteward)]
         [HttpPost]
         public async Task<ActionResult<CategoryResponse>> PostAsync([FromBody] CategoryCreateRequest request)
         {
@@ -86,7 +86,7 @@ namespace DataCatalog.Api.Controllers
         /// </summary>
         /// <param name="request">The category to update</param>
         /// <returns>The updated category Id</returns>
-        [AuthorizeRoles(Role.Admin)]
+        [AuthorizeRoles(Role.Admin, Role.DataSteward)]
         [HttpPut]
         public async Task<ActionResult<CategoryResponse>> PutAsync([FromBody] CategoryUpdateRequest request)
         {
@@ -102,7 +102,7 @@ namespace DataCatalog.Api.Controllers
         /// </summary>
         /// <param name="id">The id of the category to delete</param>
         /// <remarks>Categories with references to dataset cannot be deleted!</remarks>
-        [AuthorizeRoles(Role.Admin)]
+        [AuthorizeRoles(Role.Admin, Role.DataSteward)]
         [HttpDelete("{id:guid}")]
         public async Task<IActionResult> DeleteAsync(Guid id)
         {
