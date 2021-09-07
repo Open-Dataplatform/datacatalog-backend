@@ -69,14 +69,16 @@ namespace DataCatalog.Api.Repositories
                     case "published":
                         query = query.Where(a => a.Status == DatasetStatus.Published);
                         break;
-                    case "archived":
-                        query = query.Where(a => a.Status == DatasetStatus.Archived);
-                        break;
                     case "source":
                         query = query.Where(a => a.Status == DatasetStatus.Source);
                         break;
                     default:
                     {
+                        if (Guid.TryParse(term, out var guid))
+                        {
+                            query = query.Where(a => a.Id == guid);
+                            break;
+                        }
                         var terms = term.Split(' ').Where(a => !string.IsNullOrWhiteSpace(a)).ToArray();
 
                         var unionQuery = GetSearchTermQuery(query, terms[0]);
@@ -117,6 +119,7 @@ namespace DataCatalog.Api.Repositories
             if (_permissionUtils.FilterUnpublishedDatasets)
                 query = query.Where(a => a.Status == DatasetStatus.Published);
 
+            query = query.Where(dataset => !dataset.IsDeleted);
             query = query.Include(a => a.DatasetCategories).ThenInclude(a => a.Category);
 
             return query;
@@ -128,7 +131,7 @@ namespace DataCatalog.Api.Repositories
                    where ds.Name.Contains(t)
                          || t == "draft" && ds.Status == DatasetStatus.Draft
                          || t == "published" && ds.Status == DatasetStatus.Published
-                         || t == "archived" && ds.Status == DatasetStatus.Archived
+                         || t == "source" && ds.Status == DatasetStatus.Source
                          || ds.Description != null && ds.Description.Contains(t)
                          || ds.DatasetCategories.Any(b => b.Category.Name.Contains(t))
                          || ds.DataContracts.Any(b => b.DataSource.Name.Contains(t) || b.DataSource.Description != null && b.DataSource.Description.Contains(t))

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.Entity.Core;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoFixture;
@@ -23,6 +24,7 @@ using DataCatalog.Api.Data;
 using DataCatalog.Api.Messages;
 using DataCatalog.DatasetResourceManagement.Messages;
 using Rebus.Bus;
+using Shouldly;
 
 namespace DataCatalog.Api.UnitTests.Services
 {
@@ -99,7 +101,7 @@ namespace DataCatalog.Api.UnitTests.Services
 
             // Act / Assert
             Func<Task> f = async () => await datasetService.SaveAsync(_datasetCreateRequest);
-            f.Should().Throw<ValidationExceptionCollection>().WithMessage("*Dataset must be assigned at least one category*");
+            f.Should().ThrowAsync<ValidationExceptionCollection>().WithMessage("*Dataset must be assigned at least one category*");
         }
 
         [Fact]
@@ -111,7 +113,7 @@ namespace DataCatalog.Api.UnitTests.Services
 
             // Act / Assert
             Func<Task> f = async () => await datasetService.SaveAsync(_datasetCreateRequest);
-            f.Should().Throw<ValidationExceptionCollection>().WithMessage("*Dataset must have a contact*");
+            f.Should().ThrowAsync<ValidationExceptionCollection>().WithMessage("*Dataset must have a contact*");
         }
 
         [Fact]
@@ -123,7 +125,7 @@ namespace DataCatalog.Api.UnitTests.Services
 
             // Act / Assert
             Func<Task> f = async () => await datasetService.SaveAsync(_datasetCreateRequest);
-            f.Should().Throw<ValidationExceptionCollection>().WithMessage("*Dataset must be assigned to a hierarchy*");
+            f.Should().ThrowAsync<ValidationExceptionCollection>().WithMessage("*Dataset must be assigned to a hierarchy*");
         }
 
         [Fact]
@@ -135,7 +137,7 @@ namespace DataCatalog.Api.UnitTests.Services
 
             // Act / Assert
             Func<Task> f = async () => await datasetService.SaveAsync(_datasetCreateRequest);
-            f.Should().Throw<ValidationExceptionCollection>().WithMessage("*Dataset must have a name*");
+            f.Should().ThrowAsync<ValidationExceptionCollection>().WithMessage("*Dataset must have a name*");
         }
 
         [Fact]
@@ -147,7 +149,7 @@ namespace DataCatalog.Api.UnitTests.Services
 
             // Act / Assert
             Func<Task> f = async () => await datasetService.SaveAsync(_datasetCreateRequest);
-            f.Should().Throw<ValidationExceptionCollection>().WithMessage("*Data field must have a name*");
+            f.Should().ThrowAsync<ValidationExceptionCollection>().WithMessage("*Data field must have a name*");
         }
 
         [Fact]
@@ -159,7 +161,7 @@ namespace DataCatalog.Api.UnitTests.Services
 
             // Act / Assert
             Func<Task> f = async () => await datasetService.SaveAsync(_datasetCreateRequest);
-            f.Should().Throw<ValidationExceptionCollection>().WithMessage("*Data field must have a type*");
+            f.Should().ThrowAsync<ValidationExceptionCollection>().WithMessage("*Data field must have a type*");
         }
 
         [Fact]
@@ -175,7 +177,7 @@ namespace DataCatalog.Api.UnitTests.Services
 
             // Act / Assert
             Func<Task> f = async () => await datasetService.SaveAsync(_datasetCreateRequest);
-            f.Should().Throw<ValidationExceptionCollection>().WithMessage("*Refinement level does not match the selected data source(s)*");
+            f.Should().ThrowAsync<ValidationExceptionCollection>().WithMessage("*Refinement level does not match the selected data source(s)*");
         }
 
         [Fact]
@@ -277,9 +279,12 @@ namespace DataCatalog.Api.UnitTests.Services
             var datasetService = _fixture.Create<DatasetService>();
 
             // Act
-            await datasetService.DeleteAsync(datasetEntity.Id);
+            var exception = await Record.ExceptionAsync(() => datasetService.DeleteAsync(datasetEntity.Id));
 
             // Assert
+            exception
+                .ShouldNotBeNull()
+                .ShouldBeOfType<ObjectNotFoundException>();
             datasetRepositoryMock.Verify(mock => mock.Remove(It.IsAny<Dataset>()), Times.Never());
             unitOfWorkMock.Verify(mock => mock.CompleteAsync(), Times.Never());
         }

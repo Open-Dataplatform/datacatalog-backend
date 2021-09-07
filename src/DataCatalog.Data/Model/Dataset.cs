@@ -32,5 +32,6 @@ namespace DataCatalog.Data.Model
         public List<DataContract> DataContracts { get; set; } = new List<DataContract>();
 
         public ProvisionDatasetStatusEnum? ProvisionStatus { get; set; }
+        public bool IsDeleted { get; set; }
     }
 }

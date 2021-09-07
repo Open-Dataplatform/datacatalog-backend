@@ -106,7 +106,7 @@ namespace DataCatalog.Api.UnitTests.Services
             var datasetCategoryRepositoryMock = new Mock<IDatasetCategoryRepository>();
             var categoryEntities = _fixture.Create<IEnumerable<Category>>();
             var enumerable = categoryEntities as Category[] ?? categoryEntities.ToArray();
-            var datasetCategoryEntities = enumerable.Select(x => new DatasetCategory { CategoryId = x.Id, DatasetId = Guid.NewGuid() });
+            var datasetCategoryEntities = enumerable.Select(x => new DatasetCategory { CategoryId = x.Id, DatasetId = Guid.NewGuid(), Dataset = new Dataset {IsDeleted = false } });
             datasetCategoryEntities = datasetCategoryEntities.SkipLast(1);
             categoryRepositoryMock.Setup(x => x.ListAsync()).ReturnsAsync(enumerable);
             datasetCategoryRepositoryMock.Setup(x => x.ListAsync()).ReturnsAsync(datasetCategoryEntities);
@@ -144,7 +144,7 @@ namespace DataCatalog.Api.UnitTests.Services
             var datasetCategoryRepositoryMock = new Mock<IDatasetCategoryRepository>();
             var categoryEntities = _fixture.Create<IEnumerable<Category>>();
             var enumerable = categoryEntities as Category[] ?? categoryEntities.ToArray();
-            var datasetCategoryEntities = enumerable.Select(x => new DatasetCategory { CategoryId = x.Id, DatasetId = Guid.NewGuid() });
+            var datasetCategoryEntities = enumerable.Select(x => new DatasetCategory { CategoryId = x.Id, DatasetId = Guid.NewGuid(), Dataset = new Dataset {IsDeleted = false }});
             categoryRepositoryMock.Setup(x => x.ListAsync()).ReturnsAsync(enumerable);
             datasetCategoryRepositoryMock.Setup(x => x.ListAsync()).ReturnsAsync(datasetCategoryEntities);
             _fixture.Inject(categoryRepositoryMock.Object);

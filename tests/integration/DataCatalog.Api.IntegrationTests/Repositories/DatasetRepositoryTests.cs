@@ -26,6 +26,7 @@ namespace DataCatalog.Api.IntegrationTests.Repositories
         private readonly PermissionUtils _adminPermissionUtils;
         private readonly PermissionUtils _dataStewardPermissionUtils;
         private readonly PermissionUtils _userPermissionUtils;
+        private const int DatasetSize = 12;
 
         public DatasetRepositoryTests()
         {
@@ -34,13 +35,13 @@ namespace DataCatalog.Api.IntegrationTests.Repositories
 
             _fixture.Behaviors.OfType<ThrowingRecursionBehavior>().ToList().ForEach(b => _fixture.Behaviors.Remove(b));
             _fixture.Behaviors.Add(new OmitOnRecursionBehavior());
-            _fixture.RepeatCount = 16;
+            _fixture.RepeatCount = DatasetSize;
 
             _datasets = _fixture.Create<IEnumerable<Dataset>>().ToList();
+            _datasets.ForEach(d => d.IsDeleted = false);
             _datasets.Take(4).ToList().ForEach(d => d.Status = DatasetStatus.Draft);
             _datasets.Skip(4).Take(4).ToList().ForEach(d => d.Status = DatasetStatus.Published);
-            _datasets.Skip(8).Take(4).ToList().ForEach(d => d.Status = DatasetStatus.Archived);
-            _datasets.Skip(12).Take(4).ToList().ForEach(d => d.Status = DatasetStatus.Source);
+            _datasets.Skip(8).Take(4).ToList().ForEach(d => d.Status = DatasetStatus.Source);
             var date = new DateTime(2020, 11, 20);
             _datasets.Take(4).ToList().ForEach(d => { d.CreatedDate = date; date = date.AddYears(-1); });
             date = new DateTime(2017, 11, 20);
@@ -68,7 +69,7 @@ namespace DataCatalog.Api.IntegrationTests.Repositories
             _commonCategory = _datasets[0].DatasetCategories[0].Category;
             _context.Categories.Add(_commonCategory);
             _context.SaveChanges();
-            _datasets.ForEach(d => d.DatasetCategories = new List<DatasetCategory> { new DatasetCategory { Category = _commonCategory } });
+            _datasets.ForEach(d => d.DatasetCategories = new List<DatasetCategory> { new DatasetCategory { Category = _commonCategory, Dataset = d} });
             _datasets.ForEach(c => _context.Datasets.Add(c));
             _context.SaveChanges();
 
@@ -82,7 +83,7 @@ namespace DataCatalog.Api.IntegrationTests.Repositories
             };
             _adminPermissionUtils = new PermissionUtils(adminCurrent);
             
-            var datastewardCurrent = new Current
+            var dataStewardCurrent = new Current
             {
                 MemberId = Guid.NewGuid(),
                 Roles = new List<Role>
@@ -90,7 +91,7 @@ namespace DataCatalog.Api.IntegrationTests.Repositories
                     Role.DataSteward
                 }
             };
-            _dataStewardPermissionUtils = new PermissionUtils(datastewardCurrent);
+            _dataStewardPermissionUtils = new PermissionUtils(dataStewardCurrent);
             
             var userCurrent = new Current
             {
@@ -175,7 +176,7 @@ namespace DataCatalog.Api.IntegrationTests.Repositories
             // ASSERT
             var enumerable = result as Dataset[] ?? result.ToArray();
             enumerable.Should().NotBeNull();
-            enumerable.Length.Should().Be(16);
+            enumerable.Length.Should().Be(12);
         }
 
         [Fact]
@@ -190,6 +191,10 @@ namespace DataCatalog.Api.IntegrationTests.Repositories
             // ASSERT
             var enumerable = result as Dataset[] ?? result.ToArray();
             enumerable.Should().NotBeNull();
+            foreach (var dataset in enumerable)
+            {
+                dataset.Status.Should().Be(DatasetStatus.Published);
+            }
             enumerable.Length.Should().Be(4);
         }
 
@@ -365,21 +370,6 @@ namespace DataCatalog.Api.IntegrationTests.Repositories
         }
 
         [Fact]
-        public async Task GetDatasetsBySearchTermQuery_SearchArchived_ShouldReturnArchivedDatasets()
-        {
-            // ARRANGE
-            var datasetRepository = new DatasetRepository(_context, _adminPermissionUtils);
-
-            // ACT
-            var result = await datasetRepository.GetDatasetsBySearchTermQueryAsync(" archiVed", SortType.ByNameAscending, 0, 0, 0);
-
-            // ASSERT
-            var enumerable = result as Dataset[] ?? result.ToArray();
-            enumerable.Should().NotBeNull();
-            enumerable.ToList().ForEach(d => d.Status.Should().Be(DatasetStatus.Archived));
-        }
-
-        [Fact]
         public async Task GetDatasetsBySearchTermQuery_SearchSourceTerm_ShouldReturnSourceDatasets()
         {
             // ARRANGE
@@ -395,7 +385,7 @@ namespace DataCatalog.Api.IntegrationTests.Repositories
         }
 
         [Fact]
-        public async Task GetDatasetsBySearchTermQuery_SearchOtherTerm_ShouldReturnArchivedDatasets()
+        public async Task GetDatasetsBySearchTermQuery_SearchOtherTerm()
         {
             // ARRANGE
             var datasetRepository = new DatasetRepository(_context, _adminPermissionUtils);
@@ -430,6 +420,7 @@ namespace DataCatalog.Api.IntegrationTests.Repositories
             // ARRANGE
             var datasetRepository = new DatasetRepository(_context, _adminPermissionUtils);
             var datasetEntity = _fixture.Create<Dataset>();
+            datasetEntity.IsDeleted = false;
             
             // ACT
             await datasetRepository.AddAsync(datasetEntity);
@@ -439,8 +430,28 @@ namespace DataCatalog.Api.IntegrationTests.Repositories
             var datasets = await datasetRepository.ListSummariesAsync();
             var datasetArray = datasets as Dataset[] ?? datasets.ToArray();
             datasetArray.Should().NotBeNull();
-            datasetArray.Length.Should().Be(17);
+            datasetArray.Length.Should().Be(DatasetSize + 1);
             datasetArray.SingleOrDefault(c => c.Id == datasetEntity.Id).Should().NotBeNull();
+        }
+        
+        [Fact]
+        public async Task AddAsync_AddDeletedDatasetShouldNotIncreaseListSize()
+        {
+            // ARRANGE
+            var datasetRepository = new DatasetRepository(_context, _adminPermissionUtils);
+            var datasetEntity = _fixture.Create<Dataset>();
+            datasetEntity.IsDeleted = true;
+            
+            // ACT
+            await datasetRepository.AddAsync(datasetEntity);
+            await _context.SaveChangesAsync();
+
+            // ASSERT
+            var datasets = await datasetRepository.ListSummariesAsync();
+            var datasetArray = datasets as Dataset[] ?? datasets.ToArray();
+            datasetArray.Should().NotBeNull();
+            datasetArray.Length.Should().Be(DatasetSize);
+            datasetArray.SingleOrDefault(c => c.Id == datasetEntity.Id).Should().BeNull();
         }
 
         [Fact]

@@ -36,9 +36,11 @@ namespace DataCatalog.Api.Services
                 return result;
 
             var datasetCategories = await _datasetCategoryRepository.ListAsync();
-            var categoriesWithDataSets = datasetCategories.Select(x => x.CategoryId).Distinct();
+            var categoriesWithDataSets = datasetCategories
+                .Where(datasetCategory => datasetCategory.Dataset is {IsDeleted: false})
+                .Select(datasetCategory => datasetCategory.CategoryId).Distinct();
 
-            return result.Where(x => categoriesWithDataSets.Contains(x.Id));
+            return result.Where(category => categoriesWithDataSets.Contains(category.Id));
         }
 
         public async Task<Category> FindByIdAsync(Guid id)
