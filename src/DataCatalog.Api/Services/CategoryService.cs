@@ -100,7 +100,7 @@ namespace DataCatalog.Api.Services
             }
 
             var refs = await _datasetCategoryRepository.ListAsync(id);
-            if (refs.Any())
+            if (refs.Any(category => !category.Dataset.IsDeleted))
             {
                 throw new InvalidOperationException("This category has references to datasets and cannot de deleted");
             }

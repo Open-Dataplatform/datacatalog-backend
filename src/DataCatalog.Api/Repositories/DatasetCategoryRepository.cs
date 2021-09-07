@@ -15,12 +15,17 @@ namespace DataCatalog.Api.Repositories
 
         public async Task<IEnumerable<DatasetCategory>> ListAsync()
         {
-            return await _context.DatasetCategories.Include(d => d.Dataset).ToListAsync();
+            return await _context.DatasetCategories
+                .Include(d => d.Dataset)
+                .ToListAsync();
         }
 
         public async Task<IEnumerable<DatasetCategory>> ListAsync(Guid categoryId)
         {
-            return await _context.DatasetCategories.Where(d => d.CategoryId == categoryId).ToListAsync();
+            return await _context.DatasetCategories
+                .Include(d => d.Dataset)
+                .Where(d => d.CategoryId == categoryId)
+                .ToListAsync();
         }
     }
 }

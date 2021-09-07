@@ -22,38 +22,12 @@ namespace DataCatalog.Migrator
 
         public async Task SeedData()
         {
-            await SeedCategories();
             await SeedDurations();
             await SeedHierarchies();
             await SeedDataSources();
             await SeedIdentityProviders();
         }
 
-        private async Task SeedCategories()
-        {
-            var categories = new List<Category>
-            {
-                new Category { Id = new Guid("8713b259-0294-480a-960c-08a9c9983961"), Name = "Ancillary Services", Colour = "#2A939B", OriginEnvironment = "prod" },
-                new Category { Id = new Guid("b94863a9-685a-44d6-aae4-2cfb3a63c489"), Name = "Auctions, Transmission Capacity", Colour = "#389B88", OriginEnvironment = "prod" },
-                new Category { Id = new Guid("e5b2f760-e965-452f-b0ab-70ca506d4c20"), Name = "Emissions", Colour = "#452A9B", OriginEnvironment = "prod" },
-                new Category { Id = new Guid("08e58f12-51bf-4af9-af3a-02022cab77c7"), Name = "Day Ahead Market", Colour = "#2A9B65", OriginEnvironment = "prod" },
-                new Category { Id = new Guid("23ab1cd5-ae16-4aa4-bab7-25380c1634d5"), Name = "Electric Boilers", Colour = "#B27736", OriginEnvironment = "prod" },
-                new Category { Id = new Guid("8a95d290-417e-4a53-a807-a13293f3117d"), Name = "Gas", Colour = "#F8AE3C", OriginEnvironment = "prod" },
-                new Category { Id = new Guid("5873b2e5-5db1-42db-bf25-83fd9dded293"), Name = "Production and Consumption", Colour = "#663BCC", OriginEnvironment = "prod" },
-                new Category { Id = new Guid("084e6353-82a8-4f99-b9f3-b247081c34c8"), Name = "Electricity Consumption", Colour = "#A0C1C2", OriginEnvironment = "prod" },
-                new Category { Id = new Guid("5b39fbdd-76c5-44df-9f7d-d314db760fc1"), Name = "Intra Day Market", Colour = "#819B38", OriginEnvironment = "prod" },
-                new Category { Id = new Guid("a90abc39-c2de-4c29-a9f8-4e10f41a50f0"), Name = "Electricity Production", Colour = "#293A4C", OriginEnvironment = "prod" },
-                new Category { Id = new Guid("9ac5af8d-4165-448a-ace5-2edcf0c3e202"), Name = "Regulating Power", Colour = "#548E80", OriginEnvironment = "prod" },
-                new Category { Id = new Guid("7434d8a3-7ebb-4212-967c-061d5a2666d7"), Name = "Whole Sale Market", Colour = "#7D8E1C", OriginEnvironment = "prod" },
-                new Category { Id = new Guid("90909fcd-4a5a-455a-a543-9c2c8a45e453"), Name = "Reserves", Colour = "#398C22", OriginEnvironment = "prod" },
-                new Category { Id = new Guid("d6944781-c069-4c14-859f-07865164763f"), Name = "Solar Power", Colour = "#FFD424", OriginEnvironment = "prod" },
-                new Category { Id = new Guid("b4cef11a-d0f4-4c33-9796-b80ea6d2489a"), Name = "Transmission Lines", Colour = "#547B8E", OriginEnvironment = "prod" },
-                new Category { Id = new Guid("418e657d-3efb-4a30-ad3f-3f95a6ab8888"), Name = "Wind Power", Colour = "#C2E4F0", OriginEnvironment = "prod" },
-                new Category { Id = new Guid("6f4f675a-90c3-4504-955f-a823a897beb9"), Name = "Weather", Colour = "#B27736", OriginEnvironment = "prod" }
-            };
-
-            await UpsertData(categories);
-        }
         private async Task SeedDurations()
         {
             var durations = new List<Duration>
