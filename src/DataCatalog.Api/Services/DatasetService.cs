@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.Entity.Core;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -13,6 +14,7 @@ using DataCatalog.Api.Messages;
 using DataCatalog.Api.Repositories;
 using Rebus.Bus;
 using DataCatalog.Api.Extensions;
+using Microsoft.AspNetCore.Http;
 
 namespace DataCatalog.Api.Services
 {
@@ -164,9 +166,31 @@ namespace DataCatalog.Api.Services
             var existingDataset = await _datasetRepository.FindByIdAsync(id);
 
             if (existingDataset == null)
-                return;
+            {
+                throw new ObjectNotFoundException($"Could not find dataset with id {id}");
+            }
 
             _datasetRepository.Remove(existingDataset);
+            await _unitOfWork.CompleteAsync();
+        }
+
+        public async Task SoftDeleteAsync(Guid id)
+        {
+            var existingDataset = await _datasetRepository.FindByIdAsync(id);
+
+            if (existingDataset == null)
+            {
+                throw new ObjectNotFoundException($"Could not find dataset with id {id}");
+            }
+
+            var lineageDataset = await GetDatasetLineageAsync(id);
+            if (lineageDataset.SinkTransformations.Any(transformation => transformation.Datasets.Any()))
+            {
+                throw new BadHttpRequestException(
+                    "Cannot delete the dataset since it's a source for others. Delete it's children first");
+            }
+
+            existingDataset.IsDeleted = true;
             await _unitOfWork.CompleteAsync();
         }
 

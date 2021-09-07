@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.Entity.Core;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoFixture;
@@ -23,6 +24,7 @@ using DataCatalog.Api.Data;
 using DataCatalog.Api.Messages;
 using DataCatalog.DatasetResourceManagement.Messages;
 using Rebus.Bus;
+using Shouldly;
 
 namespace DataCatalog.Api.UnitTests.Services
 {
@@ -277,9 +279,12 @@ namespace DataCatalog.Api.UnitTests.Services
             var datasetService = _fixture.Create<DatasetService>();
 
             // Act
-            await datasetService.DeleteAsync(datasetEntity.Id);
+            var exception = await Record.ExceptionAsync(() => datasetService.DeleteAsync(datasetEntity.Id));
 
             // Assert
+            exception
+                .ShouldNotBeNull()
+                .ShouldBeOfType<ObjectNotFoundException>();
             datasetRepositoryMock.Verify(mock => mock.Remove(It.IsAny<Dataset>()), Times.Never());
             unitOfWorkMock.Verify(mock => mock.CompleteAsync(), Times.Never());
         }

@@ -15,7 +15,7 @@ namespace DataCatalog.Api.Repositories
 
         public async Task<IEnumerable<DatasetCategory>> ListAsync()
         {
-            return await _context.DatasetCategories.ToListAsync();
+            return await _context.DatasetCategories.Include(d => d.Dataset).ToListAsync();
         }
 
         public async Task<IEnumerable<DatasetCategory>> ListAsync(Guid categoryId)
