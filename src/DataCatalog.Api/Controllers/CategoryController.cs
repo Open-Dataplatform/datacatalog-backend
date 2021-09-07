@@ -76,7 +76,7 @@ namespace DataCatalog.Api.Controllers
             category.ModifiedDate = DateTime.UtcNow;
             
             var createdCategory = await _categoryService.SaveAsync(category);
-            var result = _mapper.Map<Data.Domain.Category, CategoryResponse>(category);
+            var result = _mapper.Map<Data.Domain.Category, CategoryResponse>(createdCategory);
 
             return Ok(result);
         }
