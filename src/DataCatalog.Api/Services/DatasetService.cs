@@ -21,7 +21,6 @@ namespace DataCatalog.Api.Services
     public class DatasetService : IDatasetService
     {
         private readonly IDatasetRepository _datasetRepository;
-        private readonly IHierarchyRepository _hierarchyRepository;
         private readonly ITransformationRepository _transformationRepository;
         private readonly ITransformationDatasetRepository _transformationDatasetRepository;
         private readonly IDurationRepository _durationRepository;
@@ -36,7 +35,6 @@ namespace DataCatalog.Api.Services
 
         public DatasetService(
             IDatasetRepository datasetRepository,
-            IHierarchyRepository hierarchyRepository,
             ITransformationRepository transformationRepository,
             ITransformationDatasetRepository transformationDatasetRepository,
             IDatasetDurationRepository datasetDurationRepository,
@@ -50,7 +48,6 @@ namespace DataCatalog.Api.Services
             IPermissionUtils permissionUtils)
         {
             _datasetRepository = datasetRepository;
-            _hierarchyRepository = hierarchyRepository;
             _transformationRepository = transformationRepository;
             _transformationDatasetRepository = transformationDatasetRepository;
             _durationRepository = durationRepository;
@@ -105,7 +102,6 @@ namespace DataCatalog.Api.Services
 
         private async Task<Dataset> PublishDatasetCreated(DataCatalog.Data.Model.Dataset dbDataset)
         {
-            var hierarchy = await _hierarchyRepository.FindByIdAsync(dbDataset.HierarchyId);
             var dataset = _mapper.Map<Dataset>(dbDataset);
 
             // Publish a message that the dataset has been created.
@@ -115,7 +111,6 @@ namespace DataCatalog.Api.Services
                 Container = dataset.GetContainerName(),
                 DatasetName = dataset.Name,
                 Owner = dataset.Owner,
-                Hierarchy = $"{GetHierarchyName(hierarchy).ToLower()}",
                 AddAllUsersGroup = dataset.ShouldHaveAllUsersGroup()
             };
 
@@ -264,13 +259,6 @@ namespace DataCatalog.Api.Services
             var parentHierarchyName = "<parentHierarchy>";
             var hierarchyName = "<hierarchy>";
             var datasetNameOut = "<datasetName>";
-
-            if (hierarchyId.HasValue)
-            {
-                var hierarchy = await _hierarchyRepository.FindByIdAsync(hierarchyId.Value);
-                parentHierarchyName = GetLocationName(hierarchy.ParentHierarchy.Name);
-                hierarchyName = GetLocationName(hierarchy.Name);
-            }
 
             if (!string.IsNullOrWhiteSpace(datasetName)) 
                 datasetNameOut = GetLocationName(datasetName);
@@ -481,18 +469,6 @@ namespace DataCatalog.Api.Services
             if (raw)
                 return !await _dataSourceRepository.AnyAsync(dsIds, new List<SourceType> { SourceType.DataPlatform });
             return !await _dataSourceRepository.AnyAsync(dsIds, new List<SourceType> { SourceType.External, SourceType.Internal });
-        }
-
-        private string GetHierarchyName(DataCatalog.Data.Model.Hierarchy hierarchy)
-        {
-            var name = hierarchy.Name;
-            while (hierarchy.ParentHierarchy != null)
-            {
-                hierarchy = hierarchy.ParentHierarchy;
-                name = $"{hierarchy.Name}/{name}";
-            }
-
-            return name;
         }
     }
 }

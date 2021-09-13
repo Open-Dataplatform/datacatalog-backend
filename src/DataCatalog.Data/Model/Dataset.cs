@@ -22,7 +22,6 @@ namespace DataCatalog.Data.Model
         public Guid HierarchyId { get; set; }
 
         public MemberGroup Contact { get; set; }
-        public Hierarchy Hierarchy { get; set; }
 
         public List<DataField> DataFields { get; set; } = new List<DataField>();
         public List<DatasetCategory> DatasetCategories { get; set; } = new List<DatasetCategory>();

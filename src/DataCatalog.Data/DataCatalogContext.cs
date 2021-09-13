@@ -23,7 +23,6 @@ namespace DataCatalog.Data
         public DbSet<DatasetChangeLog> DatasetChangeLogs { get; set; }
         public DbSet<Duration> Durations { get; set; }
         public DbSet<DatasetDuration> DatasetDurations { get; set; }
-        public DbSet<Hierarchy> Hierarchies { get; set; }
         public DbSet<DataSource> DataSources { get; set; }
         public DbSet<DataContract> DataContracts { get; set; }
 
@@ -82,13 +81,6 @@ namespace DataCatalog.Data
             {
                 e.Property(a => a.Code).IsRequired();
                 e.Property(a => a.Description).IsRequired();
-            });
-
-            //Hierarchy
-            modelBuilder.Entity<Hierarchy>(e =>
-            {
-                e.HasMany(a => a.ChildHierarchies).WithOne(a => a.ParentHierarchy).HasForeignKey(a => a.ParentHierarchyId);
-                e.Property(a => a.Name).IsRequired();
             });
 
             //Member

@@ -90,7 +90,6 @@ namespace DataCatalog.Api
             services.AddScoped<IDatasetRepository, DatasetRepository>();
             services.AddScoped<IDataSourceRepository, DataSourceRepository>();
             services.AddScoped<IDurationRepository, DurationRepository>();
-            services.AddScoped<IHierarchyRepository, HierarchyRepository>();
             services.AddScoped<IIdentityProviderRepository, IdentityProviderRepository>();
             services.AddScoped<IMemberGroupRepository, MemberGroupRepository>();
             services.AddScoped<IMemberRepository, MemberRepository>();
@@ -268,7 +267,6 @@ namespace DataCatalog.Api
             services.AddTransient<IDatasetService, DatasetService>();
             services.AddTransient<IDataSourceService, DataSourceService>();
             services.AddTransient<IDurationService, DurationService>();
-            services.AddTransient<IHierarchyService, HierarchyService>();
             services.AddTransient<IIdentityProviderService, IdentityProviderService>();
             services.AddTransient<IMemberGroupService, MemberGroupService>();
             services.AddTransient<IMemberService, MemberService>();

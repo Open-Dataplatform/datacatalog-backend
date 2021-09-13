@@ -27,7 +27,6 @@ namespace DataCatalog.Api.Repositories
                 .Include(a => a.Contact)
                 .Include(a => a.DatasetDurations).ThenInclude(a => a.Duration)
                 .Include(a => a.DatasetChangeLogs).ThenInclude(a => a.Member)
-                .Include(a => a.Hierarchy).ThenInclude(a => a.ParentHierarchy)
                 .Include(a => a.DataContracts).ThenInclude(a => a.DataSource)
                 .FirstOrDefault(a => a.Id == id);
           
