@@ -112,7 +112,7 @@ namespace DataCatalog.Api.Services.AD
             await Task.WhenAll(groupsTask, usersTask, servicePrincipalsTask);
 
             var result = groupsTask.Result.Where(x => !x.GroupTypes.Contains("Unified")).Select(x => new AdSearchResult {Id = x.Id, DisplayName = x.DisplayName, Type = AdSearchResultType.Group})
-                .Union(usersTask.Result.Select(x => new AdSearchResult { Id = x.Id, DisplayName = x.DisplayName, Type = AdSearchResultType.User }))
+                .Union(usersTask.Result.Select(x => new AdSearchResult { Id = x.Id, DisplayName = $"{x.DisplayName} ({x.Mail})", Type = AdSearchResultType.User }))
                 .Union(servicePrincipalsTask.Result.Select(x => new AdSearchResult { Id = x.Id, DisplayName = x.DisplayName, Type = AdSearchResultType.ServicePrincipal }));
 
             return result;
@@ -124,7 +124,7 @@ namespace DataCatalog.Api.Services.AD
                 return new AccessMember {Id = groupMember.Id, Name = groupMember.DisplayName, Type = AccessMemberType.Group};
             
             if (memberDirectoryObject is Microsoft.Graph.User userMember)
-                return new AccessMember { Id = userMember.Id, Name = userMember.DisplayName, Type = AccessMemberType.User };
+                return new AccessMember { Id = userMember.Id, Name = $"{userMember.DisplayName} ({userMember.Mail})", Type = AccessMemberType.User };
             
             if (memberDirectoryObject is ServicePrincipal servicePrincipalMember)
                 return new AccessMember { Id = servicePrincipalMember.Id, Name = servicePrincipalMember.DisplayName, Type = AccessMemberType.ServicePrincipal };
