@@ -83,9 +83,6 @@ namespace DataCatalog.Api.Services
 
             var dbDataset = _mapper.Map<DataCatalog.Data.Model.Dataset>(request);
 
-            if (string.IsNullOrWhiteSpace(dbDataset.Location))
-                dbDataset.Location = await GetDatasetLocation(request.Hierarchy.Id, request.Name);
-
             if (request.SourceTransformation?.SourceDatasets?.Any() == true)
                 await InsertOrUpdateSourceTransformation(request.SourceTransformation, dbDataset);
 
@@ -125,9 +122,6 @@ namespace DataCatalog.Api.Services
 
             var dbDataset = await _datasetRepository.FindByIdAsync(request.Id);
             _mapper.Map(request, dbDataset);
-
-            if (string.IsNullOrWhiteSpace(dbDataset.Location))
-                dbDataset.Location = await GetDatasetLocation(request.Hierarchy.Id, request.Name);
 
             if (request.SourceTransformation?.SourceDatasets?.Any() != true)
             {
@@ -432,9 +426,6 @@ namespace DataCatalog.Api.Services
 
             if (request.Contact == null)
                 exceptions.Add(new ValidationException("Dataset must have a contact", nameof(request.Contact)));
-
-            if (request.Hierarchy == null || request.Hierarchy.Id.Equals(Guid.Empty))
-                exceptions.Add(new ValidationException("Dataset must be assigned to a hierarchy", nameof(request.Hierarchy)));
 
             if (string.IsNullOrWhiteSpace(request.Name))
                 exceptions.Add(new ValidationException("Dataset must have a name", nameof(request.Name)));

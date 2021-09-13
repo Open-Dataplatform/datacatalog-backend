@@ -146,15 +146,10 @@ namespace DataCatalog.Api.IntegrationTests.Repositories
             result.RefinementLevel.Should().Be(dataset.RefinementLevel);
             result.ContactId.Should().Be(dataset.ContactId);
             result.SourceId.Should().Be(dataset.SourceId);
-            result.HierarchyId.Should().Be(dataset.HierarchyId);
             result.Contact.Should().NotBeNull();
             result.Contact.Name.Should().Be(dataset.Contact.Name);
             result.Contact.Description.Should().Be(dataset.Contact.Description);
             result.Contact.Email.Should().Be(dataset.Contact.Email);
-            result.Hierarchy.Should().NotBeNull();
-            result.Hierarchy.ParentHierarchyId.Should().Be(result.Hierarchy.ParentHierarchyId);
-            result.Hierarchy.Name.Should().Be(result.Hierarchy.Name);
-            result.Hierarchy.Description.Should().Be(result.Hierarchy.Description);
             result.DataFields.Should().NotBeNull();
             result.DataFields.Count.Should().Be(dataset.DataFields.Count);
             result.DatasetCategories.Count.Should().Be(dataset.DatasetCategories.Count);

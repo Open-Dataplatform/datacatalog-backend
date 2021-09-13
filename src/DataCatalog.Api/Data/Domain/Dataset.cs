@@ -23,10 +23,8 @@ namespace DataCatalog.Api.Data.Domain
         
         public Guid ContactId { get; set; }
         public Guid SourceId { get; set; }
-        public Guid HierarchyId { get; set; }
         
         public MemberGroup Contact { get; set; }
-        public Hierarchy Hierarchy { get; set; }
 
         public ProvisionDatasetStatusEnum ProvisionStatus { get; set; }
 

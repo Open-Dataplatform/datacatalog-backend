@@ -10,7 +10,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DataCatalog.Data.Migrations
 {
     [DbContext(typeof(DataCatalogContext))]
-    [Migration("20210913092852_RemovedHierarchy")]
+    [Migration("20210913102519_RemovedHierarchy")]
     partial class RemovedHierarchy
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -209,9 +209,6 @@ namespace DataCatalog.Data.Migrations
 
                     b.Property<string>("Description")
                         .HasColumnType("nvarchar(max)");
-
-                    b.Property<Guid>("HierarchyId")
-                        .HasColumnType("uniqueidentifier");
 
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");

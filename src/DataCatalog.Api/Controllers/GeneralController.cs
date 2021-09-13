@@ -17,13 +17,11 @@ namespace DataCatalog.Api.Controllers
     [Route("api/[controller]")]
     public class GeneralController : ControllerBase
     {
-        private readonly IHierarchyService _hierarchyService;
         private readonly IDurationService _durationService;
         private readonly IMapper _mapper;
 
-        public GeneralController(IHierarchyService hierarchyService, IDurationService durationService, IMapper mapper)
+        public GeneralController(IDurationService durationService, IMapper mapper)
         {
-            _hierarchyService = hierarchyService;
             _durationService = durationService;
             _mapper = mapper;
         }

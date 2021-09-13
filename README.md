@@ -176,7 +176,7 @@ Generating and applying database migrations are handled by EF Core. The history 
 New migrations can be added using the [Entity Framework Core tools](https://docs.microsoft.com/en-us/ef/core/cli/dotnet) by running the following command from the root folder:
 
 ```powershell
-dotnet ef migrations add NameOfMigration -p .\src\DataCatalog.Data\ -s .\src\DataCatalog.Migrator\
+dotnet ef migrations add NameOfMigration -p .\src\DataCatalog.Data\ -s .\src\DataCatalog.Api\
 ```
 
 Applying migrations can be done either using the Entity Framework Core tools or by running the [DataCatalog.Migrator console app](src/DataCatalog.Migrator/README.md). In a production environment the migrator app is expected to run before the API is launched for every new release.

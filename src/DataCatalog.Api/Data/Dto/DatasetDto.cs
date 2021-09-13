@@ -18,7 +18,6 @@ namespace DataCatalog.Api.Data.Dto
         public string Location { get; set; }
 
         public GuidId Contact { get; set; }
-        public GuidId Hierarchy { get; set; }
         public GuidId[] Categories { get; set; }
         public GuidId[] DataSources { get; set; }
 
@@ -51,7 +50,6 @@ namespace DataCatalog.Api.Data.Dto
         public DurationResponse Frequency { get; set; }
         public DurationResponse Resolution { get; set; }
         public TransformationResponse SourceTransformation { get; set; }
-        public HierarchyResponse Hierarchy { get; set; }
 
         public DataFieldResponse[] DataFields { get; set; }        
         public CategoryResponse[] Categories { get; set; }                

@@ -17,7 +17,6 @@ using Xunit;
 using Dataset = DataCatalog.Data.Model.Dataset;
 using DatasetDuration = DataCatalog.Data.Model.DatasetDuration;
 using Duration = DataCatalog.Data.Model.Duration;
-using Hierarchy = DataCatalog.Data.Model.Hierarchy;
 using Transformation = DataCatalog.Data.Model.Transformation;
 using TransformationDataset = DataCatalog.Data.Model.TransformationDataset;
 using DataCatalog.Api.Data;
@@ -117,18 +116,6 @@ namespace DataCatalog.Api.UnitTests.Services
         }
 
         [Fact]
-        public void SaveAsync_MissingHierarchy_ShouldThrowException()
-        {
-            // Arrange
-            var datasetService = _fixture.Create<DatasetService>();
-            _datasetCreateRequest.Hierarchy = null;
-
-            // Act / Assert
-            Func<Task> f = async () => await datasetService.SaveAsync(_datasetCreateRequest);
-            f.Should().ThrowAsync<ValidationExceptionCollection>().WithMessage("*Dataset must be assigned to a hierarchy*");
-        }
-
-        [Fact]
         public void SaveAsync_MissingName_ShouldThrowException()
         {
             // Arrange
@@ -184,22 +171,6 @@ namespace DataCatalog.Api.UnitTests.Services
         public async Task SaveAsync_ValidateReturnObject()
         {
             // Arrange
-            var hierarchyName = Guid.NewGuid().ToString();
-            var parentHierarchyName = Guid.NewGuid().ToString();
-            var hierarchyRepositoryMock = new Mock<IHierarchyRepository>();
-            var hierarchy = new Hierarchy
-            {
-                ParentHierarchy = new Hierarchy
-                {
-                    Name = parentHierarchyName
-                },
-
-                Id = Guid.NewGuid(),
-                Name = hierarchyName
-            };
-            hierarchyRepositoryMock.Setup(x => x.FindByIdAsync(_datasetCreateRequest.Hierarchy.Id)).ReturnsAsync(hierarchy);
-            _fixture.Inject(hierarchyRepositoryMock.Object);
-            _fixture.Freeze<IHierarchyRepository>();
             var datasetDurationRepositoryMock = new Mock<IDatasetDurationRepository>();
             var frequency = new Duration { Code = Guid.NewGuid().ToString() };
             var resolution = new Duration { Code = Guid.NewGuid().ToString() };
@@ -247,8 +218,6 @@ namespace DataCatalog.Api.UnitTests.Services
             dataset.DatasetDurations.Single(d => d.DurationType == DurationType.Frequency).Duration.Code.Should().Be((frequency.Code));
             dataset.DatasetDurations.Single(d => d.DurationType == DurationType.Resolution).Duration.Code.Should().Be((resolution.Code));
             dataset.Description.Should().Be(_datasetCreateRequest.Description);
-            dataset.HierarchyId.Should().Be(_datasetCreateRequest.Hierarchy.Id);
-            dataset.Location.Should().Be($"{parentHierarchyName}/{hierarchyName}/{_datasetCreateRequest.Name.ToLower()}");
             dataset.Name.Should().Be(_datasetCreateRequest.Name);
             dataset.Owner.Should().Be(_datasetCreateRequest.Owner);
             dataset.RefinementLevel.Should().Be(_datasetCreateRequest.RefinementLevel);
@@ -259,7 +228,6 @@ namespace DataCatalog.Api.UnitTests.Services
             messageBusSenderMock.Verify(mock => mock.Publish(It.Is<DatasetCreatedMessage>(dto =>
                 dto.DatasetName == _datasetCreateRequest.Name  &&
                 dto.Container == "RAW" &&
-                dto.Hierarchy == hierarchy.ParentHierarchy.Name + "/" + hierarchy.Name &&
                 dto.Owner == _datasetCreateRequest.Owner), It.IsAny<IDictionary<string, string>>()));
         }
 
@@ -387,42 +355,6 @@ namespace DataCatalog.Api.UnitTests.Services
             var resultArray = result as Data.Domain.Dataset[] ?? result.ToArray();
             resultArray.Should().NotBeNull();
             resultArray.Length.Should().Be(1);
-        }
-
-        [Fact]
-        public async Task GetDatasetLocationAsync_NoHierarchyOrName_MustReturnDefaultLocation()
-        {
-            // Arrange
-            var datasetService = _fixture.Create<DatasetService>();
-
-            // Act
-            var result = await datasetService.GetDatasetLocationAsync(null, null);
-
-            // Assert
-            result.Should().NotBeNull();
-            result.Should().Be("<parentHierarchy>/<hierarchy>/<datasetName>");
-        }
-
-        [Fact]
-        public async Task GetDatasetLocationAsync_HierarchyAndName_MustReturnTransformedName()
-        {
-            // Arrange
-            var hierarchyRepositoryMock = new Mock<IHierarchyRepository>();
-            hierarchyRepositoryMock.Setup(x => x.FindByIdAsync(It.IsAny<Guid>())).ReturnsAsync(new Hierarchy
-            {
-                ParentHierarchy = new Hierarchy { Name = " - D--F7#;:_xD - " },
-                Name = " - D--F7#;:_xD - "
-            });
-            _fixture.Inject(hierarchyRepositoryMock.Object);
-            _fixture.Freeze<IDatasetRepository>();
-            var datasetService = _fixture.Create<DatasetService>();
-
-            // Act
-            var result = await datasetService.GetDatasetLocationAsync(Guid.Empty, " - D--F7#;:_xD - ");
-
-            // Assert
-            result.Should().NotBeNull();
-            result.Should().Be("d-f7_xd/d-f7_xd/d-f7_xd");
         }
 
         [Fact]

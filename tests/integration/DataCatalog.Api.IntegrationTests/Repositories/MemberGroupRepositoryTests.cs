@@ -1,9 +1,6 @@
 ﻿using AutoFixture;
 using AutoFixture.AutoMoq;
-
-using DataCatalog.Common.Data;
 using DataCatalog.Data.Model;
-using DataCatalog.Common.Enums;
 using DataCatalog.Api.Repositories;
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
@@ -46,7 +43,6 @@ namespace DataCatalog.Api.IntegrationTests.Repositories
             _memberGroupMembers.ForEach(m => m.Member = null);
             _memberGroupMembers.ForEach(m => m.MemberGroup = null);
             _datasets.ForEach(d => d.Contact = null);
-            _datasets.ForEach(d => d.Hierarchy = null);
             _datasets.ForEach(d => d.DataFields = null);
             _datasets.ForEach(d => d.DatasetCategories = null);
             _datasets.ForEach(d => d.TransformationDatasets = null);

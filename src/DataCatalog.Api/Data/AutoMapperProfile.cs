@@ -89,8 +89,7 @@ namespace DataCatalog.Api.Data
                 .ForMember(a => a.Name, b => b.MapFrom(c => c.Name.FormatName()))
                 .ForMember(a => a.DatasetCategories, b =>
                     b.MapFrom(c => c.Categories.Select(d => new DatasetCategory { CategoryId = d.Id })))
-                .ForMember(a => a.Contact, b => b.Ignore()).ForMember(a => a.ContactId, b => b.MapFrom(c => c.Contact.Id))
-                .ForMember(a => a.Hierarchy, b => b.Ignore()).ForMember(a => a.HierarchyId, b => b.MapFrom(c => c.Hierarchy.Id));
+                .ForMember(a => a.Contact, b => b.Ignore()).ForMember(a => a.ContactId, b => b.MapFrom(c => c.Contact.Id));
 
             CreateMap<DatasetUpdateRequest, Dataset>()
                 .ForMember(a => a.Name, b => b.MapFrom(c => c.Name.FormatName()))

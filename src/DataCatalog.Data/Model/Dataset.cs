@@ -19,7 +19,6 @@ namespace DataCatalog.Data.Model
 
         public Guid ContactId { get; set; }
         public Guid SourceId { get; set; }
-        public Guid HierarchyId { get; set; }
 
         public MemberGroup Contact { get; set; }
 
