@@ -79,7 +79,7 @@ namespace DataCatalog.Api.Services
 
         public async Task<Dataset> SaveAsync(DatasetCreateRequest request)
         {
-            await ValidateAsync(request);
+            ValidateAsync(request);
 
             var dbDataset = _mapper.Map<DataCatalog.Data.Model.Dataset>(request);
 
@@ -105,7 +105,6 @@ namespace DataCatalog.Api.Services
             var datasetCreatedMessage = new DatasetCreatedMessage
             {
                 DatasetId = dataset.Id,
-                Container = dataset.GetContainerName(),
                 DatasetName = dataset.Name,
                 Owner = dataset.Owner,
                 AddAllUsersGroup = dataset.ShouldHaveAllUsersGroup()
@@ -118,7 +117,7 @@ namespace DataCatalog.Api.Services
 
         public async Task<Dataset> UpdateAsync(DatasetUpdateRequest request)
         {
-            await ValidateAsync(request);
+            ValidateAsync(request);
 
             var dbDataset = await _datasetRepository.FindByIdAsync(request.Id);
             _mapper.Map(request, dbDataset);
@@ -195,11 +194,6 @@ namespace DataCatalog.Api.Services
             return _mapper.Map<IEnumerable<Dataset>>(datasets);
         }
 
-        public async Task<string> GetDatasetLocationAsync(Guid? hierarchyId, string name)
-        {
-            return await GetDatasetLocation(hierarchyId, name);
-        }
-
         public async Task<LineageDataset> GetDatasetLineageAsync(Guid id)
         {
             var dataset = await FindByIdAsync(id);
@@ -214,59 +208,6 @@ namespace DataCatalog.Api.Services
             await GetLineageTransformations(lineage, TransformationDirection.Source);
 
             return lineage;
-        }
-
-        public async Task<Dataset> CopyDatasetInRawAsync(Guid id)
-        {
-            var dataset = await _datasetRepository.FindByIdAsync(id);
-
-            if (dataset is not {RefinementLevel: RefinementLevel.Raw})
-            {
-                return null;
-            }
-            dataset.Id = Guid.NewGuid();
-            dataset.CreatedDate = DateTime.Now;
-            dataset.ModifiedDate = DateTime.Now;
-
-            var promotedName = $"promoted_{dataset.Name}";
-            var currentLocation = dataset.Name.ToLower().Replace(' ', '-');
-            var newLocation = promotedName.ToLower().Replace(' ', '-');
-            dataset.Location = dataset.Location.Replace(currentLocation, newLocation);
-            dataset.Name = promotedName;
-            dataset.DatasetChangeLogs = new List<DataCatalog.Data.Model.DatasetChangeLog>();
-            dataset.RefinementLevel++;
-            dataset.DataContracts = null;
-            dataset.DataFields.ForEach(f =>
-            {
-                f.Id = Guid.NewGuid();
-                f.DatasetId = dataset.Id;
-            });
-            dataset.DatasetCategories.ForEach(d => d.DatasetId = dataset.Id);
-            dataset.DatasetDurations.ForEach(d => d.DatasetId = dataset.Id);
-
-            return _mapper.Map<Dataset>(dataset);
-
-        }
-
-        private async Task<string> GetDatasetLocation(Guid? hierarchyId, string datasetName)
-        {
-            var parentHierarchyName = "<parentHierarchy>";
-            var hierarchyName = "<hierarchy>";
-            var datasetNameOut = "<datasetName>";
-
-            if (!string.IsNullOrWhiteSpace(datasetName)) 
-                datasetNameOut = GetLocationName(datasetName);
-
-            return $"{parentHierarchyName}/{hierarchyName}/{datasetNameOut}";
-        }
-
-        private string GetLocationName(string name)
-        {
-            name = Regex.Replace(name.ToLower(), @"\s+", "-");  // To lower and replace space, tab, newline with dash
-            name = Regex.Replace(name, @"[^\w\.-]", "");        // Remove anything but alphanumeric, dot and dash
-            name = Regex.Replace(name, "[-]{2,}", "-");         // Remove any double hyphens
-            name = name.TrimEnd('-').TrimStart('-');            // Remove any leading or trailing hyphens
-            return name;
         }
 
         private async Task InsertOrUpdateSourceTransformation(SourceTransformationUpsertRequest request, DataCatalog.Data.Model.Dataset dataset)
@@ -417,7 +358,7 @@ namespace DataCatalog.Api.Services
             }
         }
 
-        private async Task ValidateAsync(DatasetCreateRequest request)
+        private void ValidateAsync(DatasetCreateRequest request)
         {
             var exceptions = new List<ValidationException>();
 
@@ -429,16 +370,6 @@ namespace DataCatalog.Api.Services
 
             if (string.IsNullOrWhiteSpace(request.Name))
                 exceptions.Add(new ValidationException("Dataset must have a name", nameof(request.Name)));
-
-            if (request.DataSources?.Any() == true)
-            {
-                var dsIds = request.DataSources.Select(a => a.Id).ToArray();
-                var refinementSourceMatchEx = new ValidationException("Refinement level does not match the selected data source(s)",
-                    nameof(request.DataSources), nameof(request.RefinementLevel));
-
-                var dataSourcesValid = await AreDataSourcesValid(dsIds, request.RefinementLevel == RefinementLevel.Raw);
-                if (!dataSourcesValid) exceptions.Add(refinementSourceMatchEx);
-            }
 
             if (request.DataFields?.Any() == true)
                 for (int i = 0; i < request.DataFields.Length; i++)
@@ -453,13 +384,6 @@ namespace DataCatalog.Api.Services
                 }
 
             if (exceptions.Any()) throw new ValidationExceptionCollection("Dataset could not be created", exceptions);
-        }
-
-        private async Task<bool> AreDataSourcesValid(Guid[] dsIds, bool raw)
-        {
-            if (raw)
-                return !await _dataSourceRepository.AnyAsync(dsIds, new List<SourceType> { SourceType.DataPlatform });
-            return !await _dataSourceRepository.AnyAsync(dsIds, new List<SourceType> { SourceType.External, SourceType.Internal });
         }
     }
 }

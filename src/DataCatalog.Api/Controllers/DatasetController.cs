@@ -204,27 +204,6 @@ namespace DataCatalog.Api.Controllers
 
             return result;
         }
-
-        /// <summary>
-        /// Given an id of a dataset in raw, this endpoint will return an unsaved copy almost ready for stock
-        /// </summary>
-        /// <param name="id">Id for dataset in raw</param>
-        /// <returns>The stock copy</returns>
-        [AuthorizeRoles(Role.Admin, Role.DataSteward)]
-        [HttpPost]
-        [Route("promote/{id}")]
-        public async Task<ActionResult<DatasetResponse>> CopyDatasetInRawAsync(Guid id)
-        {
-            var dataset = await _datasetService.CopyDatasetInRawAsync(id);
-
-            if (dataset == null && dataset.RefinementLevel != RefinementLevel.Raw)
-                return NotFound();
-
-            var result = _mapper.Map<Data.Domain.Dataset, DatasetResponse>(dataset);
-
-            return Ok(result);
-        }
-
     }
 }
 

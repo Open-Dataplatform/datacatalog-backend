@@ -15,11 +15,9 @@ namespace DataCatalog.Api.Data.Domain
         public string Description { get; set; }
         public string SlaDescription { get; set; }
         public string SlaLink { get; set; }
-        public string Location { get; set; }
         public string Owner { get; set; }
         public DatasetStatus Status { get; set; }
         public Confidentiality Confidentiality { get; set; }
-        public RefinementLevel RefinementLevel { get; set; }
         
         public Guid ContactId { get; set; }
         public Guid SourceId { get; set; }

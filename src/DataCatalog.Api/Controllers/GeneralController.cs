@@ -73,7 +73,7 @@ namespace DataCatalog.Api.Controllers
         /// <summary>
         /// Get source types
         /// </summary>
-        /// <returns>A list of refinement levels</returns>
+        /// <returns>A list of source types</returns>
         [HttpGet]
         [Route("sourcetypes")]
         public ActionResult<EnumResponse[]> GetSourceTypes()

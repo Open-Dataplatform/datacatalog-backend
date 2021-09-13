@@ -17,8 +17,6 @@ namespace DataCatalog.Api.Services
         Task SoftDeleteAsync(Guid id);
         Task<IEnumerable<Dataset>> GetDatasetByCategoryAsync(Guid categoryId, SortType sortType, int take, int pageSize, int pageIndex);
         Task<IEnumerable<Dataset>> GetDatasetsBySearchTermAsync(string searchTerm, SortType sortType, int take, int pageSize, int pageIndex);
-        Task<string> GetDatasetLocationAsync(Guid? hierarchyId, string name);
         Task<LineageDataset> GetDatasetLineageAsync(Guid id);
-        Task<Dataset> CopyDatasetInRawAsync(Guid id);
     }
 }

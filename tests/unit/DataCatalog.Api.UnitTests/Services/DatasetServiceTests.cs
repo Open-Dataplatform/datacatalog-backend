@@ -49,7 +49,6 @@ namespace DataCatalog.Api.UnitTests.Services
             _fixture.Freeze<IMapper>();
             _datasetCreateRequest = _fixture.Create<DatasetCreateRequest>();
             _datasetCreateRequest.Status = DatasetStatus.Draft;
-            _datasetCreateRequest.RefinementLevel = RefinementLevel.Raw;
             _datasetCreateRequest.Confidentiality = Confidentiality.Confidential;
         }
 
@@ -152,22 +151,6 @@ namespace DataCatalog.Api.UnitTests.Services
         }
 
         [Fact]
-        public void SaveAsync_BadRefinementLevel_ShouldThrowException()
-        {
-            // Arrange
-            var dataSourceRepositoryMock = new Mock<IDataSourceRepository>();
-            dataSourceRepositoryMock.Setup(x => x.AnyAsync(It.IsAny<Guid[]>(), It.IsAny<List<SourceType>>())).ReturnsAsync(true);
-            _fixture.Inject(dataSourceRepositoryMock.Object);
-            _fixture.Freeze<IDataSourceRepository>();
-            var datasetService = _fixture.Create<DatasetService>();
-            _datasetCreateRequest.RefinementLevel = RefinementLevel.Raw;
-
-            // Act / Assert
-            Func<Task> f = async () => await datasetService.SaveAsync(_datasetCreateRequest);
-            f.Should().ThrowAsync<ValidationExceptionCollection>().WithMessage("*Refinement level does not match the selected data source(s)*");
-        }
-
-        [Fact]
         public async Task SaveAsync_ValidateReturnObject()
         {
             // Arrange
@@ -191,7 +174,6 @@ namespace DataCatalog.Api.UnitTests.Services
             transformationRepositoryMock.Setup(x => x.FindByIdAsync(_datasetCreateRequest.SourceTransformation.Id.Value)).ReturnsAsync(transformation);
             _fixture.Inject(transformationRepositoryMock.Object);
             _fixture.Freeze<ITransformationRepository>();
-            _datasetCreateRequest.Location = null;
             var messageBusSenderMock = new Mock<IBus>();
             _fixture.Inject(messageBusSenderMock.Object);
             var datasetService = _fixture.Create<DatasetService>();
@@ -220,14 +202,12 @@ namespace DataCatalog.Api.UnitTests.Services
             dataset.Description.Should().Be(_datasetCreateRequest.Description);
             dataset.Name.Should().Be(_datasetCreateRequest.Name);
             dataset.Owner.Should().Be(_datasetCreateRequest.Owner);
-            dataset.RefinementLevel.Should().Be(_datasetCreateRequest.RefinementLevel);
             dataset.SlaDescription.Should().Be(_datasetCreateRequest.SlaDescription);
             dataset.SlaLink.Should().Be(_datasetCreateRequest.SlaLink);
             dataset.Status.Should().Be(_datasetCreateRequest.Status);
             dataset.Version.Should().Be(0);
             messageBusSenderMock.Verify(mock => mock.Publish(It.Is<DatasetCreatedMessage>(dto =>
                 dto.DatasetName == _datasetCreateRequest.Name  &&
-                dto.Container == "RAW" &&
                 dto.Owner == _datasetCreateRequest.Owner), It.IsAny<IDictionary<string, string>>()));
         }
 
@@ -431,67 +411,5 @@ namespace DataCatalog.Api.UnitTests.Services
             result.SourceTransformations.First().Datasets.Count.Should().Be(0);
         }
 
-        [Fact]
-        public async Task CopyDatasetInRawAsync_InvalidId_ShouldReturnNull()
-        {
-            // Arrange
-            var datasetRepositoryMock = new Mock<IDatasetRepository>();
-            datasetRepositoryMock.Setup(x => x.FindByIdAsync(It.IsAny<Guid>())).ReturnsAsync((Dataset)null);
-            _fixture.Inject(datasetRepositoryMock.Object);
-            _fixture.Freeze<IDatasetRepository>();
-            var datasetService = _fixture.Create<DatasetService>();
-
-            //Act
-            var result = await datasetService.CopyDatasetInRawAsync(Guid.Empty);
-
-            // Assert
-            result.Should().BeNull();
-
-        }
-
-        [Fact]
-        public async Task CopyDatasetInRawAsync_NotPlacedInRaw_ShouldReturnNull()
-        {
-            // Arrange
-            var dataset = _fixture.Create<Dataset>();
-            dataset.RefinementLevel = RefinementLevel.Stock;
-            var datasetRepositoryMock = new Mock<IDatasetRepository>();
-            datasetRepositoryMock.Setup(x => x.FindByIdAsync(dataset.Id)).ReturnsAsync(dataset);
-            _fixture.Inject(datasetRepositoryMock.Object);
-            _fixture.Freeze<IDatasetRepository>();
-            var datasetService = _fixture.Create<DatasetService>();
-
-            //Act
-            var result = await datasetService.CopyDatasetInRawAsync(dataset.Id);
-
-            // Assert
-            result.Should().BeNull();
-        }
-
-        [Fact]
-        public async Task CopyDatasetInRawAsync_ShouldReturnCopy()
-        {
-            // Arrange
-            var dataset = _fixture.Create<Dataset>();
-            dataset.RefinementLevel = RefinementLevel.Raw;
-            var origId = dataset.Id;
-            var datasetRepositoryMock = new Mock<IDatasetRepository>();
-            datasetRepositoryMock.Setup(x => x.FindByIdAsync(dataset.Id)).ReturnsAsync(dataset);
-            _fixture.Inject(datasetRepositoryMock.Object);
-            _fixture.Freeze<IDatasetRepository>();
-            var datasetService = _fixture.Create<DatasetService>();
-
-            //Act
-            var result = await datasetService.CopyDatasetInRawAsync(dataset.Id);
-
-            // Assert
-            result.Should().NotBeNull();
-            result.Id.Should().NotBe(origId);
-            result.DatasetChangeLogs.Should().BeEmpty();
-            result.RefinementLevel.Should().Be(RefinementLevel.Stock);
-            result.DataContracts.Should().BeEmpty();
-            result.DatasetCategories.ToList().ForEach(d => d.DatasetId.Should().Be(result.Id));
-            result.DatasetDurations.ToList().ForEach(d => d.DatasetId.Should().Be(result.Id));
-        }
     }
 }

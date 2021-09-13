@@ -139,11 +139,9 @@ namespace DataCatalog.Api.IntegrationTests.Repositories
             result.Description.Should().Be(dataset.Description);
             result.SlaDescription.Should().Be(dataset.SlaDescription);
             result.SlaLink.Should().Be(dataset.SlaLink);
-            result.Location.Should().Be(dataset.Location);
             result.Owner.Should().Be(dataset.Owner);
             result.Status.Should().Be(dataset.Status);
             result.Confidentiality.Should().Be(dataset.Confidentiality);
-            result.RefinementLevel.Should().Be(dataset.RefinementLevel);
             result.ContactId.Should().Be(dataset.ContactId);
             result.SourceId.Should().Be(dataset.SourceId);
             result.Contact.Should().NotBeNull();

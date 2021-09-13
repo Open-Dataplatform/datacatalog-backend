@@ -31,8 +31,6 @@ namespace DataCatalog.Api.Data
 
             //DataContract
             CreateMap<DataContract, DataContractResponse>()
-                .ForMember(a => a.DatasetLocation, b => b.MapFrom(c => c.Dataset.Location))
-                .ForMember(a => a.DatasetContainer, b => b.MapFrom(c => c.Dataset.RefinementLevel.EnumNameToDescription().ToLower()))
                 .ForMember(a => a.DatasetStatus, b => b.MapFrom(c => c.Dataset.Status));
             CreateMap<DataContractCreateRequest, DataContract>();
             CreateMap<Domain.DataContract, DataContractResponse>();
@@ -234,7 +232,6 @@ namespace DataCatalog.Api.Data
             CreateMapEnum<Role>();
             CreateMapEnum<DatasetStatus>();
             CreateMapEnum<Confidentiality>();
-            CreateMapEnum<RefinementLevel>();
         }
 
         void CreateMapEnum<TEnum>()

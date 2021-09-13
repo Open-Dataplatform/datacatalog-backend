@@ -14,8 +14,6 @@ namespace DataCatalog.Api.Data.Dto
         public string Owner { get; set; }
         public DatasetStatus Status { get; set; }
         public Confidentiality Confidentiality { get; set; }
-        public RefinementLevel RefinementLevel { get; set; }
-        public string Location { get; set; }
 
         public GuidId Contact { get; set; }
         public GuidId[] Categories { get; set; }
@@ -43,8 +41,6 @@ namespace DataCatalog.Api.Data.Dto
         public string Owner { get; set; }
         public DatasetStatus Status { get; set; }
         public Confidentiality Confidentiality { get; set; }
-        public RefinementLevel RefinementLevel { get; set; }
-        public string Location { get; set; }
 
         public MemberGroupResponse Contact { get; set; }
         public DurationResponse Frequency { get; set; }

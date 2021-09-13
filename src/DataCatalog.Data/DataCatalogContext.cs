@@ -58,7 +58,6 @@ namespace DataCatalog.Data
                 e.Property(a => a.SourceId).IsRequired();
                 e.Property(a => a.Status).IsRequired().HasDefaultValue(DatasetStatus.Draft);
                 e.Property(a => a.Confidentiality).IsRequired().HasDefaultValue(Confidentiality.Public);
-                e.Property(a => a.RefinementLevel).IsRequired().HasDefaultValue(RefinementLevel.Raw);
             });
 
             //DatasetGroup
