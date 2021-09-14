@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using AutoMapper;
 using DataCatalog.Api.Data.Domain;
 using DataCatalog.Api.Repositories;
+using DataCatalog.Common.Enums;
 using DataCatalog.Common.Utils;
 
 namespace DataCatalog.Api.Services
@@ -16,14 +17,20 @@ namespace DataCatalog.Api.Services
         private readonly IDatasetCategoryRepository _datasetCategoryRepository;
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
+        private readonly IPermissionUtils _permissionUtils;
         private readonly string _environment;
 
-        public CategoryService(ICategoryRepository categoryRepository, IDatasetCategoryRepository datasetCategoryRepository, IMapper mapper, IUnitOfWork unitOfWork)
+        public CategoryService(ICategoryRepository categoryRepository, 
+            IDatasetCategoryRepository datasetCategoryRepository, 
+            IMapper mapper, 
+            IPermissionUtils permissionUtils, 
+            IUnitOfWork unitOfWork)
         {
             _categoryRepository = categoryRepository;
             _datasetCategoryRepository = datasetCategoryRepository;
             _unitOfWork = unitOfWork;
             _mapper = mapper;
+            _permissionUtils = permissionUtils;
             _environment = EnvironmentUtil.GetCurrentEnvironment().ToLower();
         }
 
@@ -36,9 +43,19 @@ namespace DataCatalog.Api.Services
                 return result;
 
             var datasetCategories = await _datasetCategoryRepository.ListAsync();
-            var categoriesWithDataSets = datasetCategories
-                .Where(datasetCategory => datasetCategory.Dataset is {IsDeleted: false})
-                .Select(datasetCategory => datasetCategory.CategoryId).Distinct();
+            IEnumerable<Guid> categoriesWithDataSets;
+            if (_permissionUtils.FilterUnpublishedDatasets)
+            {
+                categoriesWithDataSets = datasetCategories
+                    .Where(datasetCategory => datasetCategory.Dataset is {IsDeleted: false, Confidentiality: Confidentiality.Public, Status: DatasetStatus.Published})
+                    .Select(datasetCategory => datasetCategory.CategoryId).Distinct();
+            }
+            else
+            {
+                categoriesWithDataSets = datasetCategories
+                    .Where(datasetCategory => datasetCategory.Dataset is {IsDeleted: false})
+                    .Select(datasetCategory => datasetCategory.CategoryId).Distinct();
+            }
 
             return result.Where(category => categoriesWithDataSets.Contains(category.Id));
         }
