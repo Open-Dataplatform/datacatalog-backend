@@ -102,7 +102,7 @@ namespace DataCatalog.Api.Services.AD
 
         public async Task<IEnumerable<AdSearchResult>> SearchAsync(string searchString)
         {
-            var searchQueryOption = new QueryOption("$search", $"\"displayName:{searchString}\"");
+            var searchQueryOption = new QueryOption("$search", $"\"{searchString}\"");
             var consistencyLevelHeader = new HeaderOption("ConsistencyLevel", "eventual");
             
             var groupsTask = _graphServiceClient.Groups.Request(new List<Option> { searchQueryOption, consistencyLevelHeader }).GetAsync();
