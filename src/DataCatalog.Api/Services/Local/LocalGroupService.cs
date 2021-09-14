@@ -28,12 +28,14 @@ namespace DataCatalog.Api.Services.Local
             {
                 Id = Guid.NewGuid().ToString(),
                 Name = "LocalMember",
+                Mail = "local@test.dk",
                 Type = AccessMemberType.User
             };
             _localSearchResult = new AdSearchResult()
             {
                 DisplayName = "LocalSearchResult",
                 Id = Guid.NewGuid().ToString(),
+                Mail = "local@test.dk",
                 Type = "LocalSearchResultType"
             };
         }
