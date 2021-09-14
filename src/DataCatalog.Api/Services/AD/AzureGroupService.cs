@@ -102,17 +102,20 @@ namespace DataCatalog.Api.Services.AD
 
         public async Task<IEnumerable<AdSearchResult>> SearchAsync(string searchString)
         {
-            var searchQueryOption = new QueryOption("$search", $"\"{searchString}\"");
+            var displaySearchQueryOption = new QueryOption("$search", $"\"displayName:{searchString}\"");
+            var mailSearchQueryOption = new QueryOption("$search", $"\"mail:{searchString}\"");
             var consistencyLevelHeader = new HeaderOption("ConsistencyLevel", "eventual");
-            
-            var groupsTask = _graphServiceClient.Groups.Request(new List<Option> { searchQueryOption, consistencyLevelHeader }).GetAsync();
-            var usersTask = _graphServiceClient.Users.Request(new List<Option> { searchQueryOption, consistencyLevelHeader }).GetAsync();
-            var servicePrincipalsTask = _graphServiceClient.ServicePrincipals.Request(new List<Option> { searchQueryOption, consistencyLevelHeader }).GetAsync();
 
-            await Task.WhenAll(groupsTask, usersTask, servicePrincipalsTask);
+            var groupsTask = _graphServiceClient.Groups.Request(new List<Option> { displaySearchQueryOption, consistencyLevelHeader }).GetAsync();
+            var usersTask = _graphServiceClient.Users.Request(new List<Option> { displaySearchQueryOption, consistencyLevelHeader }).GetAsync();
+            var mailTask = _graphServiceClient.Users.Request(new List<Option> { mailSearchQueryOption, consistencyLevelHeader }).GetAsync();
+            var servicePrincipalsTask = _graphServiceClient.ServicePrincipals.Request(new List<Option> { displaySearchQueryOption, consistencyLevelHeader }).GetAsync();
+
+            await Task.WhenAll(groupsTask, usersTask, mailTask, servicePrincipalsTask);
 
             var result = groupsTask.Result.Where(x => !x.GroupTypes.Contains("Unified")).Select(x => new AdSearchResult {Id = x.Id, DisplayName = x.DisplayName, Type = AdSearchResultType.Group})
-                .Union(usersTask.Result.Select(x => new AdSearchResult { Id = x.Id, DisplayName = $"{x.DisplayName} ({x.Mail})", Type = AdSearchResultType.User }))
+                .Union(usersTask.Result.Select(x => new AdSearchResult { Id = x.Id, DisplayName = x.DisplayName, Mail = x.Mail, Type = AdSearchResultType.User }))
+                .Union(mailTask.Result.Select(x => new AdSearchResult { Id = x.Id, DisplayName = x.DisplayName, Mail = x.Mail, Type = AdSearchResultType.User }))
                 .Union(servicePrincipalsTask.Result.Select(x => new AdSearchResult { Id = x.Id, DisplayName = x.DisplayName, Type = AdSearchResultType.ServicePrincipal }));
 
             return result;
@@ -124,7 +127,7 @@ namespace DataCatalog.Api.Services.AD
                 return new AccessMember {Id = groupMember.Id, Name = groupMember.DisplayName, Type = AccessMemberType.Group};
             
             if (memberDirectoryObject is Microsoft.Graph.User userMember)
-                return new AccessMember { Id = userMember.Id, Name = $"{userMember.DisplayName} ({userMember.Mail})", Type = AccessMemberType.User };
+                return new AccessMember { Id = userMember.Id, Name = userMember.DisplayName, Mail = userMember.Mail, Type = AccessMemberType.User };
             
             if (memberDirectoryObject is ServicePrincipal servicePrincipalMember)
                 return new AccessMember { Id = servicePrincipalMember.Id, Name = servicePrincipalMember.DisplayName, Type = AccessMemberType.ServicePrincipal };

@@ -55,12 +55,14 @@ namespace DataCatalog.Api.UnitTests.Controllers
                 value.ReadAccessList.Any(x =>
                     Equals(x.Id, reader.Id) && 
                     Equals(x.Name, reader.Name) &&
+                    Equals(x.Mail, reader.Mail) &&
                     Equals(x.MemberType, reader.Type.EnumNameToDescription())).ShouldBeTrue();
 
             foreach (var writer in writers)
                 value.WriteAccessList.Any(x =>
                     Equals(x.Id, writer.Id) &&
                     Equals(x.Name, writer.Name) &&
+                    Equals(x.Mail, writer.Mail) &&
                     Equals(x.MemberType, writer.Type.EnumNameToDescription())).ShouldBeTrue();
         }
 
@@ -230,6 +232,7 @@ namespace DataCatalog.Api.UnitTests.Controllers
             var dataAccessEntryResult = (DataAccessEntry)okResult.Value;
             dataAccessEntryResult.Id.ShouldBe(accessMember.Id);
             dataAccessEntryResult.Name.ShouldBe(accessMember.Name);
+            dataAccessEntryResult.Mail.ShouldBe(accessMember.Mail);
             dataAccessEntryResult.MemberType.ShouldBe(accessMember.Type.EnumNameToDescription());
             storageServiceMock.Verify(x => x.GetDirectoryMetadataWithRetry(datasetId), Times.Once);
             activeDirectoryServiceMock.Verify(
@@ -264,6 +267,7 @@ namespace DataCatalog.Api.UnitTests.Controllers
             var dataAccessEntryResult = (DataAccessEntry)okResult.Value;
             dataAccessEntryResult.Id.ShouldBe(accessMember.Id);
             dataAccessEntryResult.Name.ShouldBe(accessMember.Name);
+            dataAccessEntryResult.Mail.ShouldBe(accessMember.Mail);
             dataAccessEntryResult.MemberType.ShouldBe(accessMember.Type.EnumNameToDescription());
             storageServiceMock.Verify(x => x.GetDirectoryMetadataWithRetry(datasetId), Times.Once);
             activeDirectoryServiceMock.Verify(
@@ -367,6 +371,7 @@ namespace DataCatalog.Api.UnitTests.Controllers
             var valueResult = (IEnumerable<AdSearchResultResponse>)objectResult.Value;
             adSearchResults.All(x => valueResult.Any(y =>
                 Equals(x.DisplayName, y.DisplayName) && 
+                Equals(x.Mail, y.Mail) && 
                 Equals(x.Id, y.Id) && 
                 Equals(x.Type, y.Type))).ShouldBeTrue();
             activeDirectoryServiceMock.Verify(x => x.SearchAsync(searchString), Times.Once);
