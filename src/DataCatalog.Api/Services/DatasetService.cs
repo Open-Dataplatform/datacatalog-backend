@@ -379,7 +379,7 @@ namespace DataCatalog.Api.Services
                     if (string.IsNullOrWhiteSpace(df.Name))
                         exceptions.Add(new ValidationException("Data field must have a name", $"{i}, {nameof(df.Name)}"));
 
-                    if (string.IsNullOrWhiteSpace(df.Type))
+                    if (!df.Type.HasValue)
                         exceptions.Add(new ValidationException("Data field must have a type", $"{df.Name ?? i.ToString()}, {nameof(df.Type)}"));
                 }
 
