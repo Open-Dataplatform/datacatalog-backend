@@ -30,6 +30,7 @@ namespace DataCatalog.Api.Extensions
             if (!executingUser.Claims.Any())
             {
                 // Call must have been made by an allowAnonymous call such as /health
+                await _next(context);
                 return;
             }
             var identityProvider = await GetIdentityProviderForUser(executingUser, identityProviderService);

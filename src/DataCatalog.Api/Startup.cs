@@ -31,6 +31,7 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Graph;
 using Microsoft.Graph.Auth;
 using Microsoft.Identity.Client;
+using Prometheus;
 using Serilog;
 using Serilog.Context;
 
@@ -169,6 +170,7 @@ namespace DataCatalog.Api
             app.UseMiddleware<ExceptionExtension>();
             app.UseHttpsRedirection();
             app.UseRouting();
+            app.UseHttpMetrics();
 
             // CORS
             if (EnvironmentUtil.IsDevelopment())
@@ -200,6 +202,7 @@ namespace DataCatalog.Api
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
+                endpoints.MapMetrics();
                 endpoints.MapHealthChecks("/health");
             });
 
