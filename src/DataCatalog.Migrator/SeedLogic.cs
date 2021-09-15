@@ -25,6 +25,17 @@ namespace DataCatalog.Migrator
             await SeedDurations();
             await SeedDataSources();
             await SeedIdentityProviders();
+            await SeedServiceLevelAgreements();
+        }
+
+        private async Task SeedServiceLevelAgreements()
+        {
+            var durations = new List<ServiceLevelAgreement>
+            {
+                new ServiceLevelAgreement { Id = new Guid("2a0364c4-6047-4a3e-b21e-9b67ed8a71df"), Name = "None", Description = "No agreement" },
+            };
+
+            await UpsertData(durations);
         }
 
         private async Task SeedDurations()

@@ -29,5 +29,8 @@ namespace DataCatalog.Data.Model
 
         public ProvisionDatasetStatusEnum? ProvisionStatus { get; set; }
         public bool IsDeleted { get; set; }
+
+        public Guid? ServiceLevelAgreementId { get; set; }
+        public ServiceLevelAgreement ServiceLevelAgreement { get; set; }
     }
 }
