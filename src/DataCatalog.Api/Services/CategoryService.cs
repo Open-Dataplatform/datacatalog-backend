@@ -47,7 +47,7 @@ namespace DataCatalog.Api.Services
             if (_permissionUtils.FilterUnpublishedDatasets)
             {
                 categoriesWithDataSets = datasetCategories
-                    .Where(datasetCategory => datasetCategory.Dataset is {IsDeleted: false, Confidentiality: Confidentiality.Public, Status: DatasetStatus.Published})
+                    .Where(datasetCategory => datasetCategory.Dataset is {IsDeleted: false, Status: DatasetStatus.Published})
                     .Select(datasetCategory => datasetCategory.CategoryId).Distinct();
             }
             else
