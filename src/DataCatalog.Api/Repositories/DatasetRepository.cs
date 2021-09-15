@@ -28,7 +28,6 @@ namespace DataCatalog.Api.Repositories
                 .Include(a => a.DatasetDurations).ThenInclude(a => a.Duration)
                 .Include(a => a.DatasetChangeLogs).ThenInclude(a => a.Member)
                 .Include(a => a.Hierarchy).ThenInclude(a => a.ParentHierarchy)
-                .Include(a => a.DataContracts).ThenInclude(a => a.DataSource)
                 .FirstOrDefault(a => a.Id == id);
           
             //Only load source transformation and related datasets
@@ -134,7 +133,6 @@ namespace DataCatalog.Api.Repositories
                          || t == "source" && ds.Status == DatasetStatus.Source
                          || ds.Description != null && ds.Description.Contains(t)
                          || ds.DatasetCategories.Any(b => b.Category.Name.Contains(t))
-                         || ds.DataContracts.Any(b => b.DataSource.Name.Contains(t) || b.DataSource.Description != null && b.DataSource.Description.Contains(t))
                          || ds.DataFields.Any(b => b.Name.Contains(t) || (b.Description != null && b.Description.Contains(t)))
                    select ds;
         }

@@ -32,7 +32,6 @@ namespace DataCatalog.Api.Services
         private readonly IUnitOfWork _unitOfWork;
         private readonly Current _current;
         private readonly IMapper _mapper;
-        private readonly IPermissionUtils _permissionUtils;
 
         public DatasetService(
             IDatasetRepository datasetRepository,
@@ -46,8 +45,7 @@ namespace DataCatalog.Api.Services
             IMapper mapper,
             IUnitOfWork unitOfWork,
             Current current,
-            IBus bus, 
-            IPermissionUtils permissionUtils)
+            IBus bus)
         {
             _datasetRepository = datasetRepository;
             _hierarchyRepository = hierarchyRepository;
@@ -61,7 +59,6 @@ namespace DataCatalog.Api.Services
             _current = current;
             _bus = bus;
             _mapper = mapper;
-            _permissionUtils = permissionUtils;
         }
 
         public async Task<Dataset> FindByIdAsync(Guid id)
@@ -94,7 +91,6 @@ namespace DataCatalog.Api.Services
 
             await InsertOrUpdateDuration(request.Frequency, dbDataset, DurationType.Frequency);
             await InsertOrUpdateDuration(request.Resolution, dbDataset, DurationType.Resolution);
-            InsertOrUpdateDataContracts(dbDataset, request.DataSources);
             await AddChangeLog(dbDataset);
             dbDataset.ProvisionStatus = ProvisionDatasetStatusEnum.Pending;
 
@@ -153,7 +149,6 @@ namespace DataCatalog.Api.Services
 
             await InsertOrUpdateDuration(request.Frequency, dbDataset, DurationType.Frequency);
             await InsertOrUpdateDuration(request.Resolution, dbDataset, DurationType.Resolution);
-            InsertOrUpdateDataContracts(dbDataset, request.DataSources);
             await AddChangeLog(dbDataset);
             dbDataset.Version++;
             await _unitOfWork.CompleteAsync();
@@ -246,7 +241,6 @@ namespace DataCatalog.Api.Services
             dataset.Name = promotedName;
             dataset.DatasetChangeLogs = new List<DataCatalog.Data.Model.DatasetChangeLog>();
             dataset.RefinementLevel++;
-            dataset.DataContracts = null;
             dataset.DataFields.ForEach(f =>
             {
                 f.Id = Guid.NewGuid();
@@ -361,22 +355,6 @@ namespace DataCatalog.Api.Services
                         Duration = duration
                     });
                 }
-            }
-        }
-
-        private void InsertOrUpdateDataContracts(DataCatalog.Data.Model.Dataset dataset, GuidId[] requests)
-        {
-            if (requests != null)
-            {
-                var existing = dataset.DataContracts.ToArray();
-
-                foreach (var r in requests)
-                    if (existing.All(a => a.DataSourceId != r.Id))
-                        dataset.DataContracts.Add(new DataCatalog.Data.Model.DataContract { DataSourceId = r.Id });
-
-                foreach (var e in existing)
-                    if (requests.All(a => a.Id != e.DataSourceId))
-                        dataset.DataContracts.Remove(e);
             }
         }
 

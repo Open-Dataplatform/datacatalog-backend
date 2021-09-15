@@ -29,7 +29,6 @@ namespace DataCatalog.Data.Model
         public List<TransformationDataset> TransformationDatasets { get; set; } = new List<TransformationDataset>();
         public List<DatasetChangeLog> DatasetChangeLogs { get; set; } = new List<DatasetChangeLog>();
         public List<DatasetDuration> DatasetDurations { get; set; } = new List<DatasetDuration>();
-        public List<DataContract> DataContracts { get; set; } = new List<DataContract>();
 
         public ProvisionDatasetStatusEnum? ProvisionStatus { get; set; }
         public bool IsDeleted { get; set; }

@@ -35,6 +35,5 @@ namespace DataCatalog.Api.Data.Domain
         public List<TransformationDataset> TransformationDatasets { get; set; } = new List<TransformationDataset>();
         public List<DatasetChangeLog> DatasetChangeLogs { get; set; } = new List<DatasetChangeLog>();
         public List<DatasetDuration> DatasetDurations { get; set; } = new List<DatasetDuration>();
-        public List<DataContract> DataContracts { get; set; } = new List<DataContract>();
     }
 }

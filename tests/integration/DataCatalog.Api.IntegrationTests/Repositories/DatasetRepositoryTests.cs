@@ -161,7 +161,6 @@ namespace DataCatalog.Api.IntegrationTests.Repositories
             result.TransformationDatasets.Count.Should().Be(dataset.TransformationDatasets.Count);
             result.DatasetChangeLogs.Count.Should().Be(dataset.DatasetChangeLogs.Count);
             result.DatasetDurations.Count.Should().Be(dataset.DatasetDurations.Count);
-            result.DataContracts.Count.Should().Be(dataset.DataContracts.Count);
         }
 
         [Fact]

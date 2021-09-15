@@ -9,7 +9,7 @@ using System;
 
 namespace DataCatalog.Api.Data
 {
-    public class AutoMapperProfile: Profile
+    public class AutoMapperProfile : Profile
     {
         public AutoMapperProfile()
         {
@@ -29,20 +29,12 @@ namespace DataCatalog.Api.Data
             CreateMap<Confidentiality, ConfidentialityResponse>();
             CreateMap<Confidentiality, GuidId>();
 
-            //DataContract
-            CreateMap<DataContract, DataContractResponse>()
-                .ForMember(a => a.DatasetLocation, b => b.MapFrom(c => c.Dataset.Location))
-                .ForMember(a => a.DatasetContainer, b => b.MapFrom(c => c.Dataset.RefinementLevel.EnumNameToDescription().ToLower()))
-                .ForMember(a => a.DatasetStatus, b => b.MapFrom(c => c.Dataset.Status));
-            CreateMap<DataContractCreateRequest, DataContract>();
-            CreateMap<Domain.DataContract, DataContractResponse>();
-            CreateMap<DataContract, Domain.DataContract>();
-            CreateMap<Domain.DataContract, DataContract>();
-
             //DataField
             CreateMap<DataField, DataFieldResponse>();
-            CreateMap<DataFieldUpsertRequest, DataField>().ForMember(a => a.Name, b => b.MapFrom(c => c.Name.FormatName()));
-            CreateMap<DataFieldUpsertRequest, Domain.DataField>().ForMember(a => a.Name, b => b.MapFrom(c => c.Name.FormatName()));
+            CreateMap<DataFieldUpsertRequest, DataField>()
+                .ForMember(a => a.Name, b => b.MapFrom(c => c.Name.FormatName()));
+            CreateMap<DataFieldUpsertRequest, Domain.DataField>()
+                .ForMember(a => a.Name, b => b.MapFrom(c => c.Name.FormatName()));
             CreateMap<DataFieldResponse, DataFieldUpsertRequest>();
             CreateMap<DataField, Domain.DataField>();
 
@@ -65,12 +57,15 @@ namespace DataCatalog.Api.Data
             CreateMap<Dataset, DatasetResponse>()
                 .ForMember(a => a.Categories, b => b.MapFrom(c => c.DatasetCategories.Select(d => d.Category)))
                 .ForMember(a => a.Frequency, b => b.MapFrom(c =>
-                    c.DatasetDurations.Where(d => d.DurationType == DurationType.Frequency).Select(d => d.Duration).FirstOrDefault()))
+                    c.DatasetDurations.Where(d => d.DurationType == DurationType.Frequency).Select(d => d.Duration)
+                        .FirstOrDefault()))
                 .ForMember(a => a.Resolution, b => b.MapFrom(c =>
-                    c.DatasetDurations.Where(d => d.DurationType == DurationType.Resolution).Select(d => d.Duration).FirstOrDefault()))
+                    c.DatasetDurations.Where(d => d.DurationType == DurationType.Resolution).Select(d => d.Duration)
+                        .FirstOrDefault()))
                 .ForMember(a => a.SourceTransformation, b =>
-                    b.MapFrom(c => c.TransformationDatasets.Where(c => c.TransformationDirection == TransformationDirection.Sink).Select(c => c.Transformation).FirstOrDefault()))
-                .ForMember(a => a.DataSources, b => b.MapFrom(c => c.DataContracts.Select(d => d.DataSource)));
+                    b.MapFrom(c =>
+                        c.TransformationDatasets.Where(c => c.TransformationDirection == TransformationDirection.Sink)
+                            .Select(c => c.Transformation).FirstOrDefault()));
 
             CreateMap<Dataset, Domain.Dataset>();
 
@@ -83,32 +78,41 @@ namespace DataCatalog.Api.Data
                 .ForMember(a => a.Name, b => b.MapFrom(c => c.Name.FormatName()))
                 .ForMember(a => a.DatasetCategories, b =>
                     b.MapFrom(c => c.Categories.Select(d => new DatasetCategory { CategoryId = d.Id })))
-                .ForMember(a => a.Contact, b => b.Ignore()).ForMember(a => a.ContactId, b => b.MapFrom(c => c.Contact.Id))
-                .ForMember(a => a.Hierarchy, b => b.Ignore()).ForMember(a => a.HierarchyId, b => b.MapFrom(c => c.Hierarchy.Id));
+                .ForMember(a => a.Contact, b => b.Ignore())
+                .ForMember(a => a.ContactId, b => b.MapFrom(c => c.Contact.Id))
+                .ForMember(a => a.Hierarchy, b => b.Ignore())
+                .ForMember(a => a.HierarchyId, b => b.MapFrom(c => c.Hierarchy.Id));
 
             CreateMap<DatasetCreateRequest, Domain.Dataset>()
                 .ForMember(a => a.Name, b => b.MapFrom(c => c.Name.FormatName()))
                 .ForMember(a => a.DatasetCategories, b =>
                     b.MapFrom(c => c.Categories.Select(d => new DatasetCategory { CategoryId = d.Id })))
-                .ForMember(a => a.Contact, b => b.Ignore()).ForMember(a => a.ContactId, b => b.MapFrom(c => c.Contact.Id))
-                .ForMember(a => a.Hierarchy, b => b.Ignore()).ForMember(a => a.HierarchyId, b => b.MapFrom(c => c.Hierarchy.Id));
+                .ForMember(a => a.Contact, b => b.Ignore())
+                .ForMember(a => a.ContactId, b => b.MapFrom(c => c.Contact.Id))
+                .ForMember(a => a.Hierarchy, b => b.Ignore())
+                .ForMember(a => a.HierarchyId, b => b.MapFrom(c => c.Hierarchy.Id));
 
             CreateMap<DatasetUpdateRequest, Dataset>()
                 .ForMember(a => a.Name, b => b.MapFrom(c => c.Name.FormatName()))
                 .ForMember(a => a.DatasetCategories, b =>
                     b.MapFrom(c => c.Categories.Select(d => new DatasetCategory { CategoryId = d.Id })))
-                .ForMember(a => a.Contact, b => b.Ignore()).ForMember(a => a.ContactId, b => b.MapFrom(c => c.Contact.Id))
-                .ForMember(a => a.Hierarchy, b => b.Ignore()).ForMember(a => a.HierarchyId, b => b.MapFrom(c => c.Hierarchy.Id));
+                .ForMember(a => a.Contact, b => b.Ignore())
+                .ForMember(a => a.ContactId, b => b.MapFrom(c => c.Contact.Id))
+                .ForMember(a => a.Hierarchy, b => b.Ignore())
+                .ForMember(a => a.HierarchyId, b => b.MapFrom(c => c.Hierarchy.Id));
 
             CreateMap<Domain.Dataset, DatasetResponse>()
                 .ForMember(a => a.Categories, b => b.MapFrom(c => c.DatasetCategories.Select(d => d.Category)))
                 .ForMember(a => a.Frequency, b => b.MapFrom(c =>
-                    c.DatasetDurations.Where(d => d.DurationType == DurationType.Frequency).Select(d => d.Duration).FirstOrDefault()))
+                    c.DatasetDurations.Where(d => d.DurationType == DurationType.Frequency).Select(d => d.Duration)
+                        .FirstOrDefault()))
                 .ForMember(a => a.Resolution, b => b.MapFrom(c =>
-                    c.DatasetDurations.Where(d => d.DurationType == DurationType.Resolution).Select(d => d.Duration).FirstOrDefault()))
+                    c.DatasetDurations.Where(d => d.DurationType == DurationType.Resolution).Select(d => d.Duration)
+                        .FirstOrDefault()))
                 .ForMember(a => a.SourceTransformation, b =>
-                    b.MapFrom(c => c.TransformationDatasets.Where(c => c.TransformationDirection == TransformationDirection.Sink).Select(c => c.Transformation).FirstOrDefault()))
-                .ForMember(a => a.DataSources, b => b.MapFrom(c => c.DataContracts.Select(d => d.DataSource)));
+                    b.MapFrom(c =>
+                        c.TransformationDatasets.Where(c => c.TransformationDirection == TransformationDirection.Sink)
+                            .Select(c => c.Transformation).FirstOrDefault()));
             CreateMap<Domain.Dataset, Dataset>();
 
 
@@ -122,9 +126,11 @@ namespace DataCatalog.Api.Data
             CreateMap<Domain.DatasetGroup, DatasetGroupResponse>()
                 .ForMember(a => a.Datasets, b => b.MapFrom(c => c.DatasetGroupDatasets.Select(d => d.Dataset)));
             CreateMap<DatasetGroupCreateRequest, Domain.DatasetGroup>()
-                .ForMember(a => a.DatasetGroupDatasets, b => b.MapFrom(c => c.Datasets.Select(d => new DatasetGroupDataset { DatasetId = d.Id })));
+                .ForMember(a => a.DatasetGroupDatasets,
+                    b => b.MapFrom(c => c.Datasets.Select(d => new DatasetGroupDataset { DatasetId = d.Id })));
             CreateMap<DatasetGroupUpdateRequest, Domain.DatasetGroup>()
-                .ForMember(a => a.DatasetGroupDatasets, b => b.MapFrom(c => c.Datasets.Select(d => new Domain.DatasetGroupDataset { DatasetId = d.Id })));
+                .ForMember(a => a.DatasetGroupDatasets,
+                    b => b.MapFrom(c => c.Datasets.Select(d => new Domain.DatasetGroupDataset { DatasetId = d.Id })));
             CreateMap<DatasetGroup, Domain.DatasetGroup>();
             CreateMap<Domain.DatasetGroup, DatasetGroup>();
             CreateMap<DatasetGroupDataset, Domain.DatasetGroupDataset>();
@@ -142,7 +148,8 @@ namespace DataCatalog.Api.Data
             CreateMap<Duration, DurationResponse>();
             CreateMap<DurationResponse, DurationUpsertRequest>();
             CreateMap<DurationUpsertRequest, Duration>().ForMember(a => a.Code, b => b.MapFrom(c => c.Code.ToUpper()));
-            CreateMap<DurationUpsertRequest, Domain.Duration>().ForMember(a => a.Code, b => b.MapFrom(c => c.Code.ToUpper()));
+            CreateMap<DurationUpsertRequest, Domain.Duration>()
+                .ForMember(a => a.Code, b => b.MapFrom(c => c.Code.ToUpper()));
             CreateMap<Domain.Duration, DurationResponse>();
             CreateMap<Duration, Domain.Duration>();
             CreateMap<Domain.Duration, Duration>();
@@ -172,10 +179,12 @@ namespace DataCatalog.Api.Data
                 .ForMember(a => a.Members, b => b.MapFrom(c => c.MemberGroupMembers.Select(d => d.Member)));
 
             CreateMap<MemberGroupCreateRequest, Data.Domain.MemberGroup>()
-                .ForMember(a => a.MemberGroupMembers, b => b.MapFrom(c => c.Members.Select(d => new MemberGroupMember { MemberId = d.Id })));
+                .ForMember(a => a.MemberGroupMembers,
+                    b => b.MapFrom(c => c.Members.Select(d => new MemberGroupMember { MemberId = d.Id })));
 
             CreateMap<MemberGroupUpdateRequest, MemberGroup>()
-                .ForMember(a => a.MemberGroupMembers, b => b.MapFrom(c => c.Members.Select(d => new MemberGroupMember { MemberId = d.Id })));
+                .ForMember(a => a.MemberGroupMembers,
+                    b => b.MapFrom(c => c.Members.Select(d => new MemberGroupMember { MemberId = d.Id })));
             CreateMap<Domain.MemberGroup, MemberGroupResponse>();
             CreateMap<MemberGroup, Domain.MemberGroup>();
             CreateMap<MemberGroupMember, Domain.MemberGroupMember>();
@@ -190,21 +199,43 @@ namespace DataCatalog.Api.Data
             CreateMap<Domain.Transformation, Domain.LineageTransformation>();
 
             CreateMap<Transformation, TransformationResponse>()
-                .ForMember(a => a.SinkDatasets, b => b.MapFrom(c =>  c.TransformationDatasets.Where(d => d.TransformationDirection == TransformationDirection.Sink).Select(e => e.Dataset)))
-                .ForMember(a => a.SourceDatasets, b => b.MapFrom(c => c.TransformationDatasets.Where(d => d.TransformationDirection == TransformationDirection.Source).Select(e => e.Dataset)));
+                .ForMember(a => a.SinkDatasets,
+                    b => b.MapFrom(c =>
+                        c.TransformationDatasets.Where(d => d.TransformationDirection == TransformationDirection.Sink)
+                            .Select(e => e.Dataset)))
+                .ForMember(a => a.SourceDatasets,
+                    b => b.MapFrom(c =>
+                        c.TransformationDatasets.Where(d => d.TransformationDirection == TransformationDirection.Source)
+                            .Select(e => e.Dataset)));
             CreateMap<Domain.Transformation, TransformationResponse>()
-                .ForMember(a => a.SinkDatasets, b => b.MapFrom(c => c.TransformationDatasets.Where(d => d.TransformationDirection == TransformationDirection.Sink).Select(e => e.Dataset)))
-                .ForMember(a => a.SourceDatasets, b => b.MapFrom(c => c.TransformationDatasets.Where(d => d.TransformationDirection == TransformationDirection.Source).Select(e => e.Dataset)));
+                .ForMember(a => a.SinkDatasets,
+                    b => b.MapFrom(c =>
+                        c.TransformationDatasets.Where(d => d.TransformationDirection == TransformationDirection.Sink)
+                            .Select(e => e.Dataset)))
+                .ForMember(a => a.SourceDatasets,
+                    b => b.MapFrom(c =>
+                        c.TransformationDatasets.Where(d => d.TransformationDirection == TransformationDirection.Source)
+                            .Select(e => e.Dataset)));
 
             CreateMap<TransformationCreateRequest, Transformation>()
-                .ForMember(a => a.TransformationDatasets, b => b.MapFrom(c => 
-                    c.SinkDatasets.Select(d => new TransformationDataset { DatasetId = d.Id, TransformationDirection = TransformationDirection.Sink })
-                    .Concat(c.SourceDatasets.Select(d => new TransformationDataset { DatasetId = d.Id, TransformationDirection = TransformationDirection.Source }))));
+                .ForMember(a => a.TransformationDatasets, b => b.MapFrom(c =>
+                    c.SinkDatasets.Select(d => new TransformationDataset
+                            { DatasetId = d.Id, TransformationDirection = TransformationDirection.Sink })
+                        .Concat(c.SourceDatasets.Select(d => new TransformationDataset
+                            { DatasetId = d.Id, TransformationDirection = TransformationDirection.Source }))));
 
             CreateMap<TransformationUpdateRequest, Transformation>()
                 .ForMember(a => a.TransformationDatasets, b => b.MapFrom(c =>
-                    c.SinkDatasets.Select(d => new TransformationDataset { DatasetId = d.Id, TransformationDirection = TransformationDirection.Sink, TransformationId = c.Id })
-                    .Concat(c.SourceDatasets.Select(d => new TransformationDataset { DatasetId = d.Id, TransformationDirection = TransformationDirection.Source, TransformationId = c.Id }))));
+                    c.SinkDatasets.Select(d => new TransformationDataset
+                        {
+                            DatasetId = d.Id, TransformationDirection = TransformationDirection.Sink,
+                            TransformationId = c.Id
+                        })
+                        .Concat(c.SourceDatasets.Select(d => new TransformationDataset
+                        {
+                            DatasetId = d.Id, TransformationDirection = TransformationDirection.Source,
+                            TransformationId = c.Id
+                        }))));
 
             CreateMap<SourceTransformationUpsertRequest, Transformation>();
             CreateMap<SourceTransformationUpsertRequest, Domain.Transformation>();
@@ -216,15 +247,15 @@ namespace DataCatalog.Api.Data
             // DatasetChangeLog
             CreateMap<DatasetChangeLog, Domain.DatasetChangeLog>();
             CreateMap<Domain.DatasetChangeLog, DatasetChangeLogResponse>()
-                .ForMember(a => a.Member, b => b.MapFrom(c => 
-                new MemberResponse
-                {
-                    Id = c.MemberId,
-                    CreatedDate = c.CreatedDate,
-                    MemberRole = c.Member.MemberRole,
-                    Name = c.Name,
-                    Email = c.Email
-                }));
+                .ForMember(a => a.Member, b => b.MapFrom(c =>
+                    new MemberResponse
+                    {
+                        Id = c.MemberId,
+                        CreatedDate = c.CreatedDate,
+                        MemberRole = c.Member.MemberRole,
+                        Name = c.Name,
+                        Email = c.Email
+                    }));
 
 
             // IdentityProvider

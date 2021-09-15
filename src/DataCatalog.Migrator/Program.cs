@@ -68,13 +68,6 @@ namespace DataCatalog.Migrator
                 a.OriginEnvironment = originEnvironment;
             }
 
-            var dataContracts = db.DataContracts.Where(a => a.OriginEnvironment == null).ToArray();
-            foreach (var a in dataContracts)
-            {
-                Log.Information($"Updating origin environment of data contract with id {a.Id}");
-                a.OriginEnvironment = originEnvironment;
-            }
-
             var categories = db.Categories.Where(a => a.OriginEnvironment == null).ToArray();
             foreach (var a in categories)
             { 

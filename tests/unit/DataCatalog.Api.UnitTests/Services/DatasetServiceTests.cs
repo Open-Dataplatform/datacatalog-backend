@@ -232,8 +232,6 @@ namespace DataCatalog.Api.UnitTests.Services
             dataset.Should().NotBeNull();
             dataset.Confidentiality.Should().Be(_datasetCreateRequest.Confidentiality);
             dataset.ContactId.Should().Be(_datasetCreateRequest.Contact.Id);
-            dataset.DataContracts.Count.Should().Be(3);
-            dataset.DataContracts.First().DataSourceId.Should().Be(_datasetCreateRequest.DataSources.First().Id);
             dataset.DataFields.Length.Should().Be(3);
             dataset.DataFields.First().Description.Should().Be(_datasetCreateRequest.DataFields.First().Description);
             dataset.DataFields.First().Name.Should().Be(_datasetCreateRequest.DataFields.First().Name);
@@ -557,7 +555,6 @@ namespace DataCatalog.Api.UnitTests.Services
             result.Id.Should().NotBe(origId);
             result.DatasetChangeLogs.Should().BeEmpty();
             result.RefinementLevel.Should().Be(RefinementLevel.Stock);
-            result.DataContracts.Should().BeEmpty();
             result.DatasetCategories.ToList().ForEach(d => d.DatasetId.Should().Be(result.Id));
             result.DatasetDurations.ToList().ForEach(d => d.DatasetId.Should().Be(result.Id));
         }

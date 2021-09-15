@@ -25,7 +25,6 @@ namespace DataCatalog.Data
         public DbSet<DatasetDuration> DatasetDurations { get; set; }
         public DbSet<Hierarchy> Hierarchies { get; set; }
         public DbSet<DataSource> DataSources { get; set; }
-        public DbSet<DataContract> DataContracts { get; set; }
 
         public DataCatalogContext(DbContextOptions options) : base(options) { }
 

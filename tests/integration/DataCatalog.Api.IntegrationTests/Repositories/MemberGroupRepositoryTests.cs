@@ -52,7 +52,6 @@ namespace DataCatalog.Api.IntegrationTests.Repositories
             _datasets.ForEach(d => d.TransformationDatasets = null);
             _datasets.ForEach(d => d.DatasetChangeLogs = null);
             _datasets.ForEach(d => d.DatasetDurations = null);
-            _datasets.ForEach(d => d.DataContracts = null);
 
             _memberGroupMembers[0].MemberId = _members[0].Id;
             _memberGroupMembers[0].MemberGroupId = _memberGroups[0].Id;

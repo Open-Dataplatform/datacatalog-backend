@@ -82,7 +82,6 @@ namespace DataCatalog.Api
 
             // Repositories
             services.AddScoped<ICategoryRepository, CategoryRepository>();
-            services.AddScoped<IDataContractRepository, DataContractRepository>();
             services.AddScoped<IDataFieldRepository, DataFieldRepository>();
             services.AddScoped<IDatasetCategoryRepository, DatasetCategoryRepository>();
             services.AddScoped<IDatasetChangeLogRepository, DatasetChangeLogRepository>();
@@ -266,7 +265,6 @@ namespace DataCatalog.Api
 
             // Services
             services.AddTransient<ICategoryService, CategoryService>();
-            services.AddTransient<IDataContractService, DataContractService>();
             services.AddTransient<IDatasetGroupService, DatasetGroupService>();
             services.AddTransient<IDatasetService, DatasetService>();
             services.AddTransient<IDataSourceService, DataSourceService>();
