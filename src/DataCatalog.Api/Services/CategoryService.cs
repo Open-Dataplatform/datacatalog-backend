@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 using AutoMapper;
 using DataCatalog.Api.Data.Domain;
 using DataCatalog.Api.Repositories;
-using DataCatalog.Common.Enums;
 using DataCatalog.Common.Utils;
 
 namespace DataCatalog.Api.Services
@@ -14,50 +13,41 @@ namespace DataCatalog.Api.Services
     public class CategoryService : ICategoryService
     {
         private readonly ICategoryRepository _categoryRepository;
+        private readonly IDatasetRepository _datasetRepository;
         private readonly IDatasetCategoryRepository _datasetCategoryRepository;
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
-        private readonly IPermissionUtils _permissionUtils;
         private readonly string _environment;
 
         public CategoryService(ICategoryRepository categoryRepository, 
-            IDatasetCategoryRepository datasetCategoryRepository, 
-            IMapper mapper, 
-            IPermissionUtils permissionUtils, 
+            IDatasetCategoryRepository datasetCategoryRepository,
+            IDatasetRepository datasetRepository,
+            IMapper mapper,
             IUnitOfWork unitOfWork)
         {
             _categoryRepository = categoryRepository;
             _datasetCategoryRepository = datasetCategoryRepository;
+            _datasetRepository = datasetRepository;
             _unitOfWork = unitOfWork;
             _mapper = mapper;
-            _permissionUtils = permissionUtils;
             _environment = EnvironmentUtil.GetCurrentEnvironment().ToLower();
         }
 
         public async Task<IEnumerable<Category>> ListAsync(bool includeEmpty = false)
         {
-            var categories = await _categoryRepository.ListAsync();
-            var result = categories.Select(x => _mapper.Map<Category>(x));
-
             if (includeEmpty)
-                return result;
-
-            var datasetCategories = await _datasetCategoryRepository.ListAsync();
-            IEnumerable<Guid> categoriesWithDataSets;
-            if (_permissionUtils.FilterUnpublishedDatasets)
             {
-                categoriesWithDataSets = datasetCategories
-                    .Where(datasetCategory => datasetCategory.Dataset is {IsDeleted: false, Status: DatasetStatus.Published})
-                    .Select(datasetCategory => datasetCategory.CategoryId).Distinct();
-            }
-            else
-            {
-                categoriesWithDataSets = datasetCategories
-                    .Where(datasetCategory => datasetCategory.Dataset is {IsDeleted: false})
-                    .Select(datasetCategory => datasetCategory.CategoryId).Distinct();
+                var categories = await _categoryRepository.ListAsync();
+                return categories.Select(x => _mapper.Map<Category>(x));
             }
 
-            return result.Where(category => categoriesWithDataSets.Contains(category.Id));
+            var datasetCategories = await _datasetRepository.ListSummariesAsync();
+            var distinctCategories = datasetCategories
+                .SelectMany(dataset => dataset.DatasetCategories)
+                .GroupBy(datasetCategory => datasetCategory.CategoryId)
+                .Select(grouping => grouping.First());
+
+            return _mapper.Map<IEnumerable<DataCatalog.Data.Model.Category>, IEnumerable<Category>>(distinctCategories.Select(d => d.Category));
         }
 
         public async Task<Category> FindByIdAsync(Guid id)
