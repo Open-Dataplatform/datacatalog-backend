@@ -24,7 +24,6 @@ namespace DataCatalog.Api.Repositories
         {
             var dataset = GetIncludeQueryable()
                 .Include(a => a.DataFields)
-                .Include(a => a.Contact)
                 .Include(a => a.DatasetDurations).ThenInclude(a => a.Duration)
                 .Include(a => a.DatasetChangeLogs).ThenInclude(a => a.Member)
                 .Include(a => a.Hierarchy).ThenInclude(a => a.ParentHierarchy)

@@ -2,6 +2,7 @@ using System;
 using System.Runtime.CompilerServices;
 using Azure.Identity;
 using Azure.Storage.Files.DataLake;
+using DataCatalog.Api.Data.Dto;
 using DataCatalog.Api.Extensions;
 using DataCatalog.Api.Infrastructure;
 using DataCatalog.Api.MessageHandlers;
@@ -28,6 +29,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Options;
 using Microsoft.Graph;
 using Microsoft.Graph.Auth;
 using Microsoft.Identity.Client;
@@ -93,7 +95,6 @@ namespace DataCatalog.Api
             services.AddScoped<IDurationRepository, DurationRepository>();
             services.AddScoped<IHierarchyRepository, HierarchyRepository>();
             services.AddScoped<IIdentityProviderRepository, IdentityProviderRepository>();
-            services.AddScoped<IMemberGroupRepository, MemberGroupRepository>();
             services.AddScoped<IMemberRepository, MemberRepository>();
             services.AddScoped<ITransformationDatasetRepository, TransformationDatasetRepository>();
             services.AddScoped<ITransformationRepository, TransformationRepository>();
@@ -146,7 +147,14 @@ namespace DataCatalog.Api
             {
                 ConfigureAzureServices(services);
             }
-            
+
+            Log.Information("Logging configuration - ContactInfo start");
+            Log.Information("ContactInfo:Name = {Name}", Configuration.GetValidatedStringValue("ContactInfo:Name"));
+            Log.Information("ContactInfo:Name = {Link}", Configuration.GetValidatedStringValue("ContactInfo:Link"));
+            Log.Information("ContactInfo:Name = {Email}", Configuration.GetValidatedStringValue("ContactInfo:Email"));
+            Log.Information("Logging configuration - ContactInfo end");
+            services.Configure<ContactInfo>(Configuration.GetSection(nameof(ContactInfo)));
+
             services.AddHealthChecks();
         }
 
@@ -273,7 +281,6 @@ namespace DataCatalog.Api
             services.AddTransient<IDurationService, DurationService>();
             services.AddTransient<IHierarchyService, HierarchyService>();
             services.AddTransient<IIdentityProviderService, IdentityProviderService>();
-            services.AddTransient<IMemberGroupService, MemberGroupService>();
             services.AddTransient<IMemberService, MemberService>();
 
             services.AddTransient<ITransformationService, TransformationService>();

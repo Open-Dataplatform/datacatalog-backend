@@ -16,8 +16,7 @@ namespace DataCatalog.Api.Data.Dto
         public Confidentiality Confidentiality { get; set; }
         public RefinementLevel RefinementLevel { get; set; }
         public string Location { get; set; }
-
-        public GuidId Contact { get; set; }
+        
         public GuidId Hierarchy { get; set; }
         public GuidId[] Categories { get; set; }
         public GuidId[] DataSources { get; set; }
@@ -47,7 +46,7 @@ namespace DataCatalog.Api.Data.Dto
         public RefinementLevel RefinementLevel { get; set; }
         public string Location { get; set; }
 
-        public MemberGroupResponse Contact { get; set; }
+        public ContactInfo Contact { get; set; }
         public DurationResponse Frequency { get; set; }
         public DurationResponse Resolution { get; set; }
         public TransformationResponse SourceTransformation { get; set; }
@@ -59,5 +58,12 @@ namespace DataCatalog.Api.Data.Dto
         public DataSourceResponse[] DataSources { get; set; }
 
         public ProvisionDatasetStatusEnum ProvisionStatus { get; set; }
+    }
+
+    public class ContactInfo
+    {
+        public string Name { get; set; }
+        public string Link { get; set; }
+        public string Email { get; set; }
     }
 }
