@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using AutoFixture.Xunit2;
+using AutoMapper;
 using DataCatalog.Api.Controllers;
 using DataCatalog.Api.Data.Dto;
 using DataCatalog.Common.Enums;
@@ -24,11 +25,15 @@ namespace DataCatalog.Api.UnitTests.Controllers
         [MapperAutoMoq]
         public async Task Correctly_Put_Dataset(
             DatasetUpdateRequest request,
+            [Frozen] Mock<IGroupService> activeDirectoryGroupServiceMock,
+            [Frozen] Mock<IAllUsersGroupProvider> allUsersProviderMock,
             [Frozen] Mock<IStorageService> storageServiceMock,
             [Frozen] Mock<IDatasetService> datasetServiceMock,
-            [Greedy] DatasetController sut)
+            [Frozen] Mock<IMapper> mapper)
         {
             // Arrange
+            var sut = new DatasetController(datasetServiceMock.Object, mapper.Object,
+                activeDirectoryGroupServiceMock.Object, storageServiceMock.Object, allUsersProviderMock.Object);
             
             // Act
             var result = await sut.PutAsync(request);
@@ -58,7 +63,7 @@ namespace DataCatalog.Api.UnitTests.Controllers
             [Frozen] Mock<IAllUsersGroupProvider> allUsersProviderMock,
             [Frozen] Mock<IStorageService> storageServiceMock,
             [Frozen] Mock<IDatasetService> datasetServiceMock,
-            [Greedy] DatasetController sut)
+            [Frozen] Mock<IMapper> mapper)
         {
             // Arrange
             request.Confidentiality = Confidentiality.Public;
@@ -72,7 +77,12 @@ namespace DataCatalog.Api.UnitTests.Controllers
             storageServiceMock.Setup(x => x.GetDirectoryMetadataWithRetry(request.Id)).ReturnsAsync(metadata);
             datasetServiceMock.Setup(x => x.FindByIdAsync(request.Id)).ReturnsAsync(oldDataset);
             datasetServiceMock.Setup(x => x.UpdateAsync(request)).ReturnsAsync(newDataset);
-            
+            mapper.Setup(x => x.Map<DatasetResponse>(It.IsAny<DataCatalog.Data.Model.Dataset>()))
+                .Returns(new DatasetResponse());
+
+            var sut = new DatasetController(datasetServiceMock.Object, mapper.Object,
+                activeDirectoryGroupServiceMock.Object, storageServiceMock.Object, allUsersProviderMock.Object);
+
             // Act
             var result = await sut.PutAsync(request);
 
@@ -100,7 +110,7 @@ namespace DataCatalog.Api.UnitTests.Controllers
             [Frozen] Mock<IAllUsersGroupProvider> allUsersProviderMock,
             [Frozen] Mock<IStorageService> storageServiceMock,
             [Frozen] Mock<IDatasetService> datasetServiceMock,
-            [Greedy] DatasetController sut)
+            [Frozen] Mock<IMapper> mapper)
         {
             // Arrange
             request.Confidentiality = confidentiality;
@@ -111,7 +121,12 @@ namespace DataCatalog.Api.UnitTests.Controllers
             metadata.Add(GroupConstants.ReaderGroup, readerGroupId);
             storageServiceMock.Setup(x => x.GetDirectoryMetadataWithRetry(request.Id)).ReturnsAsync(metadata);
             datasetServiceMock.Setup(x => x.FindByIdAsync(request.Id)).ReturnsAsync(oldDataset);
+            mapper.Setup(x => x.Map<DatasetResponse>(It.IsAny<DataCatalog.Data.Model.Dataset>()))
+                .Returns(new DatasetResponse());
 
+            var sut = new DatasetController(datasetServiceMock.Object, mapper.Object,
+                activeDirectoryGroupServiceMock.Object, storageServiceMock.Object, allUsersProviderMock.Object);
+            
             // Act
             var result = await sut.PutAsync(request);
 
