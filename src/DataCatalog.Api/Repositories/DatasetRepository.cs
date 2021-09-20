@@ -42,9 +42,9 @@ namespace DataCatalog.Api.Repositories
 
         public async Task<IEnumerable<Dataset>> ListAllNonDeletedDatasets()
         {
-            var query = _context.Datasets.AsQueryable();
-            query = query.Where(d => !d.IsDeleted);
-            return await query.ToArrayAsync();
+            return await _context.Datasets
+                .Where(d => !d.IsDeleted)
+                .ToArrayAsync();
         }
 
         public async Task<IEnumerable<Dataset>> ListSummariesAsync()
