@@ -103,15 +103,22 @@ namespace DataCatalog.Api.UnitTests.Services
         {
             // Arrange
             var categoryRepositoryMock = new Mock<ICategoryRepository>();
-            var datasetCategoryRepositoryMock = new Mock<IDatasetCategoryRepository>();
+            var datasetRepositoryMock = new Mock<IDatasetRepository>();
             var categoryEntities = _fixture.Create<IEnumerable<Category>>();
             var enumerable = categoryEntities as Category[] ?? categoryEntities.ToArray();
-            var datasetCategoryEntities = enumerable.Select(x => new DatasetCategory { CategoryId = x.Id, DatasetId = Guid.NewGuid(), Dataset = new Dataset {IsDeleted = false } });
+            
+            var datasetCategoryEntities = enumerable.Select(c => new Dataset
+            {
+                DatasetCategories = Enumerable.Repeat(new DatasetCategory { Category = c, CategoryId = c.Id}, 1).ToList(),
+                Id = Guid.NewGuid(),
+                IsDeleted = false
+            });  
             datasetCategoryEntities = datasetCategoryEntities.SkipLast(1);
+            
             categoryRepositoryMock.Setup(x => x.ListAsync()).ReturnsAsync(enumerable);
-            datasetCategoryRepositoryMock.Setup(x => x.ListAsync()).ReturnsAsync(datasetCategoryEntities);
+            datasetRepositoryMock.Setup(x => x.ListSummariesAsync()).ReturnsAsync(datasetCategoryEntities);
             _fixture.Inject(categoryRepositoryMock.Object);
-            _fixture.Inject(datasetCategoryRepositoryMock.Object);
+            _fixture.Inject(datasetRepositoryMock.Object);
             _fixture.Freeze<ICategoryRepository>();
             _fixture.Freeze<IDatasetCategoryRepository>();
             var sut = _fixture.Create<CategoryService>();
@@ -141,14 +148,20 @@ namespace DataCatalog.Api.UnitTests.Services
         {
             // Arrange
             var categoryRepositoryMock = new Mock<ICategoryRepository>();
-            var datasetCategoryRepositoryMock = new Mock<IDatasetCategoryRepository>();
+            var datasetRepositoryMock = new Mock<IDatasetRepository>();
             var categoryEntities = _fixture.Create<IEnumerable<Category>>();
             var enumerable = categoryEntities as Category[] ?? categoryEntities.ToArray();
-            var datasetCategoryEntities = enumerable.Select(x => new DatasetCategory { CategoryId = x.Id, DatasetId = Guid.NewGuid(), Dataset = new Dataset {IsDeleted = false }});
+            var datasetCategoryEntities = enumerable.Select(c => new Dataset
+                {
+                    DatasetCategories = Enumerable.Repeat(new DatasetCategory { Category = c, CategoryId = c.Id}, 1).ToList(),
+                    Id = Guid.NewGuid(),
+                    IsDeleted = false
+                });  
+            //var datasetCategoryEntities = enumerable.Select(x => new Dataset { DatasetCategories = CategoryId = x.Id, DatasetId = Guid.NewGuid(), Dataset = new Dataset {IsDeleted = false }});
             categoryRepositoryMock.Setup(x => x.ListAsync()).ReturnsAsync(enumerable);
-            datasetCategoryRepositoryMock.Setup(x => x.ListAsync()).ReturnsAsync(datasetCategoryEntities);
+            datasetRepositoryMock.Setup(x => x.ListSummariesAsync()).ReturnsAsync(datasetCategoryEntities);
             _fixture.Inject(categoryRepositoryMock.Object);
-            _fixture.Inject(datasetCategoryRepositoryMock.Object);
+            _fixture.Inject(datasetRepositoryMock.Object);
             _fixture.Freeze<ICategoryRepository>();
             _fixture.Freeze<IDatasetCategoryRepository>();
             var sut = _fixture.Create<CategoryService>();
