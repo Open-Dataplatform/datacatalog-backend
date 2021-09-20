@@ -32,5 +32,8 @@ namespace DataCatalog.Api.Data.Domain
         public List<DatasetChangeLog> DatasetChangeLogs { get; set; } = new List<DatasetChangeLog>();
         public List<DatasetDuration> DatasetDurations { get; set; } = new List<DatasetDuration>();
         public List<DataContract> DataContracts { get; set; } = new List<DataContract>();
-    }
+
+        public Guid ServiceLevelAgreementId { get; set; }
+        public ServiceLevelAgreement ServiceLevelAgreement { get; set; }
+     }
 }

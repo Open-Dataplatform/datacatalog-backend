@@ -23,6 +23,8 @@ namespace DataCatalog.Api.Data.Dto
         public DurationUpsertRequest Resolution { get; set; }
         public SourceTransformationUpsertRequest SourceTransformation { get; set; }
         public DataFieldUpsertRequest[] DataFields { get; set; }
+        public GuidId ServiceLevelAgreement { get; set; }
+
     }
 
     public class DatasetUpdateRequest : DatasetCreateRequest, IUpdateRequest
@@ -53,5 +55,6 @@ namespace DataCatalog.Api.Data.Dto
         public DataSourceResponse[] DataSources { get; set; }
 
         public ProvisionDatasetStatusEnum ProvisionStatus { get; set; }
+        public ServiceLevelAgreementResponse ServiceLevelAgreement { get; set; }
     }
 }

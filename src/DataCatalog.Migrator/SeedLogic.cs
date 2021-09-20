@@ -30,12 +30,12 @@ namespace DataCatalog.Migrator
 
         private async Task SeedServiceLevelAgreements()
         {
-            var durations = new List<ServiceLevelAgreement>
+            var serviceLevelAgreements = new List<ServiceLevelAgreement>
             {
-                new ServiceLevelAgreement { Id = new Guid("2a0364c4-6047-4a3e-b21e-9b67ed8a71df"), Name = "None", Description = "No agreement" },
+                new ServiceLevelAgreement { Id = new Guid("2a0364c4-6047-4a3e-b21e-9b67ed8a71df"), Name = "No Agreement", Description = "No agreement" },
             };
 
-            await UpsertData(durations);
+            await UpsertData(serviceLevelAgreements);
         }
 
         private async Task SeedDurations()

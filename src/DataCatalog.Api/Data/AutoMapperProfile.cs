@@ -81,7 +81,8 @@ namespace DataCatalog.Api.Data
                 .ForMember(a => a.Name, b => b.MapFrom(c => c.Name.FormatName()))
                 .ForMember(a => a.DatasetCategories, b =>
                     b.MapFrom(c => c.Categories.Select(d => new DatasetCategory { CategoryId = d.Id })))
-                .ForMember(a => a.Contact, b => b.Ignore()).ForMember(a => a.ContactId, b => b.MapFrom(c => c.Contact.Id));
+                .ForMember(a => a.Contact, b => b.Ignore()).ForMember(a => a.ContactId, b => b.MapFrom(c => c.Contact.Id))
+                .ForMember(a => a.ServiceLevelAgreement, b => b.Ignore()).ForMember(a => a.ServiceLevelAgreementId, b => b.MapFrom(c => c.ServiceLevelAgreement.Id));
 
             CreateMap<DatasetCreateRequest, Domain.Dataset>()
                 .ForMember(a => a.Name, b => b.MapFrom(c => c.Name.FormatName()))
@@ -232,6 +233,11 @@ namespace DataCatalog.Api.Data
             CreateMapEnum<Role>();
             CreateMapEnum<DatasetStatus>();
             CreateMapEnum<Confidentiality>();
+
+            //DataSource
+            CreateMap<ServiceLevelAgreement, Domain.ServiceLevelAgreement>();
+            CreateMap<Domain.ServiceLevelAgreement, ServiceLevelAgreementResponse>();
+            CreateMap<ServiceLevelAgreementResponse, GuidId>();
         }
 
         void CreateMapEnum<TEnum>()

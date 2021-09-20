@@ -95,6 +95,7 @@ namespace DataCatalog.Api
             services.AddScoped<IMemberRepository, MemberRepository>();
             services.AddScoped<ITransformationDatasetRepository, TransformationDatasetRepository>();
             services.AddScoped<ITransformationRepository, TransformationRepository>();
+            services.AddScoped<IServiceLevelAgreementRepository, ServiceLevelAgreementRepository>();
             services.AddScoped<IUnitOfWork, UnitOfWork>();
             var allUsersGroup = Configuration.GetValidatedStringValue("ALL_USERS_GROUP");
             services.AddSingleton<IAllUsersGroupProvider>(new AllUsersGroupProvider(allUsersGroup));
@@ -272,6 +273,8 @@ namespace DataCatalog.Api
             services.AddTransient<IMemberService, MemberService>();
 
             services.AddTransient<ITransformationService, TransformationService>();
+            services.AddTransient<IServiceLevelAgreementService, ServiceLevelAgreementService>();
+                        
             services.AddScoped<IPermissionUtils, PermissionUtils>();
 
             // Db Context
