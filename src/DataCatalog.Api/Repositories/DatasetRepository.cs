@@ -40,6 +40,13 @@ namespace DataCatalog.Api.Repositories
             return dataset;
         }
 
+        public async Task<IEnumerable<Dataset>> ListAllNonDeletedDatasets()
+        {
+            return await _context.Datasets
+                .Where(d => !d.IsDeleted)
+                .ToArrayAsync();
+        }
+
         public async Task<IEnumerable<Dataset>> ListSummariesAsync()
         {
             return await GetIncludeQueryable().ToArrayAsync();
