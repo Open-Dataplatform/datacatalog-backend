@@ -51,7 +51,8 @@ namespace DataCatalog.Api.UnitTests.Services.AD
             members.Any(x =>
                 Equals(x.Type, AccessMemberType.User) &&
                 Equals(x.Id, userMember.Id)
-                && Equals(x.Name, userMember.DisplayName)).ShouldBe(true);
+                && Equals(x.Name, userMember.DisplayName)
+                && Equals(x.Mail, userMember.Mail)).ShouldBe(true);
 
             members.Any(x =>
                 Equals(x.Type, AccessMemberType.ServicePrincipal) &&
@@ -116,6 +117,7 @@ namespace DataCatalog.Api.UnitTests.Services.AD
             // Assert
             member.Id.ShouldBe(user.Id);
             member.Name.ShouldBe(user.DisplayName);
+            member.Mail.ShouldBe(user.Mail);
             member.Type.ShouldBe(AccessMemberType.User);
         }
 
@@ -426,14 +428,20 @@ namespace DataCatalog.Api.UnitTests.Services.AD
 
             // Assert
             results.Any(x =>
-                Equals(x.DisplayName, user1.DisplayName) && Equals(x.Id, user1.Id) &&
-                Equals(x.Type, AdSearchResultType.User)).ShouldBeTrue();
+                Equals(x.DisplayName, user1.DisplayName)
+                && Equals(x.Mail, user1.Mail)
+                && Equals(x.Id, user1.Id) 
+                && Equals(x.Type, AdSearchResultType.User)).ShouldBeTrue();
             results.Any(x =>
-                Equals(x.DisplayName, user2.DisplayName) && Equals(x.Id, user2.Id) &&
-                Equals(x.Type, AdSearchResultType.User)).ShouldBeTrue();
+                Equals(x.DisplayName, user2.DisplayName)
+                && Equals(x.Mail, user2.Mail)
+                && Equals(x.Id, user2.Id) 
+                && Equals(x.Type, AdSearchResultType.User)).ShouldBeTrue();
             results.Any(x =>
-                Equals(x.DisplayName, user3.DisplayName) && Equals(x.Id, user3.Id) &&
-                Equals(x.Type, AdSearchResultType.User)).ShouldBeTrue();
+                Equals(x.DisplayName, user3.DisplayName)
+                && Equals(x.Mail, user3.Mail) 
+                && Equals(x.Id, user3.Id) 
+                && Equals(x.Type, AdSearchResultType.User)).ShouldBeTrue();
         }
     }
 }

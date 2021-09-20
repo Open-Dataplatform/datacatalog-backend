@@ -111,6 +111,8 @@ namespace DataCatalog.Api.Data
             CreateMap<Domain.Dataset, Domain.LineageDataset>()
                 .ForMember(a => a.Categories, b => b.MapFrom(c => c.DatasetCategories.Select(d => d.Category)));
 
+            CreateMap<Dataset, DatasetMapResponse>();
+
             //DatasetChangeLog
             CreateMap<DatasetChangeLog, DatasetChangeLogResponse>();
 

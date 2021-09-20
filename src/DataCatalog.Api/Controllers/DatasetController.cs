@@ -7,7 +7,6 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using AutoMapper;
-using DataCatalog.Common.Data;
 using DataCatalog.Common.Interfaces;
 using DataCatalog.Api.Services.AD;
 using DataCatalog.Api.Services.Storage;
@@ -22,7 +21,6 @@ namespace DataCatalog.Api.Controllers
     {
         private readonly IDatasetService _datasetService;
         private readonly IMapper _mapper;
-        private readonly Current _current;
         private readonly IGroupService _groupService;
         private readonly IStorageService _storageService;
         private readonly IAllUsersGroupProvider _allUsersGroupProvider;
@@ -30,14 +28,12 @@ namespace DataCatalog.Api.Controllers
         public DatasetController(
             IDatasetService datasetService,
             IMapper mapper,
-            Current current,
             IGroupService groupService,
             IStorageService storageService,
             IAllUsersGroupProvider allUsersGroupProvider)
         {
             _datasetService = datasetService;
             _mapper = mapper;
-            _current = current;
             _groupService = groupService;
             _storageService = storageService;
             _allUsersGroupProvider = allUsersGroupProvider;
