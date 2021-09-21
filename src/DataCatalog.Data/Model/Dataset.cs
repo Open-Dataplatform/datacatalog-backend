@@ -15,10 +15,7 @@ namespace DataCatalog.Data.Model
         public DatasetStatus Status { get; set; }
         public Confidentiality Confidentiality { get; set; }
 
-        public Guid ContactId { get; set; }
         public Guid SourceId { get; set; }
-
-        public MemberGroup Contact { get; set; }
 
         public List<DataField> DataFields { get; set; } = new List<DataField>();
         public List<DatasetCategory> DatasetCategories { get; set; } = new List<DatasetCategory>();

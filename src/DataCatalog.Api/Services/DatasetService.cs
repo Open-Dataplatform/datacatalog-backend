@@ -365,9 +365,6 @@ namespace DataCatalog.Api.Services
             if (request.Categories?.Any() != true)
                 exceptions.Add(new ValidationException("Dataset must be assigned at least one category", nameof(request.Categories)));
 
-            if (request.Contact == null)
-                exceptions.Add(new ValidationException("Dataset must have a contact", nameof(request.Contact)));
-
             if (string.IsNullOrWhiteSpace(request.Name))
                 exceptions.Add(new ValidationException("Dataset must have a name", nameof(request.Name)));
 

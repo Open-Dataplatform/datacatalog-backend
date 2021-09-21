@@ -103,18 +103,6 @@ namespace DataCatalog.Api.UnitTests.Services
         }
 
         [Fact]
-        public void SaveAsync_MissingContact_ShouldThrowException()
-        {
-            // Arrange
-            var datasetService = _fixture.Create<DatasetService>();
-            _datasetCreateRequest.Contact = null;
-
-            // Act / Assert
-            Func<Task> f = async () => await datasetService.SaveAsync(_datasetCreateRequest);
-            f.Should().ThrowAsync<ValidationExceptionCollection>().WithMessage("*Dataset must have a contact*");
-        }
-
-        [Fact]
         public void SaveAsync_MissingName_ShouldThrowException()
         {
             // Arrange
@@ -184,7 +172,6 @@ namespace DataCatalog.Api.UnitTests.Services
             // Assert
             dataset.Should().NotBeNull();
             dataset.Confidentiality.Should().Be(_datasetCreateRequest.Confidentiality);
-            dataset.ContactId.Should().Be(_datasetCreateRequest.Contact.Id);
             dataset.DataContracts.Count.Should().Be(3);
             dataset.DataContracts.First().DataSourceId.Should().Be(_datasetCreateRequest.DataSources.First().Id);
             dataset.DataFields.Length.Should().Be(3);

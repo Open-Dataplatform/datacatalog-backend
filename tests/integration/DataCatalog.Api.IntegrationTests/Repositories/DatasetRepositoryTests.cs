@@ -142,12 +142,7 @@ namespace DataCatalog.Api.IntegrationTests.Repositories
             result.Owner.Should().Be(dataset.Owner);
             result.Status.Should().Be(dataset.Status);
             result.Confidentiality.Should().Be(dataset.Confidentiality);
-            result.ContactId.Should().Be(dataset.ContactId);
             result.SourceId.Should().Be(dataset.SourceId);
-            result.Contact.Should().NotBeNull();
-            result.Contact.Name.Should().Be(dataset.Contact.Name);
-            result.Contact.Description.Should().Be(dataset.Contact.Description);
-            result.Contact.Email.Should().Be(dataset.Contact.Email);
             result.DataFields.Should().NotBeNull();
             result.DataFields.Count.Should().Be(dataset.DataFields.Count);
             result.DatasetCategories.Count.Should().Be(dataset.DatasetCategories.Count);

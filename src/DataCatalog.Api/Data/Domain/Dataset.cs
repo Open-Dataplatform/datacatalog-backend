@@ -18,12 +18,7 @@ namespace DataCatalog.Api.Data.Domain
         public string Owner { get; set; }
         public DatasetStatus Status { get; set; }
         public Confidentiality Confidentiality { get; set; }
-        
-        public Guid ContactId { get; set; }
         public Guid SourceId { get; set; }
-        
-        public MemberGroup Contact { get; set; }
-
         public ProvisionDatasetStatusEnum ProvisionStatus { get; set; }
 
         public DataField[] DataFields { get; set; }
