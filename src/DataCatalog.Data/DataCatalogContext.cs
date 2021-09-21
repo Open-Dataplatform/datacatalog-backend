@@ -21,9 +21,9 @@ namespace DataCatalog.Data
         public DbSet<DatasetChangeLog> DatasetChangeLogs { get; set; }
         public DbSet<Duration> Durations { get; set; }
         public DbSet<DatasetDuration> DatasetDurations { get; set; }
-        public DbSet<Hierarchy> Hierarchies { get; set; }
         public DbSet<DataSource> DataSources { get; set; }
         public DbSet<DataContract> DataContracts { get; set; }
+        public DbSet<ServiceLevelAgreement> ServiceLevelAgreement { get; set; }
 
         public DataCatalogContext(DbContextOptions options) : base(options) { }
 
@@ -56,8 +56,6 @@ namespace DataCatalog.Data
                 e.Property(a => a.SourceId).IsRequired();
                 e.Property(a => a.Status).IsRequired().HasDefaultValue(DatasetStatus.Draft);
                 e.Property(a => a.Confidentiality).IsRequired().HasDefaultValue(Confidentiality.Public);
-                e.Property(a => a.RefinementLevel).IsRequired().HasDefaultValue(RefinementLevel.Raw);
-                e.Property(a => a.HierarchyId).IsRequired();
             });
 
             //DatasetGroup
@@ -79,13 +77,6 @@ namespace DataCatalog.Data
             {
                 e.Property(a => a.Code).IsRequired();
                 e.Property(a => a.Description).IsRequired();
-            });
-
-            //Hierarchy
-            modelBuilder.Entity<Hierarchy>(e =>
-            {
-                e.HasMany(a => a.ChildHierarchies).WithOne(a => a.ParentHierarchy).HasForeignKey(a => a.ParentHierarchyId);
-                e.Property(a => a.Name).IsRequired();
             });
 
             //Member

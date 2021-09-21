@@ -7,6 +7,8 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using AutoMapper;
+using System.Linq;
+using System.Xml;
 
 namespace DataCatalog.Api.Controllers
 {
@@ -31,7 +33,9 @@ namespace DataCatalog.Api.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<DurationResponse>>> GetAllAsync()
         {
-            var durations = await _durationService.ListAsync();
+            // Sort durations by their timespan so they will show up form short to long in dropdowns
+            var durations = (await _durationService.ListAsync())
+                .OrderBy(d => XmlConvert.ToTimeSpan(d.Code)); 
 
             if (durations == null)
                 return NotFound();

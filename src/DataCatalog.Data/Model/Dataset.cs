@@ -11,16 +11,11 @@ namespace DataCatalog.Data.Model
         public string Description { get; set; }
         public string SlaDescription { get; set; }
         public string SlaLink { get; set; }
-        public string Location { get; set; }
         public string Owner { get; set; }
         public DatasetStatus Status { get; set; }
         public Confidentiality Confidentiality { get; set; }
-        public RefinementLevel RefinementLevel { get; set; }        
 
         public Guid SourceId { get; set; }
-        public Guid HierarchyId { get; set; }
-
-        public Hierarchy Hierarchy { get; set; }
 
         public List<DataField> DataFields { get; set; } = new List<DataField>();
         public List<DatasetCategory> DatasetCategories { get; set; } = new List<DatasetCategory>();
@@ -31,5 +26,8 @@ namespace DataCatalog.Data.Model
 
         public ProvisionDatasetStatusEnum? ProvisionStatus { get; set; }
         public bool IsDeleted { get; set; }
+
+        public Guid? ServiceLevelAgreementId { get; set; }
+        public ServiceLevelAgreement ServiceLevelAgreement { get; set; }
     }
 }

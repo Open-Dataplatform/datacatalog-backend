@@ -31,8 +31,6 @@ namespace DataCatalog.Api.Data
 
             //DataContract
             CreateMap<DataContract, DataContractResponse>()
-                .ForMember(a => a.DatasetLocation, b => b.MapFrom(c => c.Dataset.Location))
-                .ForMember(a => a.DatasetContainer, b => b.MapFrom(c => c.Dataset.RefinementLevel.EnumNameToDescription().ToLower()))
                 .ForMember(a => a.DatasetStatus, b => b.MapFrom(c => c.Dataset.Status));
             CreateMap<DataContractCreateRequest, DataContract>();
             CreateMap<Domain.DataContract, DataContractResponse>();
@@ -84,19 +82,19 @@ namespace DataCatalog.Api.Data
                 .ForMember(a => a.Name, b => b.MapFrom(c => c.Name.FormatName()))
                 .ForMember(a => a.DatasetCategories, b =>
                     b.MapFrom(c => c.Categories.Select(d => new DatasetCategory { CategoryId = d.Id })))
-                .ForMember(a => a.Hierarchy, b => b.Ignore()).ForMember(a => a.HierarchyId, b => b.MapFrom(c => c.Hierarchy.Id));
+                .ForMember(a => a.ServiceLevelAgreement, b => b.Ignore()).ForMember(a => a.ServiceLevelAgreementId, b => b.MapFrom(c => c.ServiceLevelAgreement.Id));
 
             CreateMap<DatasetCreateRequest, Domain.Dataset>()
                 .ForMember(a => a.Name, b => b.MapFrom(c => c.Name.FormatName()))
                 .ForMember(a => a.DatasetCategories, b =>
                     b.MapFrom(c => c.Categories.Select(d => new DatasetCategory { CategoryId = d.Id })))
-                .ForMember(a => a.Hierarchy, b => b.Ignore()).ForMember(a => a.HierarchyId, b => b.MapFrom(c => c.Hierarchy.Id));
+                .ForMember(a => a.ServiceLevelAgreement, b => b.Ignore()).ForMember(a => a.ServiceLevelAgreementId, b => b.MapFrom(c => c.ServiceLevelAgreement.Id));
 
             CreateMap<DatasetUpdateRequest, Dataset>()
                 .ForMember(a => a.Name, b => b.MapFrom(c => c.Name.FormatName()))
                 .ForMember(a => a.DatasetCategories, b =>
                     b.MapFrom(c => c.Categories.Select(d => new DatasetCategory { CategoryId = d.Id })))
-                .ForMember(a => a.Hierarchy, b => b.Ignore()).ForMember(a => a.HierarchyId, b => b.MapFrom(c => c.Hierarchy.Id));
+                .ForMember(a => a.ServiceLevelAgreement, b => b.Ignore()).ForMember(a => a.ServiceLevelAgreementId, b => b.MapFrom(c => c.ServiceLevelAgreement.Id));
 
             CreateMap<Domain.Dataset, DatasetResponse>()
                 .ForMember(a => a.Categories, b => b.MapFrom(c => c.DatasetCategories.Select(d => d.Category)))
@@ -152,13 +150,6 @@ namespace DataCatalog.Api.Data
             // DatasetDuration
             CreateMap<DatasetDuration, Domain.DatasetDuration>();
             CreateMap<Domain.DatasetDuration, DatasetDuration>();
-
-            //Hierarchy
-            CreateMap<Hierarchy, HierarchyResponse>();
-            CreateMap<HierarchyResponse, GuidId>();
-            CreateMap<Domain.Hierarchy, HierarchyResponse>();
-            CreateMap<Hierarchy, Domain.Hierarchy>();
-            CreateMap<HierarchyCreateRequest, Hierarchy>();
 
             //Member
             CreateMap<Member, GuidId>();
@@ -230,7 +221,11 @@ namespace DataCatalog.Api.Data
             CreateMapEnum<Role>();
             CreateMapEnum<DatasetStatus>();
             CreateMapEnum<Confidentiality>();
-            CreateMapEnum<RefinementLevel>();
+
+            //DataSource
+            CreateMap<ServiceLevelAgreement, Domain.ServiceLevelAgreement>();
+            CreateMap<Domain.ServiceLevelAgreement, ServiceLevelAgreementResponse>();
+            CreateMap<ServiceLevelAgreementResponse, GuidId>();
         }
 
         void CreateMapEnum<TEnum>()

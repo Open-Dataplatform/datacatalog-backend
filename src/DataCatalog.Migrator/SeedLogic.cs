@@ -23,9 +23,19 @@ namespace DataCatalog.Migrator
         public async Task SeedData()
         {
             await SeedDurations();
-            await SeedHierarchies();
             await SeedDataSources();
             await SeedIdentityProviders();
+            await SeedServiceLevelAgreements();
+        }
+
+        private async Task SeedServiceLevelAgreements()
+        {
+            var serviceLevelAgreements = new List<ServiceLevelAgreement>
+            {
+                new ServiceLevelAgreement { Id = new Guid("2a0364c4-6047-4a3e-b21e-9b67ed8a71df"), Name = "No Agreement", Description = "No agreement" },
+            };
+
+            await UpsertData(serviceLevelAgreements);
         }
 
         private async Task SeedDurations()
@@ -46,41 +56,6 @@ namespace DataCatalog.Migrator
             };
 
             await UpsertData(durations);
-        }
-
-        private async Task SeedHierarchies()
-        {
-            var hierarchies = new List<Hierarchy>
-            {
-                // Electricity
-                new Hierarchy { Id = new Guid("668f1737-5501-4db5-a072-c2fa37ef26d0"), Name = "Electricity", Description = "Anything mainly related to electricity" },
-                new Hierarchy { Id = new Guid("ad240fb2-ca95-4ec0-9bc2-58c73bc4ac31"), Name = "Consumption", Description = "Electricity consumption", ParentHierarchyId = new Guid("668f1737-5501-4db5-a072-c2fa37ef26d0") },
-                new Hierarchy { Id = new Guid("276af4b1-72ea-4654-8ce3-37e73b2657c0"), Name = "Production", Description = "Electricity production", ParentHierarchyId = new Guid("668f1737-5501-4db5-a072-c2fa37ef26d0") },
-                new Hierarchy { Id = new Guid("a9a780d7-8f2c-4d86-b863-1327bd264575"), Name = "Consumption and Production", Description = "Electricity consumption and production", ParentHierarchyId = new Guid("668f1737-5501-4db5-a072-c2fa37ef26d0") },
-                new Hierarchy { Id = new Guid("ecce1213-9886-4361-bbc2-12ca79138f0e"), Name = "Reserves", Description = "Electricity reserves", ParentHierarchyId = new Guid("668f1737-5501-4db5-a072-c2fa37ef26d0") },
-                new Hierarchy { Id = new Guid("a6b40fdf-9831-49ec-87b0-cfed8f447577"), Name = "Ancillary Services", Description = "Electricity ancillary services", ParentHierarchyId = new Guid("668f1737-5501-4db5-a072-c2fa37ef26d0") },
-                new Hierarchy { Id = new Guid("5f2d33fc-decc-4061-af3c-5d58e65bbc9c"), Name = "CO2 Emissions", Description = "Electricity CO2 Emissions", ParentHierarchyId = new Guid("668f1737-5501-4db5-a072-c2fa37ef26d0") },
-                new Hierarchy { Id = new Guid("d27b19d3-e589-4f98-809a-351a062635e8"), Name = "Regulating Power", Description = "Electricity regulating power", ParentHierarchyId = new Guid("668f1737-5501-4db5-a072-c2fa37ef26d0") },
-                new Hierarchy { Id = new Guid("fb668c70-219c-4edf-b31a-7ad36ee43d88"), Name = "Solar Power", Description = "Electricity solar power", ParentHierarchyId = new Guid("668f1737-5501-4db5-a072-c2fa37ef26d0") },
-                new Hierarchy { Id = new Guid("ded03663-ec2e-445f-b897-b5b78c00f2d4"), Name = "Wind Power", Description = "Electricity wind power", ParentHierarchyId = new Guid("668f1737-5501-4db5-a072-c2fa37ef26d0") },
-                new Hierarchy { Id = new Guid("c5dfc671-dcb3-4f10-bf11-758c1d3e97be"), Name = "Capacities", Description = "Electricity capacities", ParentHierarchyId = new Guid("668f1737-5501-4db5-a072-c2fa37ef26d0") },
-                new Hierarchy { Id = new Guid("fc20e468-5ab4-48db-8a0b-09e86935c3aa"), Name = "Forecasts", Description = "Electricity forecasts", ParentHierarchyId = new Guid("668f1737-5501-4db5-a072-c2fa37ef26d0") },
-                
-                // Gas
-                new Hierarchy { Id = new Guid("586c321c-3f01-4cd2-8228-000670114e32"), Name = "Gas", Description = "Anything mainly related to gas" },
-                new Hierarchy { Id = new Guid("5b22fc05-6837-40f4-a8a2-184e9aa25aff"), Name = "Consumption", Description = "Gas consumption", ParentHierarchyId = new Guid("586c321c-3f01-4cd2-8228-000670114e32") },
-                new Hierarchy { Id = new Guid("49ca837b-79ba-4a4f-bbc5-e01a8f23befd"), Name = "Production", Description = "Gas Production", ParentHierarchyId = new Guid("586c321c-3f01-4cd2-8228-000670114e32") },
-                new Hierarchy { Id = new Guid("7330f2ef-f86f-4b7d-8592-e7c56ef52d15"), Name = "Consumption and Production", Description = "Gas consumption and production", ParentHierarchyId = new Guid("586c321c-3f01-4cd2-8228-000670114e32") },
-                new Hierarchy { Id = new Guid("334740dd-7158-475d-84e9-c8e83403b515"), Name = "Storage", Description = "Gas storage", ParentHierarchyId = new Guid("586c321c-3f01-4cd2-8228-000670114e32") },
-                new Hierarchy { Id = new Guid("1653a169-9548-46f6-aa47-ea9a90088b0f"), Name = "CO2 Emissions", Description = "Gas CO2 Emissions", ParentHierarchyId = new Guid("586c321c-3f01-4cd2-8228-000670114e32") },
-                
-                // Weather
-                new Hierarchy { Id = new Guid("596203b3-743a-4482-8b20-f4bc6eb844b6"), Name = "Weather", Description = "Anything mainly related to weather" },
-                new Hierarchy { Id = new Guid("a8adde4d-4dc9-4028-8993-0ef9bc153d7d"), Name = "Forecasts", Description = "Weather forecasts", ParentHierarchyId = new Guid("596203b3-743a-4482-8b20-f4bc6eb844b6") },
-                new Hierarchy { Id = new Guid("077a87f9-1842-40b4-b132-1c966b41d761"), Name = "Historical Data", Description = "Weather historical data", ParentHierarchyId = new Guid("596203b3-743a-4482-8b20-f4bc6eb844b6") }
-            };
-
-            await UpsertData(hierarchies);
         }
 
         private async Task SeedDataSources()

@@ -14,10 +14,6 @@ namespace DataCatalog.Api.Data.Dto
         public string Owner { get; set; }
         public DatasetStatus Status { get; set; }
         public Confidentiality Confidentiality { get; set; }
-        public RefinementLevel RefinementLevel { get; set; }
-        public string Location { get; set; }
-        
-        public GuidId Hierarchy { get; set; }
         public GuidId[] Categories { get; set; }
         public GuidId[] DataSources { get; set; }
 
@@ -25,6 +21,8 @@ namespace DataCatalog.Api.Data.Dto
         public DurationUpsertRequest Resolution { get; set; }
         public SourceTransformationUpsertRequest SourceTransformation { get; set; }
         public DataFieldUpsertRequest[] DataFields { get; set; }
+        public GuidId ServiceLevelAgreement { get; set; }
+
     }
 
     public class DatasetUpdateRequest : DatasetCreateRequest, IUpdateRequest
@@ -43,14 +41,11 @@ namespace DataCatalog.Api.Data.Dto
         public string Owner { get; set; }
         public DatasetStatus Status { get; set; }
         public Confidentiality Confidentiality { get; set; }
-        public RefinementLevel RefinementLevel { get; set; }
-        public string Location { get; set; }
 
         public ContactInfo Contact { get; set; }
         public DurationResponse Frequency { get; set; }
         public DurationResponse Resolution { get; set; }
         public TransformationResponse SourceTransformation { get; set; }
-        public HierarchyResponse Hierarchy { get; set; }
 
         public DataFieldResponse[] DataFields { get; set; }        
         public CategoryResponse[] Categories { get; set; }                
@@ -58,6 +53,7 @@ namespace DataCatalog.Api.Data.Dto
         public DataSourceResponse[] DataSources { get; set; }
 
         public ProvisionDatasetStatusEnum ProvisionStatus { get; set; }
+        public ServiceLevelAgreementResponse ServiceLevelAgreement { get; set; }
     }
 
     public class ContactInfo

@@ -26,8 +26,8 @@ namespace DataCatalog.Api.Repositories
                 .Include(a => a.DataFields)
                 .Include(a => a.DatasetDurations).ThenInclude(a => a.Duration)
                 .Include(a => a.DatasetChangeLogs).ThenInclude(a => a.Member)
-                .Include(a => a.Hierarchy).ThenInclude(a => a.ParentHierarchy)
                 .Include(a => a.DataContracts).ThenInclude(a => a.DataSource)
+                .Include(a => a.ServiceLevelAgreement)
                 .FirstOrDefault(a => a.Id == id);
           
             //Only load source transformation and related datasets

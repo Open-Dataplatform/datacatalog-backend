@@ -17,7 +17,6 @@ using Xunit;
 using Dataset = DataCatalog.Data.Model.Dataset;
 using DatasetDuration = DataCatalog.Data.Model.DatasetDuration;
 using Duration = DataCatalog.Data.Model.Duration;
-using Hierarchy = DataCatalog.Data.Model.Hierarchy;
 using Transformation = DataCatalog.Data.Model.Transformation;
 using TransformationDataset = DataCatalog.Data.Model.TransformationDataset;
 using DataCatalog.Api.Data;
@@ -50,7 +49,6 @@ namespace DataCatalog.Api.UnitTests.Services
             _fixture.Freeze<IMapper>();
             _datasetCreateRequest = _fixture.Create<DatasetCreateRequest>();
             _datasetCreateRequest.Status = DatasetStatus.Draft;
-            _datasetCreateRequest.RefinementLevel = RefinementLevel.Raw;
             _datasetCreateRequest.Confidentiality = Confidentiality.Confidential;
         }
 
@@ -105,18 +103,6 @@ namespace DataCatalog.Api.UnitTests.Services
         }
 
         [Fact]
-        public void SaveAsync_MissingHierarchy_ShouldThrowException()
-        {
-            // Arrange
-            var datasetService = _fixture.Create<DatasetService>();
-            _datasetCreateRequest.Hierarchy = null;
-
-            // Act / Assert
-            Func<Task> f = async () => await datasetService.SaveAsync(_datasetCreateRequest);
-            f.Should().ThrowAsync<ValidationExceptionCollection>().WithMessage("*Dataset must be assigned to a hierarchy*");
-        }
-
-        [Fact]
         public void SaveAsync_MissingName_ShouldThrowException()
         {
             // Arrange
@@ -145,7 +131,7 @@ namespace DataCatalog.Api.UnitTests.Services
         {
             // Arrange
             var datasetService = _fixture.Create<DatasetService>();
-            _datasetCreateRequest.DataFields.First().Type = "";
+            _datasetCreateRequest.DataFields.First().Type = null;
 
             // Act / Assert
             Func<Task> f = async () => await datasetService.SaveAsync(_datasetCreateRequest);
@@ -153,41 +139,9 @@ namespace DataCatalog.Api.UnitTests.Services
         }
 
         [Fact]
-        public void SaveAsync_BadRefinementLevel_ShouldThrowException()
-        {
-            // Arrange
-            var dataSourceRepositoryMock = new Mock<IDataSourceRepository>();
-            dataSourceRepositoryMock.Setup(x => x.AnyAsync(It.IsAny<Guid[]>(), It.IsAny<List<SourceType>>())).ReturnsAsync(true);
-            _fixture.Inject(dataSourceRepositoryMock.Object);
-            _fixture.Freeze<IDataSourceRepository>();
-            var datasetService = _fixture.Create<DatasetService>();
-            _datasetCreateRequest.RefinementLevel = RefinementLevel.Raw;
-
-            // Act / Assert
-            Func<Task> f = async () => await datasetService.SaveAsync(_datasetCreateRequest);
-            f.Should().ThrowAsync<ValidationExceptionCollection>().WithMessage("*Refinement level does not match the selected data source(s)*");
-        }
-
-        [Fact]
         public async Task SaveAsync_ValidateReturnObject()
         {
             // Arrange
-            var hierarchyName = Guid.NewGuid().ToString();
-            var parentHierarchyName = Guid.NewGuid().ToString();
-            var hierarchyRepositoryMock = new Mock<IHierarchyRepository>();
-            var hierarchy = new Hierarchy
-            {
-                ParentHierarchy = new Hierarchy
-                {
-                    Name = parentHierarchyName
-                },
-
-                Id = Guid.NewGuid(),
-                Name = hierarchyName
-            };
-            hierarchyRepositoryMock.Setup(x => x.FindByIdAsync(_datasetCreateRequest.Hierarchy.Id)).ReturnsAsync(hierarchy);
-            _fixture.Inject(hierarchyRepositoryMock.Object);
-            _fixture.Freeze<IHierarchyRepository>();
             var datasetDurationRepositoryMock = new Mock<IDatasetDurationRepository>();
             var frequency = new Duration { Code = Guid.NewGuid().ToString() };
             var resolution = new Duration { Code = Guid.NewGuid().ToString() };
@@ -208,7 +162,6 @@ namespace DataCatalog.Api.UnitTests.Services
             transformationRepositoryMock.Setup(x => x.FindByIdAsync(_datasetCreateRequest.SourceTransformation.Id.Value)).ReturnsAsync(transformation);
             _fixture.Inject(transformationRepositoryMock.Object);
             _fixture.Freeze<ITransformationRepository>();
-            _datasetCreateRequest.Location = null;
             var messageBusSenderMock = new Mock<IBus>();
             _fixture.Inject(messageBusSenderMock.Object);
             var datasetService = _fixture.Create<DatasetService>();
@@ -224,7 +177,7 @@ namespace DataCatalog.Api.UnitTests.Services
             dataset.DataFields.Length.Should().Be(3);
             dataset.DataFields.First().Description.Should().Be(_datasetCreateRequest.DataFields.First().Description);
             dataset.DataFields.First().Name.Should().Be(_datasetCreateRequest.DataFields.First().Name);
-            dataset.DataFields.First().Type.Should().Be(_datasetCreateRequest.DataFields.First().Type);
+            dataset.DataFields.First().Type.Should().Be(_datasetCreateRequest.DataFields.First().Type.ToString());
             dataset.DataFields.First().Validation.Should().Be(_datasetCreateRequest.DataFields.First().Validation);
             dataset.DatasetCategories.Count.Should().Be(3);
             dataset.DatasetCategories.First().CategoryId.Should().Be(_datasetCreateRequest.Categories.First().Id);
@@ -234,19 +187,14 @@ namespace DataCatalog.Api.UnitTests.Services
             dataset.DatasetDurations.Single(d => d.DurationType == DurationType.Frequency).Duration.Code.Should().Be((frequency.Code));
             dataset.DatasetDurations.Single(d => d.DurationType == DurationType.Resolution).Duration.Code.Should().Be((resolution.Code));
             dataset.Description.Should().Be(_datasetCreateRequest.Description);
-            dataset.HierarchyId.Should().Be(_datasetCreateRequest.Hierarchy.Id);
-            dataset.Location.Should().Be($"{parentHierarchyName}/{hierarchyName}/{_datasetCreateRequest.Name.ToLower()}");
             dataset.Name.Should().Be(_datasetCreateRequest.Name);
             dataset.Owner.Should().Be(_datasetCreateRequest.Owner);
-            dataset.RefinementLevel.Should().Be(_datasetCreateRequest.RefinementLevel);
             dataset.SlaDescription.Should().Be(_datasetCreateRequest.SlaDescription);
             dataset.SlaLink.Should().Be(_datasetCreateRequest.SlaLink);
             dataset.Status.Should().Be(_datasetCreateRequest.Status);
             dataset.Version.Should().Be(0);
             messageBusSenderMock.Verify(mock => mock.Publish(It.Is<DatasetCreatedMessage>(dto =>
                 dto.DatasetName == _datasetCreateRequest.Name  &&
-                dto.Container == "RAW" &&
-                dto.Hierarchy == hierarchy.ParentHierarchy.Name + "/" + hierarchy.Name &&
                 dto.Owner == _datasetCreateRequest.Owner), It.IsAny<IDictionary<string, string>>()));
         }
 
@@ -377,42 +325,6 @@ namespace DataCatalog.Api.UnitTests.Services
         }
 
         [Fact]
-        public async Task GetDatasetLocationAsync_NoHierarchyOrName_MustReturnDefaultLocation()
-        {
-            // Arrange
-            var datasetService = _fixture.Create<DatasetService>();
-
-            // Act
-            var result = await datasetService.GetDatasetLocationAsync(null, null);
-
-            // Assert
-            result.Should().NotBeNull();
-            result.Should().Be("<parentHierarchy>/<hierarchy>/<datasetName>");
-        }
-
-        [Fact]
-        public async Task GetDatasetLocationAsync_HierarchyAndName_MustReturnTransformedName()
-        {
-            // Arrange
-            var hierarchyRepositoryMock = new Mock<IHierarchyRepository>();
-            hierarchyRepositoryMock.Setup(x => x.FindByIdAsync(It.IsAny<Guid>())).ReturnsAsync(new Hierarchy
-            {
-                ParentHierarchy = new Hierarchy { Name = " - D--F7#;:_xD - " },
-                Name = " - D--F7#;:_xD - "
-            });
-            _fixture.Inject(hierarchyRepositoryMock.Object);
-            _fixture.Freeze<IDatasetRepository>();
-            var datasetService = _fixture.Create<DatasetService>();
-
-            // Act
-            var result = await datasetService.GetDatasetLocationAsync(Guid.Empty, " - D--F7#;:_xD - ");
-
-            // Assert
-            result.Should().NotBeNull();
-            result.Should().Be("d-f7_xd/d-f7_xd/d-f7_xd");
-        }
-
-        [Fact]
         public async Task GetDatasetLineageAsync_ValidateTransformations()
         {
             // Arrange
@@ -486,67 +398,5 @@ namespace DataCatalog.Api.UnitTests.Services
             result.SourceTransformations.First().Datasets.Count.Should().Be(0);
         }
 
-        [Fact]
-        public async Task CopyDatasetInRawAsync_InvalidId_ShouldReturnNull()
-        {
-            // Arrange
-            var datasetRepositoryMock = new Mock<IDatasetRepository>();
-            datasetRepositoryMock.Setup(x => x.FindByIdAsync(It.IsAny<Guid>())).ReturnsAsync((Dataset)null);
-            _fixture.Inject(datasetRepositoryMock.Object);
-            _fixture.Freeze<IDatasetRepository>();
-            var datasetService = _fixture.Create<DatasetService>();
-
-            //Act
-            var result = await datasetService.CopyDatasetInRawAsync(Guid.Empty);
-
-            // Assert
-            result.Should().BeNull();
-
-        }
-
-        [Fact]
-        public async Task CopyDatasetInRawAsync_NotPlacedInRaw_ShouldReturnNull()
-        {
-            // Arrange
-            var dataset = _fixture.Create<Dataset>();
-            dataset.RefinementLevel = RefinementLevel.Stock;
-            var datasetRepositoryMock = new Mock<IDatasetRepository>();
-            datasetRepositoryMock.Setup(x => x.FindByIdAsync(dataset.Id)).ReturnsAsync(dataset);
-            _fixture.Inject(datasetRepositoryMock.Object);
-            _fixture.Freeze<IDatasetRepository>();
-            var datasetService = _fixture.Create<DatasetService>();
-
-            //Act
-            var result = await datasetService.CopyDatasetInRawAsync(dataset.Id);
-
-            // Assert
-            result.Should().BeNull();
-        }
-
-        [Fact]
-        public async Task CopyDatasetInRawAsync_ShouldReturnCopy()
-        {
-            // Arrange
-            var dataset = _fixture.Create<Dataset>();
-            dataset.RefinementLevel = RefinementLevel.Raw;
-            var origId = dataset.Id;
-            var datasetRepositoryMock = new Mock<IDatasetRepository>();
-            datasetRepositoryMock.Setup(x => x.FindByIdAsync(dataset.Id)).ReturnsAsync(dataset);
-            _fixture.Inject(datasetRepositoryMock.Object);
-            _fixture.Freeze<IDatasetRepository>();
-            var datasetService = _fixture.Create<DatasetService>();
-
-            //Act
-            var result = await datasetService.CopyDatasetInRawAsync(dataset.Id);
-
-            // Assert
-            result.Should().NotBeNull();
-            result.Id.Should().NotBe(origId);
-            result.DatasetChangeLogs.Should().BeEmpty();
-            result.RefinementLevel.Should().Be(RefinementLevel.Stock);
-            result.DataContracts.Should().BeEmpty();
-            result.DatasetCategories.ToList().ForEach(d => d.DatasetId.Should().Be(result.Id));
-            result.DatasetDurations.ToList().ForEach(d => d.DatasetId.Should().Be(result.Id));
-        }
     }
 }
