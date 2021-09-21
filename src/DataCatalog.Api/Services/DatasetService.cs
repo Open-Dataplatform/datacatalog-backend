@@ -79,7 +79,7 @@ namespace DataCatalog.Api.Services
 
         public async Task<Dataset> SaveAsync(DatasetCreateRequest request)
         {
-            ValidateAsync(request);
+            Validate(request);
 
             var dbDataset = _mapper.Map<DataCatalog.Data.Model.Dataset>(request);
 
@@ -117,7 +117,7 @@ namespace DataCatalog.Api.Services
 
         public async Task<Dataset> UpdateAsync(DatasetUpdateRequest request)
         {
-            ValidateAsync(request);
+            Validate(request);
 
             var dbDataset = await _datasetRepository.FindByIdAsync(request.Id);
             _mapper.Map(request, dbDataset);
@@ -358,7 +358,7 @@ namespace DataCatalog.Api.Services
             }
         }
 
-        private void ValidateAsync(DatasetCreateRequest request)
+        private void Validate(DatasetCreateRequest request)
         {
             var exceptions = new List<ValidationException>();
 
