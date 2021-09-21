@@ -14,8 +14,6 @@ namespace DataCatalog.Data
         public DbSet<Category> Categories { get; set; }
         public DbSet<DatasetCategory> DatasetCategories { get; set; }
         public DbSet<Member> Members { get; set; }
-        public DbSet<MemberGroup> MemberGroups { get; set; }
-        public DbSet<MemberGroupMember> MemberGroupMembers { get; set; }
         public DbSet<Transformation> Transformations { get; set; }
         public DbSet<TransformationDataset> TransformationDatasets { get; set; }
         public DbSet<DatasetGroup> DatasetGroups { get; set; }
@@ -55,7 +53,6 @@ namespace DataCatalog.Data
             {
                 e.Property(a => a.Version).IsRequired().HasDefaultValue(1);
                 e.Property(a => a.Name).IsRequired();
-                e.Property(a => a.ContactId).IsRequired();
                 e.Property(a => a.SourceId).IsRequired();
                 e.Property(a => a.Status).IsRequired().HasDefaultValue(DatasetStatus.Draft);
                 e.Property(a => a.Confidentiality).IsRequired().HasDefaultValue(Confidentiality.Public);
@@ -97,14 +94,6 @@ namespace DataCatalog.Data
                 e.Property(a => a.ExternalId).IsRequired();
             });
 
-            //MemberGroup
-            modelBuilder.Entity<MemberGroup>(e =>
-            {
-                e.HasMany(a => a.Datasets).WithOne(a => a.Contact).HasForeignKey(a => a.ContactId);
-                e.Property(a => a.Email).IsRequired();
-                e.Property(a => a.Name).IsRequired();
-            });
-
             //Transformation
             modelBuilder.Entity<Transformation>(e => e.Property(a => a.ShortDescription).IsRequired());
 
@@ -117,7 +106,6 @@ namespace DataCatalog.Data
 
             //Relation types
             modelBuilder.Entity<DatasetCategory>(e => e.HasKey(a => new { a.DatasetId, a.CategoryId }));
-            modelBuilder.Entity<MemberGroupMember>(e => e.HasKey(a => new { a.MemberGroupId, a.MemberId }));
             modelBuilder.Entity<DatasetGroupDataset>(e => e.HasKey(a => new { a.DatasetGroupId, a.DatasetId }));
             modelBuilder.Entity<DatasetDuration>(e => e.HasKey(a => new { a.DatasetId, a.DurationId, a.DurationType }));
         }
