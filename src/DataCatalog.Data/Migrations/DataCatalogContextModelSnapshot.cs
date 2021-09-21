@@ -16,7 +16,7 @@ namespace DataCatalog.Data.Migrations
 #pragma warning disable 612, 618
             modelBuilder
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
-                .HasAnnotation("ProductVersion", "5.0.9")
+                .HasAnnotation("ProductVersion", "5.0.5")
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
             modelBuilder.Entity("DataCatalog.Data.Model.Category", b =>
@@ -133,9 +133,6 @@ namespace DataCatalog.Data.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Unit")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<string>("Validation")
                         .HasColumnType("nvarchar(max)");
 
@@ -211,8 +208,14 @@ namespace DataCatalog.Data.Migrations
                     b.Property<string>("Description")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<Guid>("HierarchyId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
+
+                    b.Property<string>("Location")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("ModifiedDate")
                         .ValueGeneratedOnAdd()
@@ -235,8 +238,10 @@ namespace DataCatalog.Data.Migrations
                     b.Property<int?>("ProvisionStatus")
                         .HasColumnType("int");
 
-                    b.Property<Guid?>("ServiceLevelAgreementId")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<int>("RefinementLevel")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(0);
 
                     b.Property<string>("SlaDescription")
                         .HasColumnType("nvarchar(max)");
@@ -261,7 +266,7 @@ namespace DataCatalog.Data.Migrations
 
                     b.HasIndex("ContactId");
 
-                    b.HasIndex("ServiceLevelAgreementId");
+                    b.HasIndex("HierarchyId");
 
                     b.ToTable("Dataset");
                 });
@@ -423,6 +428,39 @@ namespace DataCatalog.Data.Migrations
                     b.ToTable("Duration");
                 });
 
+            modelBuilder.Entity("DataCatalog.Data.Model.Hierarchy", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreatedDate")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("getutcdate()");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("ModifiedDate")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("getutcdate()");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid?>("ParentHierarchyId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ParentHierarchyId");
+
+                    b.ToTable("Hierarchy");
+                });
+
             modelBuilder.Entity("DataCatalog.Data.Model.IdentityProvider", b =>
                 {
                     b.Property<Guid>("Id")
@@ -522,36 +560,6 @@ namespace DataCatalog.Data.Migrations
                     b.ToTable("MemberGroupMember");
                 });
 
-            modelBuilder.Entity("DataCatalog.Data.Model.ServiceLevelAgreement", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime>("CreatedDate")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("datetime2")
-                        .HasDefaultValueSql("getutcdate()");
-
-                    b.Property<string>("Description")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Link")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime>("ModifiedDate")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("datetime2")
-                        .HasDefaultValueSql("getutcdate()");
-
-                    b.Property<string>("Name")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("ServiceLevelAgreement");
-                });
-
             modelBuilder.Entity("DataCatalog.Data.Model.Transformation", b =>
                 {
                     b.Property<Guid>("Id")
@@ -641,13 +649,15 @@ namespace DataCatalog.Data.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("DataCatalog.Data.Model.ServiceLevelAgreement", "ServiceLevelAgreement")
+                    b.HasOne("DataCatalog.Data.Model.Hierarchy", "Hierarchy")
                         .WithMany("Datasets")
-                        .HasForeignKey("ServiceLevelAgreementId");
+                        .HasForeignKey("HierarchyId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Contact");
 
-                    b.Navigation("ServiceLevelAgreement");
+                    b.Navigation("Hierarchy");
                 });
 
             modelBuilder.Entity("DataCatalog.Data.Model.DatasetCategory", b =>
@@ -737,6 +747,15 @@ namespace DataCatalog.Data.Migrations
                     b.Navigation("DatasetGroup");
                 });
 
+            modelBuilder.Entity("DataCatalog.Data.Model.Hierarchy", b =>
+                {
+                    b.HasOne("DataCatalog.Data.Model.Hierarchy", "ParentHierarchy")
+                        .WithMany("ChildHierarchies")
+                        .HasForeignKey("ParentHierarchyId");
+
+                    b.Navigation("ParentHierarchy");
+                });
+
             modelBuilder.Entity("DataCatalog.Data.Model.Member", b =>
                 {
                     b.HasOne("DataCatalog.Data.Model.IdentityProvider", "IdentityProvider")
@@ -821,6 +840,13 @@ namespace DataCatalog.Data.Migrations
                     b.Navigation("DatasetsDurations");
                 });
 
+            modelBuilder.Entity("DataCatalog.Data.Model.Hierarchy", b =>
+                {
+                    b.Navigation("ChildHierarchies");
+
+                    b.Navigation("Datasets");
+                });
+
             modelBuilder.Entity("DataCatalog.Data.Model.Member", b =>
                 {
                     b.Navigation("DatasetChangeLogs");
@@ -833,11 +859,6 @@ namespace DataCatalog.Data.Migrations
                     b.Navigation("Datasets");
 
                     b.Navigation("MemberGroupMembers");
-                });
-
-            modelBuilder.Entity("DataCatalog.Data.Model.ServiceLevelAgreement", b =>
-                {
-                    b.Navigation("Datasets");
                 });
 
             modelBuilder.Entity("DataCatalog.Data.Model.Transformation", b =>
