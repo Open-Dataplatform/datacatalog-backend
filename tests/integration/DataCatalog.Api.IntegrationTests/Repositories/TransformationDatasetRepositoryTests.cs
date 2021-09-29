@@ -97,7 +97,7 @@ namespace DataCatalog.Api.IntegrationTests.Repositories
             var invalidDatasetId = Guid.NewGuid();
 
             // ACT
-            var transformationDataset = await transformationDatasetRepository.FindByDatasetIdAndDirectionAsync(invalidDatasetId, direction);
+            var transformationDataset = await transformationDatasetRepository.FindByDatasetIdAndDirectionAsync(invalidDatasetId, direction, _transformations[0].Id);
 
             // ASSERT
             transformationDataset.Should().BeNull();
@@ -110,7 +110,7 @@ namespace DataCatalog.Api.IntegrationTests.Repositories
             var transformationDatasetRepository = new TransformationDatasetRepository(_context);
 
             // ACT
-            var transformationDataset = await transformationDatasetRepository.FindByDatasetIdAndDirectionAsync(_datasets[0].Id, TransformationDirection.Sink);
+            var transformationDataset = await transformationDatasetRepository.FindByDatasetIdAndDirectionAsync(_datasets[0].Id, TransformationDirection.Sink, _transformations[0].Id);
 
             // ASSERT
             transformationDataset.Should().BeNull();
@@ -123,7 +123,7 @@ namespace DataCatalog.Api.IntegrationTests.Repositories
             var transformationDatasetRepository = new TransformationDatasetRepository(_context);
 
             // ACT
-            var transformationDataset = await transformationDatasetRepository.FindByDatasetIdAndDirectionAsync(_datasets[0].Id, TransformationDirection.Source);
+            var transformationDataset = await transformationDatasetRepository.FindByDatasetIdAndDirectionAsync(_datasets[0].Id, TransformationDirection.Source, _transformations[0].Id);
 
             // ASSERT
             transformationDataset.Should().NotBeNull();
@@ -287,29 +287,6 @@ namespace DataCatalog.Api.IntegrationTests.Repositories
                 t.DatasetId == transformationDatasetToRemove.DatasetId &&
                 t.TransformationId == transformationDatasetToRemove.TransformationId && t.TransformationDirection ==
                 transformationDatasetToRemove.TransformationDirection).Should().BeNull();
-        }
-
-        [Fact]
-        public async Task Remove_ShouldBeRemoved()
-        {
-            // ARRANGE
-            var transformationDatasetRepository = new TransformationDatasetRepository(_context);
-            var transformationDatasetsToRemove = _transformationDatasets.Take(2).ToList();
-
-            // ACT
-            transformationDatasetRepository.Remove(transformationDatasetsToRemove);
-            await _context.SaveChangesAsync();
-
-            // ASSERT
-            var allTransformationDatasets = await transformationDatasetRepository.ListAsync();
-            var transformationDatasetArray = allTransformationDatasets as TransformationDataset[] ?? allTransformationDatasets.ToArray();
-            transformationDatasetArray.Should().NotBeNull();
-
-            transformationDatasetsToRemove.ForEach(td =>
-                transformationDatasetArray.SingleOrDefault(t =>
-                    t.DatasetId == td.DatasetId &&
-                    t.TransformationId == td.TransformationId && t.TransformationDirection ==
-                    td.TransformationDirection).Should().BeNull());
         }
     }
 }

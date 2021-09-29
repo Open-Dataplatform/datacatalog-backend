@@ -20,13 +20,17 @@ namespace DataCatalog.Api.Repositories
             return await _context.TransformationDatasets.ToListAsync();
         }
 
-        public async Task<TransformationDataset> FindByDatasetIdAndDirectionAsync(Guid datasetId, TransformationDirection direction)
+        public async Task<TransformationDataset> FindByDatasetIdAndDirectionAsync(Guid datasetId, TransformationDirection direction, Guid transformationId)
         {
             return await _context.TransformationDatasets
                 .Include(transformationDataset => transformationDataset.Transformation).ThenInclude(a => a.TransformationDatasets)
                 .Include(transformationDataset => transformationDataset.Dataset)
                 .Where(transformationDataset => !transformationDataset.Dataset.IsDeleted)
-                .Where(transformationDataset => transformationDataset.DatasetId == datasetId && transformationDataset.TransformationDirection == direction).FirstOrDefaultAsync();
+                .Where(transformationDataset => 
+                    transformationDataset.DatasetId == datasetId 
+                    && transformationDataset.TransformationDirection == direction
+                    && transformationDataset.TransformationId == transformationId)
+                .FirstOrDefaultAsync();
         }
 
         public async Task<IEnumerable<TransformationDataset>> FindAllTransformationDatasetsForDatasetIdAndDirectionAsync(Guid datasetId, TransformationDirection direction)
@@ -64,11 +68,6 @@ namespace DataCatalog.Api.Repositories
                 t.TransformationDirection == transformationDataset.TransformationDirection);
             if (entityToRemove != null)
                 _context.TransformationDatasets.Remove(entityToRemove);
-        }
-
-        public void Remove(List<TransformationDataset> transformationDatasets)
-        {
-            Task.WaitAll(transformationDatasets.Select(RemoveAsync).ToArray());
         }
     }
 }

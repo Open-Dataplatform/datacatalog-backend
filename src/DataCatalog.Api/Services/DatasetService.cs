@@ -82,7 +82,7 @@ namespace DataCatalog.Api.Services
             Validate(request);
 
             var dbDataset = _mapper.Map<DataCatalog.Data.Model.Dataset>(request);
-
+            
             if (request.SourceTransformation?.SourceDatasets?.Any() == true)
                 await InsertOrUpdateSourceTransformation(request.SourceTransformation, dbDataset);
 
@@ -122,22 +122,7 @@ namespace DataCatalog.Api.Services
             var dbDataset = await _datasetRepository.FindByIdAsync(request.Id);
             _mapper.Map(request, dbDataset);
 
-            if (request.SourceTransformation?.SourceDatasets?.Any() != true)
-            {
-                // Find sink dataset relation
-                var sinkTransformationDataset = await GetSinkTransformationDataset(dbDataset);
-                if (sinkTransformationDataset != null)
-                {
-                    // Delete sink dataset relation
-                    var sourceTransformation = sinkTransformationDataset.Transformation;
-                    sourceTransformation.TransformationDatasets.Remove(sinkTransformationDataset);
-                    // If the transformation is no longer connected to any sink datasets, delete it
-                    if (sourceTransformation.TransformationDatasets.All(a => a.TransformationDirection != TransformationDirection.Sink))
-                        await DeleteSourceTransformationAsync(sourceTransformation);
-                }
-            }
-            else
-                await InsertOrUpdateSourceTransformation(request.SourceTransformation, dbDataset);
+            await UpdateSourceTransformation(dbDataset, request.SourceTransformation);
 
             await InsertOrUpdateDuration(request.Frequency, dbDataset, DurationType.Frequency);
             await InsertOrUpdateDuration(request.Resolution, dbDataset, DurationType.Resolution);
@@ -147,6 +132,27 @@ namespace DataCatalog.Api.Services
             await _unitOfWork.CompleteAsync();
 
             return _mapper.Map<Dataset>(dbDataset);
+        }
+
+        private async Task UpdateSourceTransformation(DataCatalog.Data.Model.Dataset dbDataset, SourceTransformationUpsertRequest sourceTransformationDto)
+        {
+            if (sourceTransformationDto.SourceDatasets?.Any() != true)
+            {
+                // Find sink dataset relation   
+                var sinkTransformationDataset = await GetSinkTransformationDataset(dbDataset, sourceTransformationDto);
+                if (sinkTransformationDataset != null)
+                {
+                    // Delete sink dataset relation
+                    var sourceTransformation = sinkTransformationDataset.Transformation;
+                    sourceTransformation.TransformationDatasets.Remove(sinkTransformationDataset);
+                    
+                    // If the transformation is no longer connected to any sink datasets, delete it
+                    if (sourceTransformation.TransformationDatasets.All(a => a.TransformationDirection != TransformationDirection.Sink))
+                        await _transformationRepository.RemoveAsync(sourceTransformation);
+                }
+            }
+            else
+                await InsertOrUpdateSourceTransformation(sourceTransformationDto, dbDataset);
         }
 
         public async Task DeleteAsync(Guid id)
@@ -216,21 +222,37 @@ namespace DataCatalog.Api.Services
             {
                 // Find existing transformation, update descriptions and add dataset as sink.
                 var sourceTransformation = await _transformationRepository.FindByIdAsync(request.Id.Value);
-                if (sourceTransformation == null) throw new NotFoundException();
+                
+                if (sourceTransformation == null) 
+                    throw new NotFoundException();
+
+                // Save existing sinks as these will be overwritten by _mapper.Map()
+                var sinks = sourceTransformation.TransformationDatasets
+                    .Where(t => t.TransformationDirection == TransformationDirection.Sink)
+                    .ToList();
+
+                // Update description and source datasets of transformation
                 _mapper.Map(request, sourceTransformation);
+                
+                // Add sink datasets back again
+                sourceTransformation.TransformationDatasets.AddRange(sinks);
+
+                // If the current dataset is not already a sink of this transformation then add it
                 var sinkRelationExists = sourceTransformation.TransformationDatasets
                     .Any(a => a.Dataset == dataset && a.TransformationDirection == TransformationDirection.Sink);
+                
                 if (!sinkRelationExists)
                     AddTransformationDataset(sourceTransformation, dataset.Id, TransformationDirection.Sink);
             }
             else
             {
-                // Add new transformation and transformation relations
+                // Map to Transformation - this only creates source TransformationDatasets
                 var sourceTransformation = _mapper.Map<DataCatalog.Data.Model.Transformation>(request);
+
+                // Add the sink TransformationDataset
                 AddTransformationDataset(sourceTransformation, dataset, TransformationDirection.Sink);
-                foreach (var id in request.SourceDatasets)
-                    AddTransformationDataset(sourceTransformation, id.Id, TransformationDirection.Source);
-                await _transformationRepository.AddAsync(_mapper.Map<DataCatalog.Data.Model.Transformation>(sourceTransformation));
+
+                await _transformationRepository.AddAsync(sourceTransformation);
             }
         }
 
@@ -316,15 +338,12 @@ namespace DataCatalog.Api.Services
             );
         }
 
-        private async Task<DataCatalog.Data.Model.TransformationDataset> GetSinkTransformationDataset(DataCatalog.Data.Model.Dataset dataset)
+        private async Task<DataCatalog.Data.Model.TransformationDataset> GetSinkTransformationDataset(DataCatalog.Data.Model.Dataset dataset, SourceTransformationUpsertRequest transformation)
         {
-            return await _transformationDatasetRepository.FindByDatasetIdAndDirectionAsync(dataset.Id, TransformationDirection.Sink);
-        }
+            if (!transformation.Id.HasValue)
+                return null;
 
-        private async Task DeleteSourceTransformationAsync(DataCatalog.Data.Model.Transformation sourceTransformation)
-        {
-            _transformationDatasetRepository.Remove(sourceTransformation.TransformationDatasets);
-            await _transformationRepository.RemoveAsync(sourceTransformation);
+            return await _transformationDatasetRepository.FindByDatasetIdAndDirectionAsync(dataset.Id, TransformationDirection.Sink, transformation.Id.Value);
         }
 
         private async Task GetLineageTransformations(LineageDataset lineage, TransformationDirection transformationDirection, int maxRelations = -1)

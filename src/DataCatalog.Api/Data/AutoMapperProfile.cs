@@ -183,7 +183,10 @@ namespace DataCatalog.Api.Data
                     c.SinkDatasets.Select(d => new TransformationDataset { DatasetId = d.Id, TransformationDirection = TransformationDirection.Sink, TransformationId = c.Id })
                     .Concat(c.SourceDatasets.Select(d => new TransformationDataset { DatasetId = d.Id, TransformationDirection = TransformationDirection.Source, TransformationId = c.Id }))));
 
-            CreateMap<SourceTransformationUpsertRequest, Transformation>();
+            CreateMap<SourceTransformationUpsertRequest, Transformation>()
+                .ForMember(a => a.TransformationDatasets, b => b.MapFrom(c =>
+                    c.SourceDatasets.Select(d => new TransformationDataset { DatasetId = d.Id, TransformationDirection = TransformationDirection.Source, TransformationId = c.Id.HasValue ? c.Id.Value : Guid.Empty })));
+
             CreateMap<SourceTransformationUpsertRequest, Domain.Transformation>();
             CreateMap<Transformation, Domain.Transformation>();
             CreateMap<Domain.Transformation, Transformation>();
