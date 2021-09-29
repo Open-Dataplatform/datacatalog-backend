@@ -136,7 +136,7 @@ namespace DataCatalog.Api.Services
 
         private async Task UpdateSourceTransformation(DataCatalog.Data.Model.Dataset dbDataset, SourceTransformationUpsertRequest sourceTransformationDto)
         {
-            if (sourceTransformationDto.SourceDatasets?.Any() != true)
+            if (sourceTransformationDto?.SourceDatasets?.Any() != true)
             {
                 // Find sink dataset relation   
                 var sinkTransformationDataset = await GetSinkTransformationDataset(dbDataset, sourceTransformationDto);
@@ -340,7 +340,7 @@ namespace DataCatalog.Api.Services
 
         private async Task<DataCatalog.Data.Model.TransformationDataset> GetSinkTransformationDataset(DataCatalog.Data.Model.Dataset dataset, SourceTransformationUpsertRequest transformation)
         {
-            if (!transformation.Id.HasValue)
+            if (transformation?.Id.HasValue != true)
                 return null;
 
             return await _transformationDatasetRepository.FindByDatasetIdAndDirectionAsync(dataset.Id, TransformationDirection.Sink, transformation.Id.Value);
