@@ -18,7 +18,7 @@ namespace DataCatalog.Api.Data.Dto
         public Role MemberRole { get; set; }
     }
 
-    public class MemberResponse: Entity
+    public class MemberResponse: EntityDto
     {
         public string Name { get; set; }
         public string Email { get; set; }

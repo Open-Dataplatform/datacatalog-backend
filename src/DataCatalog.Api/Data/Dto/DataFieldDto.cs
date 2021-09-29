@@ -13,7 +13,7 @@ namespace DataCatalog.Api.Data.Dto
         public DataFieldUnit? Unit { get; set; }
     }
 
-    public class DataFieldResponse : Entity
+    public class DataFieldResponse : GuidId
     {
         public string Name { get; set; }
         public string Type { get; set; }
