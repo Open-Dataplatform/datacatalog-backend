@@ -6,6 +6,7 @@ using DataCatalog.Api.Repositories;
 using DataCatalog.Common.Enums;
 using Microsoft.Extensions.Logging;
 using Polly;
+using Serilog.Context;
 
 namespace DataCatalog.Api.Services.Storage
 {
@@ -14,16 +15,15 @@ namespace DataCatalog.Api.Services.Storage
         private readonly DataLakeServiceClient _dataLakeServiceClient;
         private readonly ILogger<AzureStorageService> _logger;
         private readonly IDatasetRepository _datasetRepository;
+        private const string FileSystemName = "datasets";
 
         public AzureStorageService(
             DataLakeServiceClient dataLakeServiceClient,
             ILogger<AzureStorageService> logger,
             IDatasetRepository datasetRepository)
         {
-            _dataLakeServiceClient =
-                dataLakeServiceClient ?? throw new ArgumentNullException(nameof(dataLakeServiceClient));
-
-            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+            _dataLakeServiceClient = dataLakeServiceClient;
+            _logger = logger;
             _datasetRepository = datasetRepository;
         }
 
@@ -32,11 +32,15 @@ namespace DataCatalog.Api.Services.Storage
             try
             {
                 // Use Polly to wait and retry if dataset provisioning status is Pending.
-                // This is relevant because dataset creation happens asynchronously and the meta data will not be availble until this process is finished
+                // This is relevant because dataset creation happens asynchronously and the meta data will not be available until this process is finished
                 var provisionStatus = await Policy
-                    .HandleResult<ProvisionDatasetStatusEnum?>((status) => status.HasValue && status.Value == ProvisionDatasetStatusEnum.Pending)
-                    .WaitAndRetryAsync(4, retryAttempt => TimeSpan.FromSeconds(1))
-                    .ExecuteAsync(() => _datasetRepository.GetProvisioningStatusAsync(datasetId));
+                    .HandleResult<ProvisionDatasetStatusEnum?>(status => status is ProvisionDatasetStatusEnum.Pending)
+                    .WaitAndRetryAsync(4, _ => TimeSpan.FromSeconds(1))
+                    .ExecuteAsync(() =>
+                    {
+                        _logger.LogDebug("Trying to fetch provisioning status for the datasetId {DatasetId}", datasetId);
+                        return _datasetRepository.GetProvisioningStatusAsync(datasetId);
+                    });
 
                 return provisionStatus switch
                 {
@@ -60,11 +64,15 @@ namespace DataCatalog.Api.Services.Storage
 
         private async Task<IDictionary<string,string>> GetDirectoryMetadataAsync(string path)
         {
-            var fileSystemClient = _dataLakeServiceClient.GetFileSystemClient("datasets");
+            var fileSystemClient = _dataLakeServiceClient.GetFileSystemClient(FileSystemName);
             var directoryClient = fileSystemClient.GetDirectoryClient(path);
 
             var directoryProperties = await directoryClient.GetPropertiesAsync();
-            
+
+            using (LogContext.PushProperty("DirectoryProperties", directoryProperties, true))
+            {
+                _logger.LogDebug("Fetched directory properties from the datalake using the path {Path}", path);
+            }
             return directoryProperties.Value.Metadata;
         }
     }

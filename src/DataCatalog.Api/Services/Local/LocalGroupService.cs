@@ -40,12 +40,12 @@ namespace DataCatalog.Api.Services.Local
             };
         }
 
-        public Task<IEnumerable<AccessMember>> GetGroupMembersAsync(string id)
+        public Task<IEnumerable<AccessMember>> GetGroupMembersAsync(string groupId)
         {
             return Task.FromResult(new List<AccessMember> {_localAccessMember}.AsEnumerable());
         }
 
-        public Task<AccessMember> GetAccessMemberAsync(string id)
+        public Task<AccessMember> GetAccessMemberAsync(string groupId)
         {
             return Task.FromResult(_localAccessMember);
         }
