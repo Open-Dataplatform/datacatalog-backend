@@ -6,6 +6,7 @@ using DataCatalog.Common.Enums;
 using DataCatalog.Common.Extensions;
 using DataCatalog.Common.Data;
 using System;
+using System.Xml;
 
 namespace DataCatalog.Api.Data
 {
@@ -138,11 +139,11 @@ namespace DataCatalog.Api.Data
             CreateMap<DataSourceUpdateRequest, DataSource>();
 
             //Duration
-            CreateMap<Duration, DurationResponse>();
+            CreateMap<Duration, DurationResponse>().ForMember(a => a.DurationInMinutes, b => b.MapFrom(c => XmlConvert.ToTimeSpan(c.Code).TotalMinutes));
             CreateMap<DurationResponse, DurationUpsertRequest>();
             CreateMap<DurationUpsertRequest, Duration>().ForMember(a => a.Code, b => b.MapFrom(c => c.Code.ToUpper()));
             CreateMap<DurationUpsertRequest, Domain.Duration>().ForMember(a => a.Code, b => b.MapFrom(c => c.Code.ToUpper()));
-            CreateMap<Domain.Duration, DurationResponse>();
+            CreateMap<Domain.Duration, DurationResponse>().ForMember(a => a.DurationInMinutes, b => b.MapFrom(c => XmlConvert.ToTimeSpan(c.Code).TotalMinutes));
             CreateMap<Duration, Domain.Duration>();
             CreateMap<Domain.Duration, Duration>();
             CreateMap<DurationCreateRequest, Duration>();
