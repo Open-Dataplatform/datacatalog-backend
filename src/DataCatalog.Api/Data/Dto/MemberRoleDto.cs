@@ -2,7 +2,7 @@
 
 namespace DataCatalog.Api.Data.Dto
 {
-    public class MemberRoleResponse : Entity
+    public class MemberRoleResponse : GuidId
     {
         public string Name { get; set; }
     }

@@ -18,7 +18,7 @@ namespace DataCatalog.Api.Data.Dto
         public Guid Id { get; set; }
     }
 
-    public class DataSourceResponse : ReplicantEntity
+    public class DataSourceResponse : GuidId
     {
         public string Name { get; set; }
         public string Description { get; set; }

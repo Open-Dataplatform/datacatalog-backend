@@ -20,7 +20,7 @@ namespace DataCatalog.Api.Data.Dto
         public GuidId[] Datasets { get; set; }
     }
 
-    public class DatasetGroupResponse : Entity
+    public class DatasetGroupResponse : GuidId
     {
         public Guid? MemberId { get; set; }
 

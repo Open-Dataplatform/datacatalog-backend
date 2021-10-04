@@ -30,7 +30,7 @@ namespace DataCatalog.Api.Data.Dto
         public Guid Id { get; set; }
     }
 
-    public class DatasetResponse : ReplicantEntity
+    public class DatasetResponse : EntityDto
     {
         public Guid? MemberId { get; set; }
 
@@ -39,6 +39,7 @@ namespace DataCatalog.Api.Data.Dto
         public string SlaDescription { get; set; }
         public string SlaLink { get; set; }
         public string Owner { get; set; }
+        public int Version { get; set; }
         public DatasetStatus Status { get; set; }
         public Confidentiality Confidentiality { get; set; }
 

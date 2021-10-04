@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace DataCatalog.Api.Data.Dto
 {
-    public class LineageTransformationResponse : Entity
+    public class LineageTransformationResponse : GuidId
     {
         public string ShortDescription { get; set; }
         public string Description { get; set; }

@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace DataCatalog.Api.Data.Dto
 {
-    public class DatasetSummaryResponse : Entity
+    public class DatasetSummaryResponse : GuidId
     {
         public string Name { get; set; }
         public string Description { get; set; }

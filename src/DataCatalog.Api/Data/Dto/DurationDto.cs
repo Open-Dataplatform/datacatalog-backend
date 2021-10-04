@@ -14,7 +14,7 @@ namespace DataCatalog.Api.Data.Dto
         public Guid Id { get; set; }
     }
 
-    public class DurationResponse: Entity
+    public class DurationResponse: GuidId
     {
         public string Code { get; set; }
         public string Description { get; set; }

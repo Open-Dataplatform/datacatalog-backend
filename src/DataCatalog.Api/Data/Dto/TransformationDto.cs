@@ -20,7 +20,7 @@ namespace DataCatalog.Api.Data.Dto
         public GuidId[] SinkDatasets { get; set; }
     }       
 
-    public class TransformationResponse : Entity
+    public class TransformationResponse : GuidId
     {
         public string ShortDescription { get; set; }
         public string Description { get; set; }
