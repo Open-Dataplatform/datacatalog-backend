@@ -18,6 +18,7 @@ namespace DataCatalog.Api.Data.Dto
     {
         public string Code { get; set; }
         public string Description { get; set; }
+        public int DurationInMinutes { get; set; }
     }
 
     public class DurationUpsertRequest : NullableGuidId
