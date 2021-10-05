@@ -11,6 +11,7 @@ namespace DataCatalog.Api.Data.Domain
         public string Description { get; set; }
         public string Format { get; set; }
         public string Validation { get; set; }
+        public int SortingKey { get; set; }
         public Dataset Dataset { get; set; }
         public DateTime CreatedTime { get; set; }
         public DateTime ModifiedTime { get; set; }
