@@ -8,6 +8,7 @@ namespace DataCatalog.Common.Enums
         Integer,
         Number,
         String,
-        Time
+        Time,
+        GUID
     }
 }

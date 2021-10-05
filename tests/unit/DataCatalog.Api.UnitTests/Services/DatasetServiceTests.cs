@@ -177,7 +177,7 @@ namespace DataCatalog.Api.UnitTests.Services
             dataset.DataFields.Length.Should().Be(3);
             dataset.DataFields.First().Description.Should().Be(_datasetCreateRequest.DataFields.First().Description);
             dataset.DataFields.First().Name.Should().Be(_datasetCreateRequest.DataFields.First().Name);
-            dataset.DataFields.First().Type.Should().Be(_datasetCreateRequest.DataFields.First().Type.ToString());
+            dataset.DataFields.First().Type.Should().Be(_datasetCreateRequest.DataFields.First().Type);
             dataset.DataFields.First().Validation.Should().Be(_datasetCreateRequest.DataFields.First().Validation);
             dataset.DatasetCategories.Count.Should().Be(3);
             dataset.DatasetCategories.First().CategoryId.Should().Be(_datasetCreateRequest.Categories.First().Id);
