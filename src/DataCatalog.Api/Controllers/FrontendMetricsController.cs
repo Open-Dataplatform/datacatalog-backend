@@ -20,5 +20,11 @@ namespace DataCatalog.Api.Controllers
         {
             return Ok();
         }
+
+        [HttpGet("preview-data")]
+        public IActionResult PreviewDataClicked()
+        {
+            return Ok();
+        }
     }
 }

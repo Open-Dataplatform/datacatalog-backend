@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Reflection;
 using DataCatalog.Common.Extensions;
+using DataCatalog.Common.Messages;
+using DataCatalog.Common.Utils;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Rebus.Config;
@@ -75,6 +77,15 @@ namespace DataCatalog.Common.Rebus.Extensions
             
             var transportOptions = new SqlServerTransportOptions(connectionString);
             services.AddRebus(configure => configure
+                .Events(e =>
+                {
+                    e.BeforeMessageSent += (_, headers, message, _) =>
+                    {
+                        var m = message as MessageBase;
+                        headers["rbs2-corr-id"] = m?.CorrelationId; // rbs-corr-id is rebus's own header for correlation id.
+                        headers[CorrelationId.CorrelationIdHeaderKey] = m?.CorrelationId;
+                    };
+                })
                 .Logging(l => l.Serilog())
                 .Transport(t => t.UseSqlServer(transportOptions, inputQueueName))
                 .Options(o =>

@@ -5,6 +5,7 @@ using DataCatalog.Api.Messages;
 using DataCatalog.Common.Extensions;
 using DataCatalog.Common.Implementations;
 using DataCatalog.Common.Interfaces;
+using DataCatalog.Common.Rebus;
 using DataCatalog.Common.Rebus.Extensions;
 using DataCatalog.DatasetResourceManagement.Common.ServiceInterfaces.ActiveDirectory;
 using DataCatalog.DatasetResourceManagement.Common.ServiceInterfaces.Storage;
@@ -88,7 +89,11 @@ namespace DataCatalog.DatasetResourceManagement
             services.AddHttpClient<IActiveDirectoryGroupService, AzureActiveDirectoryGroupService>(httpConfig =>
                     httpConfig.BaseAddress = aadProvisionerBaseUrl)
                 .AddHttpMessageHandler<GroupAuthenticationMiddleware>();
-            
+
+            //CorrelationId section
+            services.AddSingleton<ICorrelationIdResolver, CorrelationIdResolver>();
+            services.AddSingleton<ICorrelationIdProvider, RebusCorrelationIdProvider>();
+
             services.AddHealthChecks();
         }
 

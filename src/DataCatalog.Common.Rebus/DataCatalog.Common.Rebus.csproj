@@ -8,12 +8,14 @@
     <ItemGroup>
         <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="5.0.0" />
         <PackageReference Include="Rebus" Version="6.6.1" />
+        <PackageReference Include="Rebus.Events" Version="4.0.2" />
         <PackageReference Include="Rebus.SqlServer" Version="7.2.0-b2" />
         <PackageReference Include="Rebus.ServiceProvider" Version="6.4.1" />
         <PackageReference Include="Rebus.Serilog" Version="6.0.0" />
     </ItemGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\DataCatalog.Common.Messages\DataCatalog.Common.Messages.csproj" />
       <ProjectReference Include="..\DataCatalog.Common\DataCatalog.Common.csproj" />
     </ItemGroup>
 </Project>

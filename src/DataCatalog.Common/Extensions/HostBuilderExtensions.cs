@@ -22,7 +22,7 @@ namespace DataCatalog.Common.Extensions
             return builder;
         }
 
-        public static void CreateHostBuilderWithStartup<TStartup>(string serviceName, string[] args)
+        public static void CreateHostBuilderWithStartup<TStartup>(string serviceName, string[] args, Action<LoggerConfiguration> additionalSerilogConfig = default)
         {
             var environmentName = EnvironmentUtil.GetCurrentEnvironment();
 
@@ -55,7 +55,7 @@ namespace DataCatalog.Common.Extensions
             }
         }
         
-        private static IHost CreateHost<TStartup>(string[] args)
+        private static IHost CreateHost<TStartup>(string[] args, Action<LoggerConfiguration> additionalSerilogConfig = default)
         {
             return Host.CreateDefaultBuilder(args)
                 .UseSerilog((hostingContext, loggerConfiguration) =>
@@ -63,7 +63,10 @@ namespace DataCatalog.Common.Extensions
                     loggerConfiguration
                         .ReadFrom.Configuration(hostingContext.Configuration)
                         .Enrich.FromLogContext()
-                        .Enrich.WithEnvironment();
+                        .Enrich.WithEnvironment()
+                        .Enrich.WithCorrelationIdHeader(CorrelationId.CorrelationIdHeaderKey);
+                    additionalSerilogConfig?.Invoke(loggerConfiguration);
+
                 })
                 .ConfigureAppConfiguration((_, builder) => 
                 {
