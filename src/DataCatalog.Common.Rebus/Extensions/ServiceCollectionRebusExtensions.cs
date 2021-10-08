@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.Reflection;
 using DataCatalog.Common.Extensions;
 using DataCatalog.Common.Messages;
-using DataCatalog.Common.Utils;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Rebus.Config;
+using Rebus.Messages;
 using Rebus.Retry.Simple;
 using Rebus.Routing.TypeBased;
 using Rebus.ServiceProvider;
@@ -82,8 +82,7 @@ namespace DataCatalog.Common.Rebus.Extensions
                     e.BeforeMessageSent += (_, headers, message, _) =>
                     {
                         var m = message as MessageBase;
-                        headers["rbs2-corr-id"] = m?.CorrelationId; // rbs-corr-id is rebus's own header for correlation id.
-                        headers[CorrelationId.CorrelationIdHeaderKey] = m?.CorrelationId;
+                        headers[Headers.CorrelationId] = m?.CorrelationId;
                     };
                 })
                 .Logging(l => l.Serilog())

@@ -57,6 +57,7 @@ namespace DataCatalog.DatasetResourceManagement.MessageHandlers
             try
             {
                 var path = datasetCreatedMessage.DatasetId.ToString();
+                _logger.LogInformation("Received Dataset created message for Dataset Id {DatasetId}. Starting provisioning process", datasetCreatedMessage.DatasetId);
 
                 var rootGroupId = await _activeDirectoryRootGroupProvider.ProvideGroupAsync(
                     $"DataPlatform-{Constants.Container}-Zone-{EnvironmentUtil.GetCurrentEnvironment()}-Reader",

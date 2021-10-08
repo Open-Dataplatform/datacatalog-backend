@@ -40,7 +40,7 @@ namespace DataCatalog.Common.Extensions
             try
             {
                 Log.Information("Configuring the {ServiceName} using the environment {Environment}", serviceName, environmentName);
-                var host = CreateHost<TStartup>(args);
+                var host = CreateHost<TStartup>(args, additionalSerilogConfig);
                 Log.Information("Completed configuration of the {ServiceName}", serviceName);
                 Log.Information("Starting up the {ServiceName}", serviceName);
                 host.Run();

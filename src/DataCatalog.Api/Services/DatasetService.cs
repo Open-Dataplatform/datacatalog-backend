@@ -15,6 +15,8 @@ using Rebus.Bus;
 using DataCatalog.Api.Extensions;
 using DataCatalog.Common.Interfaces;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Logging;
+using Serilog.Context;
 
 namespace DataCatalog.Api.Services
 {
@@ -31,6 +33,7 @@ namespace DataCatalog.Api.Services
         private readonly Current _current;
         private readonly IMapper _mapper;
         private readonly ICorrelationIdResolver _correlationIdResolver;
+        private readonly ILogger<DatasetService> _logger;
 
         public DatasetService(
             IDatasetRepository datasetRepository,
@@ -43,7 +46,8 @@ namespace DataCatalog.Api.Services
             IUnitOfWork unitOfWork,
             Current current,
             IBus bus,
-            ICorrelationIdResolver correlationIdResolver)
+            ICorrelationIdResolver correlationIdResolver, 
+            ILogger<DatasetService> logger)
         {
             _datasetRepository = datasetRepository;
             _transformationRepository = transformationRepository;
@@ -56,6 +60,7 @@ namespace DataCatalog.Api.Services
             _bus = bus;
             _mapper = mapper;
             _correlationIdResolver = correlationIdResolver;
+            _logger = logger;
         }
 
         public async Task<Dataset> FindByIdAsync(Guid id)
@@ -91,7 +96,12 @@ namespace DataCatalog.Api.Services
 
             await _unitOfWork.CompleteAsync();
 
-            return await PublishDatasetCreated(dbDataset);
+            var createdDataset = await PublishDatasetCreated(dbDataset);
+            using(LogContext.PushProperty("Dataset", createdDataset, true))
+            {
+                _logger.LogInformation("Created dataset and published dataset created message");
+            }
+            return createdDataset;
         }
 
         private async Task<Dataset> PublishDatasetCreated(DataCatalog.Data.Model.Dataset dbDataset)
