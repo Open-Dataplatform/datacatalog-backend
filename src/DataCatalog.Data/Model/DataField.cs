@@ -12,9 +12,9 @@ namespace DataCatalog.Data.Model
         public string Format { get; set; }
         public string Validation { get; set; }
         public string Unit { get; set; }
-
-        public Guid DatasetId { get; set; }
+        public int SortingKey { get; set; }
         
+        public Guid DatasetId { get; set; }
         public Dataset Dataset { get; set; }
     }
 }
