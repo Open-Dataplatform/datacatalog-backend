@@ -36,27 +36,25 @@ namespace DataCatalog.Api.Extensions
             var message = ex.Message;
             _logger.LogError(ex, message);
 
-            if (ex is NotFoundException)
+            switch (ex)
             {
-                context.Response.StatusCode = (int)HttpStatusCode.NotFound;
-            }
-            else if (ex is ValidationException)
-            {
-                context.Response.StatusCode = (int)HttpStatusCode.BadRequest;
-            }
-            else if (ex is ValidationExceptionCollection)
-            {
-                context.Response.StatusCode = (int)HttpStatusCode.BadRequest;
-            }
-            else if (ex is DbUpdateException)
-            {
-                if (ex.InnerException != null)
-                    message = $"{message}\r\nInnerException:\r\n{ex.InnerException.Message}";
-                context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
-            }
-            else
-            {
-                context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
+                case NotFoundException:
+                    context.Response.StatusCode = (int)HttpStatusCode.NotFound;
+                    break;
+                case ValidationException:
+                case ValidationExceptionCollection:
+                    context.Response.StatusCode = (int)HttpStatusCode.BadRequest;
+                    break;
+                case DbUpdateException:
+                {
+                    if (ex.InnerException != null)
+                        message = $"{message}\r\nInnerException:\r\n{ex.InnerException.Message}";
+                    context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
+                    break;
+                }
+                default:
+                    context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
+                    break;
             }
 
             await context.Response.WriteAsync(message);

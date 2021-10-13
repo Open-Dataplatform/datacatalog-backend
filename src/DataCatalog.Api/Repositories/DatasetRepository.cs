@@ -9,15 +9,18 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using DataCatalog.Data;
 using DataCatalog.Api.Services;
+using Microsoft.Extensions.Logging;
 
 namespace DataCatalog.Api.Repositories
 {
     public class DatasetRepository : BaseRepository, IDatasetRepository
     {
         private readonly IPermissionUtils _permissionUtils;
-        public DatasetRepository(DataCatalogContext context, IPermissionUtils permissionUtils) : base(context)
+        private readonly ILogger<DatasetRepository> _logger;
+        public DatasetRepository(DataCatalogContext context, IPermissionUtils permissionUtils, ILogger<DatasetRepository> logger) : base(context)
         {
             _permissionUtils = permissionUtils;
+            _logger = logger;
         }
 
         public async Task<Dataset> FindByIdAsync(Guid id)
@@ -116,6 +119,7 @@ namespace DataCatalog.Api.Repositories
             var dataset = await _context.Datasets.SingleAsync(d => d.Id == id);
             dataset.ProvisionStatus = status;
             dataset.ModifiedDate = DateTime.UtcNow;
+            _logger.LogInformation("Dataset with Id {DatasetId} was updated with provisioning status {ProvisioningStatus}", id, status);
         }
 
         private IQueryable<Dataset> GetIncludeQueryable()

@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Data.Entity.Core;
 using System.Linq;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using AutoMapper;
 using DataCatalog.Common.Data;
@@ -14,7 +13,10 @@ using DataCatalog.Api.Messages;
 using DataCatalog.Api.Repositories;
 using Rebus.Bus;
 using DataCatalog.Api.Extensions;
+using DataCatalog.Common.Interfaces;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Logging;
+using Serilog.Context;
 
 namespace DataCatalog.Api.Services
 {
@@ -26,12 +28,12 @@ namespace DataCatalog.Api.Services
         private readonly IDurationRepository _durationRepository;
         private readonly IDatasetDurationRepository _datasetDurationRepository;
         private readonly IDatasetChangeLogRepository _datasetChangeLogRepository;
-        private readonly IDataSourceRepository _dataSourceRepository;
         private readonly IBus _bus;
         private readonly IUnitOfWork _unitOfWork;
         private readonly Current _current;
         private readonly IMapper _mapper;
-        private readonly IPermissionUtils _permissionUtils;
+        private readonly ICorrelationIdResolver _correlationIdResolver;
+        private readonly ILogger<DatasetService> _logger;
 
         public DatasetService(
             IDatasetRepository datasetRepository,
@@ -40,12 +42,12 @@ namespace DataCatalog.Api.Services
             IDatasetDurationRepository datasetDurationRepository,
             IDurationRepository durationRepository,
             IDatasetChangeLogRepository datasetChangeLogRepository,
-            IDataSourceRepository dataSourceRepository,
             IMapper mapper,
             IUnitOfWork unitOfWork,
             Current current,
-            IBus bus, 
-            IPermissionUtils permissionUtils)
+            IBus bus,
+            ICorrelationIdResolver correlationIdResolver, 
+            ILogger<DatasetService> logger)
         {
             _datasetRepository = datasetRepository;
             _transformationRepository = transformationRepository;
@@ -53,12 +55,12 @@ namespace DataCatalog.Api.Services
             _durationRepository = durationRepository;
             _datasetDurationRepository = datasetDurationRepository;
             _datasetChangeLogRepository = datasetChangeLogRepository;
-            _dataSourceRepository = dataSourceRepository;
             _unitOfWork = unitOfWork;
             _current = current;
             _bus = bus;
             _mapper = mapper;
-            _permissionUtils = permissionUtils;
+            _correlationIdResolver = correlationIdResolver;
+            _logger = logger;
         }
 
         public async Task<Dataset> FindByIdAsync(Guid id)
@@ -94,7 +96,12 @@ namespace DataCatalog.Api.Services
 
             await _unitOfWork.CompleteAsync();
 
-            return await PublishDatasetCreated(dbDataset);
+            var createdDataset = await PublishDatasetCreated(dbDataset);
+            using(LogContext.PushProperty("Dataset", createdDataset, true))
+            {
+                _logger.LogInformation("Created dataset and published dataset created message");
+            }
+            return createdDataset;
         }
 
         private async Task<Dataset> PublishDatasetCreated(DataCatalog.Data.Model.Dataset dbDataset)
@@ -104,6 +111,7 @@ namespace DataCatalog.Api.Services
             // Publish a message that the dataset has been created.
             var datasetCreatedMessage = new DatasetCreatedMessage
             {
+                CorrelationId = _correlationIdResolver.GetCorrelationId(),
                 DatasetId = dataset.Id,
                 DatasetName = dataset.Name,
                 Owner = dataset.Owner,

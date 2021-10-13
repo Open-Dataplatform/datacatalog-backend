@@ -27,6 +27,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataCatalog.DatasetResource
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataCatalog.Common.UnitTests", "tests\unit\DataCatalog.Common.UnitTests\DataCatalog.Common.UnitTests.csproj", "{74021BC2-D22E-4098-B236-B6333A37D16E}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataCatalog.Common.Messages", "src\DataCatalog.Common.Messages\DataCatalog.Common.Messages.csproj", "{1CA33778-7883-4041-AFC4-9C730705D4F7}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -81,6 +83,10 @@ Global
 		{74021BC2-D22E-4098-B236-B6333A37D16E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{74021BC2-D22E-4098-B236-B6333A37D16E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{74021BC2-D22E-4098-B236-B6333A37D16E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1CA33778-7883-4041-AFC4-9C730705D4F7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1CA33778-7883-4041-AFC4-9C730705D4F7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1CA33778-7883-4041-AFC4-9C730705D4F7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1CA33778-7883-4041-AFC4-9C730705D4F7}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

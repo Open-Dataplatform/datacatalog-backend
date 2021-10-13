@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using DataCatalog.Api.Messages;
+using DataCatalog.Common.Interfaces;
 using DataCatalog.Common.Rebus;
 using DataCatalog.Common.Utils;
 using DataCatalog.DatasetResourceManagement.Commands.AccessControlList;
@@ -26,6 +27,7 @@ namespace DataCatalog.DatasetResourceManagement.MessageHandlers
         private readonly IActiveDirectoryGroupProvider _activeDirectoryGroupProvider;
         private readonly IActiveDirectoryRootGroupProvider _activeDirectoryRootGroupProvider;
         private readonly IAllUsersGroupProvider _allUsersGroupProvider;
+        private readonly ICorrelationIdResolver _correlationIdResolver;
         private readonly IBus _bus;
 
         public DatasetCreatedHandler(ILogger<DatasetCreatedHandler> logger, 
@@ -36,6 +38,7 @@ namespace DataCatalog.DatasetResourceManagement.MessageHandlers
             IActiveDirectoryRootGroupProvider activeDirectoryRootGroupProvider, 
             IAllUsersGroupProvider allUsersGroupProvider, 
             IBus bus,
+            ICorrelationIdResolver correlationIdResolver,
             IOptions<RebusOptions> rebusOptions) : base(logger, rebusOptions, bus)
         {
             _logger = logger;
@@ -45,6 +48,7 @@ namespace DataCatalog.DatasetResourceManagement.MessageHandlers
             _activeDirectoryGroupProvider = activeDirectoryGroupProvider;
             _activeDirectoryRootGroupProvider = activeDirectoryRootGroupProvider;
             _allUsersGroupProvider = allUsersGroupProvider;
+            _correlationIdResolver = correlationIdResolver;
             _bus = bus;
         }
 
@@ -53,6 +57,7 @@ namespace DataCatalog.DatasetResourceManagement.MessageHandlers
             try
             {
                 var path = datasetCreatedMessage.DatasetId.ToString();
+                _logger.LogInformation("Received Dataset created message for Dataset Id {DatasetId}. Starting provisioning process", datasetCreatedMessage.DatasetId);
 
                 var rootGroupId = await _activeDirectoryRootGroupProvider.ProvideGroupAsync(
                     $"DataPlatform-{Constants.Container}-Zone-{EnvironmentUtil.GetCurrentEnvironment()}-Reader",
@@ -113,6 +118,7 @@ namespace DataCatalog.DatasetResourceManagement.MessageHandlers
                 _logger.LogInformation("Successfully provisioned the dataset with Id {Id}", datasetCreatedMessage.DatasetId);
                 await _bus.Publish(new DatasetProvisionedMessage
                     {
+                        CorrelationId = _correlationIdResolver.GetCorrelationId(),
                         DatasetId = datasetCreatedMessage.DatasetId, 
                         Status = "Succeeded"
                     }

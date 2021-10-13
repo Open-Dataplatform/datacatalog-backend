@@ -15,6 +15,8 @@ using DataCatalog.Common.Data;
 using DataCatalog.Common.Extensions;
 using DataCatalog.Common.Implementations;
 using DataCatalog.Common.Interfaces;
+using DataCatalog.Common.Middleware;
+using DataCatalog.Common.Rebus;
 using DataCatalog.Common.Rebus.Extensions;
 using DataCatalog.Common.Utils;
 using DataCatalog.Data;
@@ -155,6 +157,11 @@ namespace DataCatalog.Api
             Log.Information("Logging configuration - ContactInfo end");
             services.Configure<ContactInfo>(Configuration.GetSection(nameof(ContactInfo)));
 
+            //CorrelationId section
+            services.AddSingleton<ICorrelationIdResolver, CorrelationIdResolver>();
+            services.AddSingleton<ICorrelationIdProvider, WebApiCorrelationIdProvider>();
+            services.AddSingleton<ICorrelationIdProvider, RebusCorrelationIdProvider>();
+            
             services.AddHealthChecks();
         }
 
@@ -206,6 +213,7 @@ namespace DataCatalog.Api
             {
                 app.UseMiddleware<CurrentUserInitializationMiddleware>();
             }
+            app.UseMiddleware<CorrelationIdMiddleware>();
 
             app.UseEndpoints(endpoints =>
             {

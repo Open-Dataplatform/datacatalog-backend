@@ -2,9 +2,11 @@
 using System.Collections.Generic;
 using System.Reflection;
 using DataCatalog.Common.Extensions;
+using DataCatalog.Common.Messages;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Rebus.Config;
+using Rebus.Messages;
 using Rebus.Retry.Simple;
 using Rebus.Routing.TypeBased;
 using Rebus.ServiceProvider;
@@ -75,6 +77,14 @@ namespace DataCatalog.Common.Rebus.Extensions
             
             var transportOptions = new SqlServerTransportOptions(connectionString);
             services.AddRebus(configure => configure
+                .Events(e =>
+                {
+                    e.BeforeMessageSent += (_, headers, message, _) =>
+                    {
+                        var m = message as MessageBase;
+                        headers[Headers.CorrelationId] = m?.CorrelationId;
+                    };
+                })
                 .Logging(l => l.Serilog())
                 .Transport(t => t.UseSqlServer(transportOptions, inputQueueName))
                 .Options(o =>

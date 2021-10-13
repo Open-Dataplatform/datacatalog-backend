@@ -4,4 +4,8 @@
         <TargetFramework>net5.0</TargetFramework>
     </PropertyGroup>
 
+    <ItemGroup>
+      <ProjectReference Include="..\DataCatalog.Common.Messages\DataCatalog.Common.Messages.csproj" />
+    </ItemGroup>
+
 </Project>

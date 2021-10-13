@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using DataCatalog.Api.Data.Domain;
 using Microsoft.Extensions.Logging;
 using Microsoft.Graph;
+using Serilog.Context;
 
 namespace DataCatalog.Api.Services.AD
 {
@@ -21,41 +22,50 @@ namespace DataCatalog.Api.Services.AD
             _logger = logger;
         }
 
-        public async Task<IEnumerable<AccessMember>> GetGroupMembersAsync(string id)
+        public async Task<IEnumerable<AccessMember>> GetGroupMembersAsync(string groupId)
         {
             try
             {
-                var members = await _graphServiceClient.Groups[id].Members.Request().GetAsync();
+                var members = await _graphServiceClient.Groups[groupId].Members.Request().GetAsync();
+                using(LogContext.PushProperty("GroupMembers", members, true))
+                {
+                    _logger.LogDebug("Fetched group members from groupId {GroupId}", groupId);
+                }
                 return members.Select(GetMemberInfo);
             }
 
             catch (ServiceException se)
             {
-                _logger.LogInformation(se, $"Service exception caught from the graph api when trying to get members for group {id}");
+                _logger.LogInformation(se, "Service exception caught from the graph api when trying to get members for group {GroupId}", groupId);
                 return null;
             }
             catch (Exception e)
             {
-                _logger.LogError(e, $"Exception caught when retrieving group members for group {id}");
+                _logger.LogError(e, "Exception caught when retrieving group members for group {GroupId}", groupId);
                 throw;
             }
         }
 
-        public async Task<AccessMember> GetAccessMemberAsync(string id)
+        public async Task<AccessMember> GetAccessMemberAsync(string groupId)
         {
             try
             {
-                var directoryObject = await _graphServiceClient.DirectoryObjects[id].Request().GetAsync();
-                return GetMemberInfo(directoryObject);
+                var directoryObject = await _graphServiceClient.DirectoryObjects[groupId].Request().GetAsync();
+                var accessMember = GetMemberInfo(directoryObject);
+                using(LogContext.PushProperty("AccessMembers", accessMember, true))
+                {
+                    _logger.LogDebug("Fetched access members from groupId {GroupId}", groupId);
+                }
+                return accessMember;
             }
             catch (ServiceException se)
             {
-                _logger.LogInformation(se, $"Service exception caught from the graph api when trying to get member with id {id}");
+                _logger.LogInformation(se, "Service exception caught from the graph api when trying to get member with id {GroupId}", groupId);
                 return null;
             }
             catch (Exception e)
             {
-                _logger.LogError(e, $"Exception caught when retrieving member with id {id}");
+                _logger.LogError(e, "Exception caught when retrieving member with id {GroupId}", groupId);
                 throw;
             }
         }
@@ -65,14 +75,15 @@ namespace DataCatalog.Api.Services.AD
             try
             {
                 await _graphServiceClient.Groups[groupId].Members[memberId].Reference.Request().DeleteAsync();
+                _logger.LogInformation("Removed the member with Id {MemberId} from the group with Id {GroupId}", memberId, groupId);
             }
             catch (ServiceException se)
             {
-                _logger.LogWarning(se, $"Service exception caught from the graph api when trying to remove member {memberId} from group {groupId}");
+                _logger.LogWarning(se, "Service exception caught from the graph api when trying to remove member {MemberId} from group {GroupId}", memberId, groupId);
             }
             catch (Exception e)
             {
-                _logger.LogError(e, $"Exception caught when removing member {memberId} from group {groupId}");
+                _logger.LogError(e, "Exception caught when removing member {MemberId} from group {GroupId}", memberId, groupId);
                 throw;
             }
         }
@@ -84,18 +95,23 @@ namespace DataCatalog.Api.Services.AD
                 var members = await _graphServiceClient.Groups[groupId].Members.Request().GetAsync();
 
                 // Just return if member is already present in the group
-                if (members.Any(x => Equals(x.Id, memberId))) return;
+                if (members.Any(x => Equals(x.Id, memberId)))
+                {
+                    _logger.LogInformation("Member with Id {MemberId} is already part of the group with Id {GroupId}", memberId, groupId);
+                    return;
+                }
 
                 await _graphServiceClient.Groups[groupId].Members.References.Request()
                     .AddAsync(new DirectoryObject { Id = memberId });
+                _logger.LogInformation("Added the member with Id {MemberId} to the group with Id {GroupId}", memberId, groupId);
             }
             catch (ServiceException se)
             {
-                _logger.LogWarning(se, $"Service exception caught from the graph api when trying to add member {memberId} from group {groupId}");
+                _logger.LogWarning(se, "Service exception caught from the graph api when trying to add member {MemberId} from group {GroupId}", memberId, groupId);
             }
             catch (Exception e)
             {
-                _logger.LogError(e, $"Exception caught when adding member {memberId} to group {groupId}");
+                _logger.LogError(e, "Exception caught when adding member {MemberId} to group {GroupId}", memberId, groupId);
                 throw;
             }
         }
@@ -123,16 +139,17 @@ namespace DataCatalog.Api.Services.AD
 
         private AccessMember GetMemberInfo(DirectoryObject memberDirectoryObject)
         {
-            if (memberDirectoryObject is Group groupMember)
-                return new AccessMember {Id = groupMember.Id, Name = groupMember.DisplayName, Type = AccessMemberType.Group};
-            
-            if (memberDirectoryObject is Microsoft.Graph.User userMember)
-                return new AccessMember { Id = userMember.Id, Name = userMember.DisplayName, Mail = userMember.Mail, Type = AccessMemberType.User };
-            
-            if (memberDirectoryObject is ServicePrincipal servicePrincipalMember)
-                return new AccessMember { Id = servicePrincipalMember.Id, Name = servicePrincipalMember.DisplayName, Type = AccessMemberType.ServicePrincipal };
-
-            return new AccessMember {Id = memberDirectoryObject.Id, Name = memberDirectoryObject.Id, Type = AccessMemberType.Other};
+            switch (memberDirectoryObject)
+            {
+                case Group groupMember:
+                    return new AccessMember {Id = groupMember.Id, Name = groupMember.DisplayName, Type = AccessMemberType.Group};
+                case Microsoft.Graph.User userMember:
+                    return new AccessMember { Id = userMember.Id, Name = userMember.DisplayName, Mail = userMember.Mail, Type = AccessMemberType.User };
+                case ServicePrincipal servicePrincipalMember:
+                    return new AccessMember { Id = servicePrincipalMember.Id, Name = servicePrincipalMember.DisplayName, Type = AccessMemberType.ServicePrincipal };
+                default:
+                    return new AccessMember {Id = memberDirectoryObject.Id, Name = memberDirectoryObject.Id, Type = AccessMemberType.Other};
+            }
         }
     }
 }

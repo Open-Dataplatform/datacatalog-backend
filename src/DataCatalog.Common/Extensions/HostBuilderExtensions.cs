@@ -22,7 +22,7 @@ namespace DataCatalog.Common.Extensions
             return builder;
         }
 
-        public static void CreateHostBuilderWithStartup<TStartup>(string serviceName, string[] args)
+        public static void CreateHostBuilderWithStartup<TStartup>(string serviceName, string[] args, Action<LoggerConfiguration> additionalSerilogConfig = default)
         {
             var environmentName = EnvironmentUtil.GetCurrentEnvironment();
 
@@ -40,7 +40,7 @@ namespace DataCatalog.Common.Extensions
             try
             {
                 Log.Information("Configuring the {ServiceName} using the environment {Environment}", serviceName, environmentName);
-                var host = CreateHost<TStartup>(args);
+                var host = CreateHost<TStartup>(args, additionalSerilogConfig);
                 Log.Information("Completed configuration of the {ServiceName}", serviceName);
                 Log.Information("Starting up the {ServiceName}", serviceName);
                 host.Run();
@@ -55,7 +55,7 @@ namespace DataCatalog.Common.Extensions
             }
         }
         
-        private static IHost CreateHost<TStartup>(string[] args)
+        private static IHost CreateHost<TStartup>(string[] args, Action<LoggerConfiguration> additionalSerilogConfig = default)
         {
             return Host.CreateDefaultBuilder(args)
                 .UseSerilog((hostingContext, loggerConfiguration) =>
@@ -63,7 +63,10 @@ namespace DataCatalog.Common.Extensions
                     loggerConfiguration
                         .ReadFrom.Configuration(hostingContext.Configuration)
                         .Enrich.FromLogContext()
-                        .Enrich.WithEnvironment();
+                        .Enrich.WithEnvironment()
+                        .Enrich.WithCorrelationIdHeader(CorrelationId.CorrelationIdHeaderKey);
+                    additionalSerilogConfig?.Invoke(loggerConfiguration);
+
                 })
                 .ConfigureAppConfiguration((_, builder) => 
                 {
