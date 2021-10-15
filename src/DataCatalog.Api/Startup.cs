@@ -9,6 +9,7 @@ using DataCatalog.Api.MessageHandlers;
 using DataCatalog.Api.Repositories;
 using DataCatalog.Api.Services;
 using DataCatalog.Api.Services.AD;
+using DataCatalog.Api.Services.Egress;
 using DataCatalog.Api.Services.Local;
 using DataCatalog.Api.Services.Storage;
 using DataCatalog.Common.Data;
@@ -31,7 +32,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using Microsoft.Extensions.Options;
 using Microsoft.Graph;
 using Microsoft.Graph.Auth;
 using Microsoft.Identity.Client;
@@ -289,6 +289,7 @@ namespace DataCatalog.Api
             services.AddTransient<IDurationService, DurationService>();
             services.AddTransient<IIdentityProviderService, IdentityProviderService>();
             services.AddTransient<IMemberService, MemberService>();
+            services.AddTransient<IEgressService, EgressService>();
 
             services.AddTransient<ITransformationService, TransformationService>();
             services.AddTransient<IServiceLevelAgreementService, ServiceLevelAgreementService>();

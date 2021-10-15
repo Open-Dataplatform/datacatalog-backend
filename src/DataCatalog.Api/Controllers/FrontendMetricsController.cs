@@ -14,17 +14,5 @@ namespace DataCatalog.Api.Controllers
         {
             return Ok();
         }
-        
-        [HttpGet("oboflow-end")]
-        public IActionResult OboFlowEnded()
-        {
-            return Ok();
-        }
-
-        [HttpGet("preview-data")]
-        public IActionResult PreviewDataClicked()
-        {
-            return Ok();
-        }
     }
 }
