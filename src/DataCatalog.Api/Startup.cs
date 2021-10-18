@@ -2,6 +2,7 @@ using System;
 using System.Runtime.CompilerServices;
 using Azure.Identity;
 using Azure.Storage.Files.DataLake;
+using DataCatalog.Api.Data;
 using DataCatalog.Api.Data.Dto;
 using DataCatalog.Api.Extensions;
 using DataCatalog.Api.Infrastructure;
@@ -289,7 +290,9 @@ namespace DataCatalog.Api
             services.AddTransient<IDurationService, DurationService>();
             services.AddTransient<IIdentityProviderService, IdentityProviderService>();
             services.AddTransient<IMemberService, MemberService>();
+            services.Configure<EgressOptions>(Configuration.GetSection("Egress"));
             services.AddTransient<IEgressService, EgressService>();
+            services.AddHttpClient<IEgressService, EgressService>();
 
             services.AddTransient<ITransformationService, TransformationService>();
             services.AddTransient<IServiceLevelAgreementService, ServiceLevelAgreementService>();

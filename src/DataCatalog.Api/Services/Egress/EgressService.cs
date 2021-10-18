@@ -3,8 +3,10 @@ using System.Net;
 using System.Net.Http;
 using System.Text.Json;
 using System.Threading.Tasks;
+using DataCatalog.Api.Data;
 using DataCatalog.Common.Utils;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Serilog.Context;
 
 namespace DataCatalog.Api.Services.Egress
@@ -12,17 +14,24 @@ namespace DataCatalog.Api.Services.Egress
     public class EgressService : IEgressService
     {
         private const int Limit = 10;
-        private readonly HttpClient _httpClient = new();
+        private readonly HttpClient _httpClient;
         private readonly ILogger<EgressService> _logger;
+        private readonly string _egressBaseUrl; 
 
-        public EgressService(ILogger<EgressService> logger)
+        public EgressService(ILogger<EgressService> logger, HttpClient httpClient, IOptions<EgressOptions> options)
         {
             _logger = logger;
+            _httpClient = httpClient;
+            _egressBaseUrl = options.Value.BaseUrl;
+            if (!options.Value.BaseUrl.EndsWith('/'))
+            {
+                _egressBaseUrl += '/';
+            }
         }
 
         public async Task<Either<object, Exception>> FetchData(Guid datasetId, string fromDate, string toDate, string authorizationHeader)
         {
-            var request = new HttpRequestMessage(HttpMethod.Get, $"https://dp-test.westeurope.cloudapp.azure.com/osiris-egress/v1/{datasetId}/json?limit={Limit}&from_date={fromDate}&to_date={toDate}");
+            var request = new HttpRequestMessage(HttpMethod.Get, $"{_egressBaseUrl}{datasetId}/json?limit={Limit}&from_date={fromDate}&to_date={toDate}");
             request.Headers.Add("Authorization", authorizationHeader);
             _logger.LogInformation("Fetching {Limit} rows from the dataset with Id {DatasetId} within the time range of {FromDate} to {ToDate}", Limit, datasetId, fromDate, toDate);
             var response = await _httpClient.SendAsync(request);
