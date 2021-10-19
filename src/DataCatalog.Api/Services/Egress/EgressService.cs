@@ -29,7 +29,7 @@ namespace DataCatalog.Api.Services.Egress
             }
         }
 
-        public async Task<Either<object, Exception>> FetchData(Guid datasetId, string fromDate, string toDate, string authorizationHeader)
+        public async Task<object> FetchData(Guid datasetId, string fromDate, string toDate, string authorizationHeader)
         {
             var request = new HttpRequestMessage(HttpMethod.Get, $"{_egressBaseUrl}{datasetId}/json?limit={Limit}&from_date={fromDate}&to_date={toDate}");
             request.Headers.Add("Authorization", authorizationHeader);
@@ -49,16 +49,13 @@ namespace DataCatalog.Api.Services.Egress
                 }
                 return response.StatusCode switch
                 {
-                    HttpStatusCode.Forbidden => new Either<object, Exception>(
-                        new AuthorizationException(exceptionDetails?.Detail)),
-                    HttpStatusCode.BadRequest => new Either<object, Exception>(
-                        new ConfigurationException(exceptionDetails?.Detail)),
-                    _ => new Either<object, Exception>(new Exception(exceptionDetails?.Detail))
+                    HttpStatusCode.Forbidden => throw new EgressAuthorizationException(exceptionDetails?.Detail),
+                    HttpStatusCode.BadRequest => throw new EgressConfigurationException(exceptionDetails?.Detail),
+                    _ => throw new GenericEgressException(exceptionDetails?.Detail)
                 };
             }
             
-            var result = JsonSerializer.Deserialize<object>(stringJson);
-            return new Either<object, Exception>(result);
+            return JsonSerializer.Deserialize<object>(stringJson);
         }
 
         public class ExceptionDetails
