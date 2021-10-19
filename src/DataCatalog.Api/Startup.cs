@@ -83,7 +83,7 @@ namespace DataCatalog.Api
             });
 
             // Controllers
-            services.AddControllers();
+            services.AddControllers(options => options.Filters.Add<CustomExceptionFilter>());
 
             // Repositories
             services.AddScoped<ICategoryRepository, CategoryRepository>();
@@ -183,7 +183,6 @@ namespace DataCatalog.Api
                 app.UseCustomSwagger();
 
             // Exception handling and logging.
-            app.UseMiddleware<ExceptionExtension>();
             app.UseHttpsRedirection();
             app.UseRouting();
             app.UseHttpMetrics();

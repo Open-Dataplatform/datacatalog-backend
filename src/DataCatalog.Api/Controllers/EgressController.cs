@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Net;
 using System.Threading.Tasks;
 using DataCatalog.Api.Infrastructure;
 using DataCatalog.Api.Services.Egress;
@@ -26,26 +25,7 @@ namespace DataCatalog.Api.Controllers
         {
             var authorizationHeader = Request.Headers[XAuthorizationHeader];
             var result = await _egressService.FetchData(datasetId, fromDate, toDate, authorizationHeader);
-            return result.Match<IActionResult>(jsonResult => new OkObjectResult(jsonResult), 
-                exception =>
-                {
-                    var message = exception.Message;
-                    if (string.IsNullOrEmpty(message))
-                    {
-                        message = "Unknown error occured while attempting to access the Egress Api";
-                    }
-                    var exceptionResult = new ObjectResult(message)
-                    {
-                        StatusCode = exception switch
-                        {
-                            AuthorizationException => (int)HttpStatusCode.Forbidden,
-                            ConfigurationException => (int)HttpStatusCode.NotFound,
-                            _ => (int)HttpStatusCode.InternalServerError
-                        }
-                    };
-
-                    return exceptionResult;
-                });
+            return new ObjectResult(result);
         }
     }
 }
