@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using DataCatalog.Api.Data.Domain;
 using DataCatalog.Api.Services.AD;
+using DataCatalog.Common.Enums;
 using DataCatalog.Common.Utils;
 
 namespace DataCatalog.Api.Services.Local

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using DataCatalog.Api.Data.Domain;
+using DataCatalog.Common.Enums;
 using Microsoft.Extensions.Logging;
 using Microsoft.Graph;
 using Serilog.Context;

@@ -24,6 +24,7 @@ namespace DataCatalog.Data
         public DbSet<DataSource> DataSources { get; set; }
         public DbSet<DataContract> DataContracts { get; set; }
         public DbSet<ServiceLevelAgreement> ServiceLevelAgreement { get; set; }
+        public DbSet<DatasetPermissionChange> DatasetPermissionChanges { get; set; }
 
         public DataCatalogContext(DbContextOptions options) : base(options) { }
 
@@ -99,6 +100,21 @@ namespace DataCatalog.Data
             modelBuilder.Entity<DatasetCategory>(e => e.HasKey(a => new { a.DatasetId, a.CategoryId }));
             modelBuilder.Entity<DatasetGroupDataset>(e => e.HasKey(a => new { a.DatasetGroupId, a.DatasetId }));
             modelBuilder.Entity<DatasetDuration>(e => e.HasKey(a => new { a.DatasetId, a.DurationId, a.DurationType }));
+
+            modelBuilder.Entity<DatasetChangeLog>(e =>
+            {
+                e.Property(dcl => dcl.DatasetChangeType)
+                    .HasDefaultValue(DatasetChangeType.Update)
+                    .HasConversion<string>();
+            });
+
+            modelBuilder.Entity<DatasetPermissionChange>(e =>
+            {
+                e.Property(dpc => dpc.PermissionChangeType).HasConversion<string>();
+                e.Property(dpc => dpc.AccessType).HasConversion<string>();
+                e.Property(dpc => dpc.AccessMemberType).HasConversion<string>();
+            });
+
         }
     }
 }
