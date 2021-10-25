@@ -29,7 +29,7 @@ namespace DataCatalog.Api.IntegrationTests.Repositories
         private readonly PermissionUtils _dataStewardPermissionUtils;
         private readonly PermissionUtils _userPermissionUtils;
         private readonly ILogger<DatasetRepository> _logger;
-        private const int DatasetSize = 12;
+        private const int DatasetSize = 16;
 
         public DatasetRepositoryTests()
         {
@@ -45,6 +45,7 @@ namespace DataCatalog.Api.IntegrationTests.Repositories
             _datasets.Take(4).ToList().ForEach(d => d.Status = DatasetStatus.Draft);
             _datasets.Skip(4).Take(4).ToList().ForEach(d => d.Status = DatasetStatus.Published);
             _datasets.Skip(8).Take(4).ToList().ForEach(d => d.Status = DatasetStatus.Source);
+            _datasets.Skip(12).Take(4).ToList().ForEach(d => d.Status = DatasetStatus.Developing);
             var date = new DateTime(2020, 11, 20);
             _datasets.Take(4).ToList().ForEach(d => { d.CreatedDate = date; date = date.AddYears(-1); });
             date = new DateTime(2017, 11, 20);
@@ -169,7 +170,7 @@ namespace DataCatalog.Api.IntegrationTests.Repositories
             // ASSERT
             var enumerable = result as Dataset[] ?? result.ToArray();
             enumerable.Should().NotBeNull();
-            enumerable.Length.Should().Be(12);
+            enumerable.Length.Should().Be(DatasetSize);
         }
 
         [Fact]
@@ -184,11 +185,11 @@ namespace DataCatalog.Api.IntegrationTests.Repositories
             // ASSERT
             var enumerable = result as Dataset[] ?? result.ToArray();
             enumerable.Should().NotBeNull();
+            enumerable.Length.Should().Be(8);
             foreach (var dataset in enumerable)
             {
-                dataset.Status.Should().Be(DatasetStatus.Published);
+                dataset.Status.Should().Match(status => status == DatasetStatus.Published || status == DatasetStatus.Developing);
             }
-            enumerable.Length.Should().Be(4);
         }
 
         [Fact]
@@ -204,7 +205,7 @@ namespace DataCatalog.Api.IntegrationTests.Repositories
             var enumerable = result as Dataset[] ?? result.ToArray();
             enumerable.Should().NotBeNull();
             var ordered = _datasets.OrderBy(d => d.Name).ToList();
-            for (var i = 0; i < 12; i++)
+            for (var i = 0; i < DatasetSize; i++)
                 enumerable[i].Id.Should().Be(ordered[i].Id);
         }
 
@@ -221,7 +222,7 @@ namespace DataCatalog.Api.IntegrationTests.Repositories
             var enumerable = result as Dataset[] ?? result.ToArray();
             enumerable.Should().NotBeNull();
             var ordered = _datasets.OrderByDescending(d => d.Name).ToList();
-            for (var i = 0; i < 12; i++)
+            for (var i = 0; i < DatasetSize; i++)
                 enumerable[i].Id.Should().Be(ordered[i].Id);
         }
 
@@ -238,7 +239,7 @@ namespace DataCatalog.Api.IntegrationTests.Repositories
             var enumerable = result as Dataset[] ?? result.ToArray();
             enumerable.Should().NotBeNull();
             var ordered = _datasets.OrderBy(d => d.CreatedDate).ToList();
-            for (var i = 0; i < 12; i++)
+            for (var i = 0; i < DatasetSize; i++)
                 enumerable[i].Id.Should().Be(ordered[i].Id);
         }
 
@@ -255,7 +256,7 @@ namespace DataCatalog.Api.IntegrationTests.Repositories
             var enumerable = result as Dataset[] ?? result.ToArray();
             enumerable.Should().NotBeNull();
             var ordered = _datasets.OrderByDescending(d => d.CreatedDate).ToList();
-            for (var i = 0; i < 12; i++)
+            for (var i = 0; i < DatasetSize; i++)
                 enumerable[i].Id.Should().Be(ordered[i].Id);
         }
 
@@ -272,7 +273,7 @@ namespace DataCatalog.Api.IntegrationTests.Repositories
             var enumerable = result as Dataset[] ?? result.ToArray();
             enumerable.Should().NotBeNull();
             var ordered = _datasets.OrderBy(d => d.ModifiedDate).ToList();
-            for (var i = 0; i < 12; i++)
+            for (var i = 0; i < DatasetSize; i++)
                 enumerable[i].Id.Should().Be(ordered[i].Id);
         }
 
@@ -289,7 +290,7 @@ namespace DataCatalog.Api.IntegrationTests.Repositories
             var enumerable = result as Dataset[] ?? result.ToArray();
             enumerable.Should().NotBeNull();
             var ordered = _datasets.OrderByDescending(d => d.ModifiedDate).ToList();
-            for (int i = 0; i < 12; i++)
+            for (int i = 0; i < DatasetSize; i++)
                 enumerable[i].Id.Should().Be(ordered[i].Id);
         }
 

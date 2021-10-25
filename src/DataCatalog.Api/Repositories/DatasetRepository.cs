@@ -81,6 +81,9 @@ namespace DataCatalog.Api.Repositories
                     case "source":
                         query = query.Where(a => a.Status == DatasetStatus.Source);
                         break;
+                    case "developing":
+                        query = query.Where(a => a.Status == DatasetStatus.Developing);
+                        break;
                     default:
                     {
                         if (Guid.TryParse(term, out var guid))
@@ -127,7 +130,9 @@ namespace DataCatalog.Api.Repositories
             var query = _context.Datasets.AsQueryable();
 
             if (_permissionUtils.FilterUnpublishedDatasets)
-                query = query.Where(a => a.Status == DatasetStatus.Published);
+            { 
+                query = query.Where(a => a.Status == DatasetStatus.Published || a.Status == DatasetStatus.Developing);
+            }
 
             query = query.Where(dataset => !dataset.IsDeleted);
             query = query.Include(a => a.DatasetCategories).ThenInclude(a => a.Category);
@@ -142,6 +147,7 @@ namespace DataCatalog.Api.Repositories
                          || t == "draft" && ds.Status == DatasetStatus.Draft
                          || t == "published" && ds.Status == DatasetStatus.Published
                          || t == "source" && ds.Status == DatasetStatus.Source
+                         || t == "developing" && ds.Status == DatasetStatus.Developing
                          || ds.Description != null && ds.Description.Contains(t)
                          || ds.DatasetCategories.Any(b => b.Category.Name.Contains(t))
                          || ds.DataContracts.Any(b => b.DataSource.Name.Contains(t) || b.DataSource.Description != null && b.DataSource.Description.Contains(t))
