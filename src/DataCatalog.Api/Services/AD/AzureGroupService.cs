@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using DataCatalog.Api.Data.Domain;
+using DataCatalog.Api.Repositories;
+using DataCatalog.Common.Data;
 using DataCatalog.Common.Enums;
 using Microsoft.Extensions.Logging;
 using Microsoft.Graph;
@@ -10,20 +12,26 @@ using Serilog.Context;
 
 namespace DataCatalog.Api.Services.AD
 {
-    public class AzureGroupService : IGroupService
+    public class AzureGroupService : BaseGroupService, IGroupService
     {
         private readonly IGraphServiceClient _graphServiceClient;
+        private readonly IUnitOfWork _unitOfWork;
+        
         private readonly ILogger<AzureGroupService> _logger;
 
         public AzureGroupService(
-            IGraphServiceClient graphServiceClient, 
-            ILogger<AzureGroupService> logger)
+            IGraphServiceClient graphServiceClient,
+            ILogger<AzureGroupService> logger,
+            IDatasetChangeLogRepository datasetChangeLogRepository,
+            Current current, 
+            IUnitOfWork unitOfWork) : base(datasetChangeLogRepository, current)
         {
             _graphServiceClient = graphServiceClient;
             _logger = logger;
+            _unitOfWork = unitOfWork;
         }
 
-        public async Task<IEnumerable<AccessMember>> GetGroupMembersAsync(string groupId)
+        public override async Task<IEnumerable<AccessMember>> GetGroupMembersAsync(string groupId)
         {
             try
             {
@@ -47,7 +55,7 @@ namespace DataCatalog.Api.Services.AD
             }
         }
 
-        public async Task<AccessMember> GetAccessMemberAsync(string groupId)
+        public override async Task<AccessMember> GetAccessMemberAsync(string groupId)
         {
             try
             {
@@ -71,12 +79,17 @@ namespace DataCatalog.Api.Services.AD
             }
         }
 
-        public async Task RemoveGroupMemberAsync(string groupId, string memberId)
+        public override async Task RemoveGroupMemberAsync(Guid datasetId, string groupId, string memberId, Common.Enums.AccessType accessType)
         {
             try
             {
+                var accessMember = await GetAccessMemberAsync(memberId);
+                AddChangeLog(datasetId, accessType, PermissionChangeType.Removed, accessMember, groupId);
+
                 await _graphServiceClient.Groups[groupId].Members[memberId].Reference.Request().DeleteAsync();
                 _logger.LogInformation("Removed the member with Id {MemberId} from the group with Id {GroupId}", memberId, groupId);
+
+                await _unitOfWork.CompleteAsync(); // Save the new changelog entry once we know the operation did not trow an error
             }
             catch (ServiceException se)
             {
@@ -89,26 +102,35 @@ namespace DataCatalog.Api.Services.AD
             }
         }
 
-        public async Task AddGroupMemberAsync(string groupId, string memberId)
+        public override async Task<AccessMember> AddGroupMemberAsync(Guid datasetId, string groupId, string memberId, Common.Enums.AccessType accessType)
         {
             try
             {
                 var members = await _graphServiceClient.Groups[groupId].Members.Request().GetAsync();
+                var accessMember = await GetAccessMemberAsync(memberId);
 
                 // Just return if member is already present in the group
                 if (members.Any(x => Equals(x.Id, memberId)))
                 {
                     _logger.LogInformation("Member with Id {MemberId} is already part of the group with Id {GroupId}", memberId, groupId);
-                    return;
+                    return accessMember;
                 }
+
+                AddChangeLog(datasetId, accessType, PermissionChangeType.Added, accessMember, groupId);
 
                 await _graphServiceClient.Groups[groupId].Members.References.Request()
                     .AddAsync(new DirectoryObject { Id = memberId });
+
                 _logger.LogInformation("Added the member with Id {MemberId} to the group with Id {GroupId}", memberId, groupId);
+
+                await _unitOfWork.CompleteAsync(); // Save the new changelog entry once we know the operation did not trow an error
+
+                return accessMember;
             }
             catch (ServiceException se)
             {
                 _logger.LogWarning(se, "Service exception caught from the graph api when trying to add member {MemberId} from group {GroupId}", memberId, groupId);
+                return null;
             }
             catch (Exception e)
             {
@@ -117,7 +139,7 @@ namespace DataCatalog.Api.Services.AD
             }
         }
 
-        public async Task<IEnumerable<AdSearchResult>> SearchAsync(string searchString)
+        public override async Task<IEnumerable<AdSearchResult>> SearchAsync(string searchString)
         {
             var displaySearchQueryOption = new QueryOption("$search", $"\"displayName:{searchString}\"");
             var mailSearchQueryOption = new QueryOption("$search", $"\"mail:{searchString}\"");

@@ -195,18 +195,19 @@ namespace DataCatalog.Api.Data
             CreateMap<TransformationDataset, Domain.TransformationDataset>();
 
             // DatasetChangeLog
+            CreateMap<DatasetPermissionChange, Domain.DatasetPermissionChange>();
+            CreateMap<Domain.DatasetPermissionChange, DatasetPermissionChangeResponse>();
             CreateMap<DatasetChangeLog, Domain.DatasetChangeLog>();
             CreateMap<Domain.DatasetChangeLog, DatasetChangeLogResponse>()
-                .ForMember(a => a.Member, b => b.MapFrom(c => 
-                new MemberResponse
-                {
-                    Id = c.MemberId,
-                    CreatedDate = c.CreatedDate,
-                    MemberRole = c.Member.MemberRole,
-                    Name = c.Name,
-                    Email = c.Email
-                }));
-
+                .ForMember(a => a.Member, b => b.MapFrom(c =>
+                    new MemberResponse
+                    {
+                        Id = c.MemberId,
+                        CreatedDate = c.CreatedDate,
+                        MemberRole = c.Member.MemberRole,
+                        Name = c.Name,
+                        Email = c.Email
+                    }));
 
             // IdentityProvider
             CreateMap<IdentityProvider, Domain.IdentityProvider>();

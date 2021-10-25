@@ -29,8 +29,10 @@ namespace DataCatalog.Api.Repositories
                 .Include(a => a.DataFields.OrderBy(df => df.SortingKey))
                 .Include(a => a.DatasetDurations).ThenInclude(a => a.Duration)
                 .Include(a => a.DatasetChangeLogs).ThenInclude(a => a.Member)
+                .Include(a => a.DatasetChangeLogs).ThenInclude(a => a.DatasetPermissionChange)
                 .Include(a => a.DataContracts).ThenInclude(a => a.DataSource)
                 .Include(a => a.ServiceLevelAgreement)
+                .AsSplitQuery()
                 .FirstOrDefault(a => a.Id == id);
           
             //Only load source transformation and related datasets

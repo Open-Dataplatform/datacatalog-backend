@@ -4,7 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using DataCatalog.Common.Enums;
 
-namespace DataCatalog.Data.Model
+namespace DataCatalog.Api.Data.Domain
 {
     public class DatasetPermissionChange
     {

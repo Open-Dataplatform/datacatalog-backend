@@ -22,6 +22,7 @@ namespace DataCatalog.Data.Migrations
                     PermissionChangeType = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     AccessType = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     AccessMemberType = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    AccessGroupId = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     DirectoryObjectId = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     DisplayName = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Mail = table.Column<string>(type: "nvarchar(max)", nullable: true),

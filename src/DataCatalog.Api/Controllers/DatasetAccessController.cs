@@ -69,28 +69,28 @@ namespace DataCatalog.Api.Controllers
         [Route("{datasetId}/access/read")]
         public Task<ActionResult<DataAccessEntry>> AddReadAccessMember(Guid datasetId, AddDatasetAccessMemberRequestDto accessMemberRequest)
         {
-            return AddMember(GroupConstants.ReaderGroup, datasetId, accessMemberRequest.MemberId);
+            return AddMember(AccessType.Read, datasetId, accessMemberRequest.MemberId);
         }
 
         [HttpPost]
         [Route("{datasetId}/access/write")]
         public Task<ActionResult<DataAccessEntry>> AddWriteAccessMember(Guid datasetId, AddDatasetAccessMemberRequestDto accessMemberRequest)
         {
-            return AddMember(GroupConstants.WriterGroup, datasetId, accessMemberRequest.MemberId);
+            return AddMember(AccessType.Write, datasetId, accessMemberRequest.MemberId);
         }
 
         [HttpDelete]
         [Route("{datasetId}/access/{memberId}/read")]
         public Task<IActionResult> RemoveReadDataAccessMember(Guid datasetId, Guid memberId)
         {
-            return RemoveMember(GroupConstants.ReaderGroup, datasetId, memberId);
+            return RemoveMember(AccessType.Read, datasetId, memberId);
         }
 
         [HttpDelete]
         [Route("{datasetId}/access/{memberId}/write")]
         public Task<IActionResult> RemoveWriteDataAccessMember(Guid datasetId, Guid memberId)
         {
-            return RemoveMember(GroupConstants.WriterGroup, datasetId, memberId);
+            return RemoveMember(AccessType.Write, datasetId, memberId);
         }
 
         [HttpGet]
@@ -102,38 +102,40 @@ namespace DataCatalog.Api.Controllers
             return Ok(searchResults.Select(x => _mapper.Map<Data.Domain.AdSearchResult, AdSearchResultResponse>(x)));
         }
 
-        private async Task<IActionResult> RemoveMember(string accessGroupType, Guid datasetId, Guid memberId)
+        private async Task<IActionResult> RemoveMember(AccessType accessType, Guid datasetId, Guid memberId)
         {
             var directoryMetadata = await _storageService.GetDirectoryMetadataWithRetry(datasetId);
 
             if (directoryMetadata == null)
                 return NotFound();
 
-            directoryMetadata.TryGetValue(accessGroupType, out var groupId);
+            directoryMetadata.TryGetValue(GroupConstants.AccessGroupTypeKey(accessType), out var groupId);
 
             if (groupId == null)
                 return NotFound();
 
-            await _groupService.RemoveGroupMemberAsync(groupId, memberId.ToString());
+            await _groupService.RemoveGroupMemberAsync(datasetId, groupId, memberId.ToString(), accessType);
 
             return Ok();
         }
 
-        private async Task<ActionResult<DataAccessEntry>> AddMember(string accessGroupType, Guid datasetId, Guid memberId)
+        private async Task<ActionResult<DataAccessEntry>> AddMember(AccessType accessType, Guid datasetId, Guid memberId)
         {
             var directoryMetadata = await _storageService.GetDirectoryMetadataWithRetry(datasetId);
 
             if (directoryMetadata == null)
                 return NotFound();
 
-            directoryMetadata.TryGetValue(accessGroupType, out var groupId);
+            directoryMetadata.TryGetValue(GroupConstants.AccessGroupTypeKey(accessType), out var groupId);
 
             if (groupId == null)
                 return NotFound();
 
-            await _groupService.AddGroupMemberAsync(groupId, memberId.ToString());
-            var addedMember = await _groupService.GetAccessMemberAsync(memberId.ToString());
-            
+            var addedMember = await _groupService.AddGroupMemberAsync(datasetId, groupId, memberId.ToString(), accessType);
+
+            if (addedMember == null)
+                addedMember = await _groupService.GetAccessMemberAsync(groupId);
+
             return Ok(_mapper.Map<Data.Domain.AccessMember, DataAccessEntry>(addedMember));
         }
     }

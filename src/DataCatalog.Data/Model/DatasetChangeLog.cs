@@ -1,4 +1,5 @@
 ﻿using DataCatalog.Common.Data;
+using DataCatalog.Common.Enums;
 using System;
 
 namespace DataCatalog.Data.Model
@@ -17,13 +18,5 @@ namespace DataCatalog.Data.Model
         public Member Member { get; set; }
 
         public DatasetPermissionChange DatasetPermissionChange { get; set; }
-    }
-
-    public enum DatasetChangeType 
-    {
-        Insert,
-        Update,
-        Delete,
-        PermissionChange
     }
 }

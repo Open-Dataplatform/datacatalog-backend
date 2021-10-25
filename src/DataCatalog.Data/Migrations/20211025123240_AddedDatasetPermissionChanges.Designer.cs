@@ -10,7 +10,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DataCatalog.Data.Migrations
 {
     [DbContext(typeof(DataCatalogContext))]
-    [Migration("20211020144814_AddedDatasetPermissionChanges")]
+    [Migration("20211025123240_AddedDatasetPermissionChanges")]
     partial class AddedDatasetPermissionChanges
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -405,6 +405,9 @@ namespace DataCatalog.Data.Migrations
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("AccessGroupId")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("AccessMemberType")
                         .IsRequired()

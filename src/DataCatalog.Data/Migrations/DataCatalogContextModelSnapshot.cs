@@ -404,6 +404,9 @@ namespace DataCatalog.Data.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<string>("AccessGroupId")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("AccessMemberType")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");

@@ -1,6 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using DataCatalog.Api.Data.Domain;
+using DataCatalog.Common.Enums;
 
 namespace DataCatalog.Api.Services.AD
 {
@@ -8,8 +10,8 @@ namespace DataCatalog.Api.Services.AD
     {
         Task<IEnumerable<AccessMember>> GetGroupMembersAsync(string groupId);
         Task<AccessMember> GetAccessMemberAsync(string groupId);
-        Task RemoveGroupMemberAsync(string groupId, string memberId);
-        Task AddGroupMemberAsync(string groupId, string memberId);
+        Task RemoveGroupMemberAsync(Guid datasetId, string groupId, string memberId, AccessType accessType);
+        Task<AccessMember> AddGroupMemberAsync(Guid datasetId, string groupId, string memberId, AccessType accessType);
         Task<IEnumerable<AdSearchResult>> SearchAsync(string searchString);
     }
 }
