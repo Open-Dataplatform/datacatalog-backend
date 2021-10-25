@@ -31,6 +31,10 @@ namespace DataCatalog.Api.UnitTests.Services
     {
         private readonly IFixture _fixture = new Fixture().Customize(new AutoMoqCustomization());
         private readonly DatasetCreateRequest _datasetCreateRequest;
+        private readonly Duration _frequency;
+        private readonly Duration _resolution;
+        private readonly Mock<IBus> _messageBusSenderMock;
+        private readonly DatasetService _datasetService;
 
         public DatasetServiceTests()
         {
@@ -50,6 +54,30 @@ namespace DataCatalog.Api.UnitTests.Services
             _datasetCreateRequest = _fixture.Create<DatasetCreateRequest>();
             _datasetCreateRequest.Status = DatasetStatus.Draft;
             _datasetCreateRequest.Confidentiality = Confidentiality.Confidential;
+            
+            var datasetDurationRepositoryMock = new Mock<IDatasetDurationRepository>();
+            _frequency = new Duration { Code = Guid.NewGuid().ToString() };
+            _resolution = new Duration { Code = Guid.NewGuid().ToString() };
+            var frequencyDatasetDuration = new DatasetDuration { Duration = _frequency };
+            var resolutionDatasetDuration = new DatasetDuration { Duration = _resolution };
+            datasetDurationRepositoryMock.Setup(x => x.FindByDatasetAndTypeAsync(It.IsAny<Guid>(), DurationType.Frequency)).ReturnsAsync(frequencyDatasetDuration);
+            datasetDurationRepositoryMock.Setup(x => x.FindByDatasetAndTypeAsync(It.IsAny<Guid>(), DurationType.Resolution)).ReturnsAsync(resolutionDatasetDuration);
+            _fixture.Inject(datasetDurationRepositoryMock.Object);
+            _fixture.Freeze<IDatasetDurationRepository>();
+            var durationRepository = new Mock<IDurationRepository>();
+            durationRepository.Setup(x => x.FindByCodeAsync(_datasetCreateRequest.Frequency.Code.ToUpper())).ReturnsAsync(_frequency);
+            durationRepository.Setup(x => x.FindByCodeAsync(_datasetCreateRequest.Resolution.Code.ToUpper())).ReturnsAsync(_resolution);
+            _fixture.Inject(durationRepository.Object);
+            _fixture.Freeze<IDurationRepository>();
+            var transformationRepositoryMock = new Mock<ITransformationRepository>();
+            var transformation = _fixture.Create<Transformation>();
+            transformation.Id = _datasetCreateRequest.SourceTransformation.Id.Value;
+            transformationRepositoryMock.Setup(x => x.FindByIdAsync(_datasetCreateRequest.SourceTransformation.Id.Value)).ReturnsAsync(transformation);
+            _fixture.Inject(transformationRepositoryMock.Object);
+            _fixture.Freeze<ITransformationRepository>();
+            _messageBusSenderMock = new Mock<IBus>();
+            _fixture.Inject(_messageBusSenderMock.Object);
+            _datasetService = _fixture.Create<DatasetService>();
         }
 
         [Fact]
@@ -141,33 +169,8 @@ namespace DataCatalog.Api.UnitTests.Services
         [Fact]
         public async Task SaveAsync_ValidateReturnObject()
         {
-            // Arrange
-            var datasetDurationRepositoryMock = new Mock<IDatasetDurationRepository>();
-            var frequency = new Duration { Code = Guid.NewGuid().ToString() };
-            var resolution = new Duration { Code = Guid.NewGuid().ToString() };
-            var frequencyDatasetDuration = new DatasetDuration { Duration = frequency };
-            var resolutionDatasetDuration = new DatasetDuration { Duration = resolution };
-            datasetDurationRepositoryMock.Setup(x => x.FindByDatasetAndTypeAsync(It.IsAny<Guid>(), DurationType.Frequency)).ReturnsAsync(frequencyDatasetDuration);
-            datasetDurationRepositoryMock.Setup(x => x.FindByDatasetAndTypeAsync(It.IsAny<Guid>(), DurationType.Resolution)).ReturnsAsync(resolutionDatasetDuration);
-            _fixture.Inject(datasetDurationRepositoryMock.Object);
-            _fixture.Freeze<IDatasetDurationRepository>();
-            var durationRepository = new Mock<IDurationRepository>();
-            durationRepository.Setup(x => x.FindByCodeAsync(_datasetCreateRequest.Frequency.Code.ToUpper())).ReturnsAsync(frequency);
-            durationRepository.Setup(x => x.FindByCodeAsync(_datasetCreateRequest.Resolution.Code.ToUpper())).ReturnsAsync(resolution);
-            _fixture.Inject(durationRepository.Object);
-            _fixture.Freeze<IDurationRepository>();
-            var transformationRepositoryMock = new Mock<ITransformationRepository>();
-            var transformation = _fixture.Create<Transformation>();
-            transformation.Id = _datasetCreateRequest.SourceTransformation.Id.Value;
-            transformationRepositoryMock.Setup(x => x.FindByIdAsync(_datasetCreateRequest.SourceTransformation.Id.Value)).ReturnsAsync(transformation);
-            _fixture.Inject(transformationRepositoryMock.Object);
-            _fixture.Freeze<ITransformationRepository>();
-            var messageBusSenderMock = new Mock<IBus>();
-            _fixture.Inject(messageBusSenderMock.Object);
-            var datasetService = _fixture.Create<DatasetService>();
-
             // Act
-            var dataset = await datasetService.SaveAsync(_datasetCreateRequest);
+            var dataset = await _datasetService.SaveAsync(_datasetCreateRequest);
 
             // Assert
             dataset.Should().NotBeNull();
@@ -184,8 +187,8 @@ namespace DataCatalog.Api.UnitTests.Services
             dataset.DatasetDurations.Count.Should().Be(2);
             dataset.DatasetDurations.Any(d => d.DurationType == DurationType.Frequency).Should().BeTrue();
             dataset.DatasetDurations.Any(d => d.DurationType == DurationType.Resolution).Should().BeTrue();
-            dataset.DatasetDurations.Single(d => d.DurationType == DurationType.Frequency).Duration.Code.Should().Be((frequency.Code));
-            dataset.DatasetDurations.Single(d => d.DurationType == DurationType.Resolution).Duration.Code.Should().Be((resolution.Code));
+            dataset.DatasetDurations.Single(d => d.DurationType == DurationType.Frequency).Duration.Code.Should().Be(_frequency.Code);
+            dataset.DatasetDurations.Single(d => d.DurationType == DurationType.Resolution).Duration.Code.Should().Be(_resolution.Code);
             dataset.Description.Should().Be(_datasetCreateRequest.Description);
             dataset.Name.Should().Be(_datasetCreateRequest.Name);
             dataset.Owner.Should().Be(_datasetCreateRequest.Owner);
@@ -193,7 +196,7 @@ namespace DataCatalog.Api.UnitTests.Services
             dataset.SlaLink.Should().Be(_datasetCreateRequest.SlaLink);
             dataset.Status.Should().Be(_datasetCreateRequest.Status);
             dataset.Version.Should().Be(0);
-            messageBusSenderMock.Verify(mock => mock.Publish(It.Is<DatasetCreatedMessage>(dto =>
+            _messageBusSenderMock.Verify(mock => mock.Publish(It.Is<DatasetCreatedMessage>(dto =>
                 dto.DatasetName == _datasetCreateRequest.Name  &&
                 dto.Owner == _datasetCreateRequest.Owner), It.IsAny<IDictionary<string, string>>()));
         }
@@ -398,5 +401,35 @@ namespace DataCatalog.Api.UnitTests.Services
             result.SourceTransformations.First().Datasets.Count.Should().Be(0);
         }
 
+        [Fact]
+        public async void SaveAsync_OnPublicAndPublishedDataset_CreatesDatasetCreatedMessageWithAddAllUsers()
+        {
+            // Arrange
+            _datasetCreateRequest.Status = DatasetStatus.Published;
+            _datasetCreateRequest.Confidentiality = Confidentiality.Public;
+            
+            // Act
+            await _datasetService.SaveAsync(_datasetCreateRequest);
+            
+            // Assert
+            _messageBusSenderMock.Verify(bus => bus.Publish(It.Is<DatasetCreatedMessage>(message => message.AddAllUsersGroup == true), null), Times.Once);
+        }
+        
+        [Theory]
+        [InlineData(DatasetStatus.Developing)]
+        [InlineData(DatasetStatus.Draft)]
+        [InlineData(DatasetStatus.Source)]
+        public async void SaveAsync_OnPublicButNotPublishedDataset_CreatesDatasetCreatedMessageWithoutAddAllUsers(DatasetStatus status)
+        {
+            // Arrange 
+            _datasetCreateRequest.Status = status;
+            _datasetCreateRequest.Confidentiality = Confidentiality.Public;
+            
+            // Act
+            await _datasetService.SaveAsync(_datasetCreateRequest);
+            
+            // Assert
+            _messageBusSenderMock.Verify(bus => bus.Publish(It.Is<DatasetCreatedMessage>(message => message.AddAllUsersGroup == false), null), Times.Once);
+        }
     }
 }
