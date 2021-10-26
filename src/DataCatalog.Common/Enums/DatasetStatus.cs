@@ -2,8 +2,9 @@
 {
     public enum DatasetStatus
     {
-        Draft,
-        Published,
-        Source
+        Draft = 0,
+        Published = 1,
+        Source = 2,
+        Developing = 3
     }
 }

@@ -54,8 +54,8 @@ namespace DataCatalog.Api.Services.Egress
                     _ => throw new GenericEgressException(exceptionDetails?.Detail)
                 };
             }
-            
-            return JsonSerializer.Deserialize<object>(stringJson);
+
+            return JsonSerializer.Deserialize<object>(response.StatusCode == HttpStatusCode.NoContent ? "[]" : stringJson);
         }
 
         public class ExceptionDetails

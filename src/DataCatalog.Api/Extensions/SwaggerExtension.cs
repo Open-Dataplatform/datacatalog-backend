@@ -2,6 +2,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using System.Collections.Generic;
 using NJsonSchema;
+using NSwag.AspNetCore;
 
 namespace DataCatalog.Api.Extensions
 {
@@ -52,23 +53,15 @@ namespace DataCatalog.Api.Extensions
         /// Swagger endpoint setup
         /// </summary>
         /// <param name="app"></param>
-        public static void UseCustomSwagger(this IApplicationBuilder app)
+        /// <param name="virtualBasePath">The base path that the backend is potentially hosted on through a (reverse) proxy
+        /// (e.g. example.com/backend/swagger... - then the virtual base path would be '/backend')</param>
+        public static void UseCustomSwagger(this IApplicationBuilder app, string virtualBasePath = "")
         {
             app.UseOpenApi(config => config.DocumentName = "v1.0");
             app.UseSwaggerUi3(config =>
             {
                 config.DocExpansion = "list";
-                // See https://github.com/RicoSuter/NSwag/wiki/AspNetCore-Middleware#hosting-behind-a-reverse-proxy-or-as-an-iis-virtual-application
-                config.TransformToExternalPath = (internalUiRoute, request) =>
-                {
-                    if (internalUiRoute.StartsWith("/") &&
-                        !internalUiRoute.StartsWith(request.PathBase))
-                    {
-                        return request.PathBase + internalUiRoute;
-                    }
-
-                    return internalUiRoute;
-                };
+                config.DocumentPath = $"{virtualBasePath}/swagger/{{documentName}}/swagger.json";
             });
         }
     }

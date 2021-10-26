@@ -180,7 +180,7 @@ namespace DataCatalog.Api
 
             // Swagger setup from extensions
             if (!EnvironmentUtil.IsProduction()) 
-                app.UseCustomSwagger();
+                app.UseCustomSwagger(Configuration.GetValue("Swagger:VirtualBasePath", ""));
 
             // Exception handling and logging.
             app.UseHttpsRedirection();
