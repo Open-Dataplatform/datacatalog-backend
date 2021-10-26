@@ -94,7 +94,7 @@ namespace DataCatalog.Api.IntegrationTests.Repositories
             var datasetChangeLogEntity = _fixture.Create<DatasetChangeLog>();
 
             // ACT
-            await datasetChangeLogRepository.AddAsync(datasetChangeLogEntity);
+            datasetChangeLogRepository.Add(datasetChangeLogEntity);
             await _context.SaveChangesAsync();
 
             // ASSERT
