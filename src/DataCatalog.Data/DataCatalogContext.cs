@@ -30,9 +30,6 @@ namespace DataCatalog.Data
 
         internal DataCatalogContext() { } // For unit test mocking
 
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-            => optionsBuilder.LogTo(Console.WriteLine);
-
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.UseEntityNamesForTableNames();

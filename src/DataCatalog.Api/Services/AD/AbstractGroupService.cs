@@ -9,12 +9,12 @@ using DataCatalog.Common.Enums;
 
 namespace DataCatalog.Api.Services.AD
 {
-    public abstract class BaseGroupService : IGroupService
+    public abstract class AbstractGroupService : IGroupService
     {
         protected readonly IDatasetChangeLogRepository _datasetChangeLogRepository;
         protected readonly Current _current;
 
-        protected BaseGroupService(IDatasetChangeLogRepository datasetChangeLogRepository, Current current)
+        protected AbstractGroupService(IDatasetChangeLogRepository datasetChangeLogRepository, Current current)
         {
             _datasetChangeLogRepository = datasetChangeLogRepository;
             _current = current;

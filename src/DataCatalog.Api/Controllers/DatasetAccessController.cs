@@ -43,7 +43,9 @@ namespace DataCatalog.Api.Controllers
             var directoryMetadata = await _storageService.GetDirectoryMetadataWithRetry(id);
 
             if (directoryMetadata == null)
+            {
                 return NotFound("Dataset access assignment not ready yet");
+            }
             
             directoryMetadata.TryGetValue(GroupConstants.ReaderGroup, out var readerGroupId);
             directoryMetadata.TryGetValue(GroupConstants.WriterGroup, out var writerGroupId);
@@ -107,12 +109,16 @@ namespace DataCatalog.Api.Controllers
             var directoryMetadata = await _storageService.GetDirectoryMetadataWithRetry(datasetId);
 
             if (directoryMetadata == null)
+            {
                 return NotFound();
+            }
 
             directoryMetadata.TryGetValue(GroupConstants.AccessGroupTypeKey(accessType), out var groupId);
 
             if (groupId == null)
+            {
                 return NotFound();
+            }
 
             await _groupService.RemoveGroupMemberAsync(datasetId, groupId, memberId.ToString(), accessType);
 
@@ -124,17 +130,23 @@ namespace DataCatalog.Api.Controllers
             var directoryMetadata = await _storageService.GetDirectoryMetadataWithRetry(datasetId);
 
             if (directoryMetadata == null)
+            {
                 return NotFound();
+            }
 
             directoryMetadata.TryGetValue(GroupConstants.AccessGroupTypeKey(accessType), out var groupId);
 
             if (groupId == null)
+            {
                 return NotFound();
+            }
 
             var addedMember = await _groupService.AddGroupMemberAsync(datasetId, groupId, memberId.ToString(), accessType);
 
             if (addedMember == null)
+            {
                 addedMember = await _groupService.GetAccessMemberAsync(groupId);
+            }
 
             return Ok(_mapper.Map<Data.Domain.AccessMember, DataAccessEntry>(addedMember));
         }

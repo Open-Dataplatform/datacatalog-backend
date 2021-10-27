@@ -15,7 +15,7 @@ namespace DataCatalog.Api.Services.Local
     /// Dummy Group service implementation used ONLY for the local environment runtime.
     /// DO NOT use this in any other context! 
     /// </summary>
-    public class LocalGroupService : BaseGroupService, IGroupService
+    public class LocalGroupService : AbstractGroupService, IGroupService
     {
         private readonly AccessMember _localAccessMember;
         private readonly AdSearchResult _localSearchResult;

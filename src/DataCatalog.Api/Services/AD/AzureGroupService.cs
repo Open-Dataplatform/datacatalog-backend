@@ -12,7 +12,7 @@ using Serilog.Context;
 
 namespace DataCatalog.Api.Services.AD
 {
-    public class AzureGroupService : BaseGroupService, IGroupService
+    public class AzureGroupService : AbstractGroupService, IGroupService
     {
         private readonly IGraphServiceClient _graphServiceClient;
         private readonly IUnitOfWork _unitOfWork;
