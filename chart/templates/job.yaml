@@ -30,6 +30,10 @@ spec:
         {{- include "datacatalog-backend.selectorLabels" . | nindent 8 }}
     spec:
       restartPolicy: Never
+      {{- with .Values.job.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
       containers:
       - name: {{ .Chart.Name }}
         image: "{{ .Values.job.image.repository }}:{{ .Values.job.image.tag | default .Chart.AppVersion }}"
