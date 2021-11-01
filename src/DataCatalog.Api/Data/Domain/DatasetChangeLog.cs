@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using DataCatalog.Common.Enums;
 
 namespace DataCatalog.Api.Data.Domain
 {
@@ -18,5 +19,8 @@ namespace DataCatalog.Api.Data.Domain
         public string Email { get; set; }
 
         public DateTime CreatedDate { get; set; }
+
+        public DatasetPermissionChange DatasetPermissionChange { get; set; }
+        public DatasetChangeType DatasetChangeType { get; set; }
     }
 }

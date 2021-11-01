@@ -22,9 +22,9 @@ namespace DataCatalog.Api.Repositories
             return await _context.DatasetChangeLogs.FirstOrDefaultAsync(a => a.Id == id);
         }
 
-        public async Task AddAsync(DatasetChangeLog datasetChangeLog)
+        public void Add(DatasetChangeLog datasetChangeLog)
         {
-            await _context.DatasetChangeLogs.AddAsync(datasetChangeLog);
+            _context.DatasetChangeLogs.Add(datasetChangeLog);
         }
 
         public void Update(DatasetChangeLog datasetChangeLog)
