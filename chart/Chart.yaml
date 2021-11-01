@@ -11,6 +11,6 @@ maintainers:
 
 dependencies:
   - name: lethe
-    version: "0.1.2"
+    version: "0.1.x"
     repository: "https://open-olympus-project.github.io/repo-helm"
     condition: lethe.enabled
