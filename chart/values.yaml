@@ -113,3 +113,6 @@ job:
 
 lethe:
   enabled: false
+
+janus:
+  enabled: false
