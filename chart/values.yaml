@@ -7,6 +7,7 @@ appName: datacatalog-backend
 
 apiDeployment:
   replicaCount: 1
+  revisionHistoryLimit: 2
 
   image:
     repository: <IMAGENAME>
@@ -53,6 +54,7 @@ apiDeployment:
 
 drmDeployment:
   replicaCount: 1
+  revisionHistoryLimit: 2
 
   image:
     repository: <IMAGENAME>

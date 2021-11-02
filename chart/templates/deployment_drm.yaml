@@ -8,6 +8,7 @@ spec:
   {{- if not .Values.drmDeployment.autoscaling.enabled }}
   replicas: {{ .Values.drmDeployment.replicaCount }}
   {{- end }}
+  revisionHistoryLimit: {{ .Values.drmDeployment.revisionHistoryLimit }}
   selector:
     matchLabels:
       {{- include "datacatalog-backend-drm.selectorLabels" . | nindent 6 }}

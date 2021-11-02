@@ -8,6 +8,7 @@ spec:
   {{- if not .Values.apiDeployment.autoscaling.enabled }}
   replicas: {{ .Values.apiDeployment.replicaCount }}
   {{- end }}
+  revisionHistoryLimit: {{ .Values.apiDeployment.revisionHistoryLimit }}
   selector:
     matchLabels:
       {{- include "datacatalog-backend.selectorLabels" . | nindent 6 }}
