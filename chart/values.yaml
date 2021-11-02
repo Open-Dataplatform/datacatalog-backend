@@ -110,6 +110,14 @@ job:
   env:
     "ASPNETCORE_ENVIRONMENT": "Development"
 
+  volumes: []
+    # - name: migration
+    #   secret:
+    #     secretName: mysecret
+  volumeMounts: []
+    # - name: foo
+    #   mountPath: "/etc/foo"
+    #   readOnly: true
 
 lethe:
   enabled: false
