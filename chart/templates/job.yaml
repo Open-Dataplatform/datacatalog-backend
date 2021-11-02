@@ -29,12 +29,12 @@ spec:
         image: "{{ .Values.job.image.repository }}:{{ .Values.job.image.tag | default .Chart.AppVersion }}"
         imagePullPolicy: {{ .Values.job.image.pullPolicy }}
         env:
-          {{ range $k, $v := .Values.job.env }}
-            - name: {{ $k | quote }}
-              value: {{ $v | quote }}
-          {{- end }}
+        {{- range $k, $v := .Values.job.env }}
+          - name: {{ $k | quote }}
+            value: {{ $v | quote }}
+        {{- end }}
         {{- with .Values.job.volumeMounts }}
         volumeMounts:
-          {{ . }}
-        {{- end -}}
+          {{- toYaml . | nindent 10 }}
+        {{- end }}
 {{- end -}}
