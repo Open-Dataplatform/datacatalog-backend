@@ -20,6 +20,12 @@ apiDeployment:
     timeoutSeconds: 2
     periodSeconds: 60
 
+  imagePullSecrets: []
+
+  volumes: []
+
+  volumeMounts: []
+
   podSecurityContext: {}
 
   securityContext: {}
@@ -59,6 +65,12 @@ drmDeployment:
     initialDelaySeconds: 30
     timeoutSeconds: 2
     periodSeconds: 60
+
+  imagePullSecrets: []
+
+  volumes: []
+
+  volumeMounts: []
 
   podSecurityContext: {}
 

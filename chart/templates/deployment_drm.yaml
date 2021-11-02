@@ -13,27 +13,8 @@ spec:
       {{- include "datacatalog-backend-drm.selectorLabels" . | nindent 6 }}
   template:
     metadata:
-      annotations:
-        vault.hashicorp.com/agent-inject: "true"
-        vault.hashicorp.com/role: "{{ .Values.secretName }}-reader"
-        vault.hashicorp.com/auth-path: "auth/kubernetes-{{ .Values.environment }}"
-        vault.hashicorp.com/agent-inject-secret-appsettings.secrets.json: "{{ .Values.secretName }}/data/credentials"
-        vault.hashicorp.com/agent-inject-template-appsettings.secrets.json: |
-          {{`{{-`}} with secret "{{ .Values.secretName }}/data/drm_credentials" {{`-}}`}}
-          {{`{
-            "GroupManagementClientId": "{{ .Data.data.group_management_client_id }}",
-            "GroupManagementClientSecret": "{{ .Data.data.group_management_client_secret }}",
-            "DataLakeClientId": "{{ .Data.data.data_lake_client_id }}",
-            "DataLakeClientSecret": "{{ .Data.data.data_lake_client_secret }}",
-            "ConnectionStrings": {
-              "DataCatalog": "{{ .Data.data.connection_string }}"
-            },
-            "AzureAd": {
-              "TenantId": "{{ .Data.data.tenant_id }}"
-            }
-          }
-          {{- end -}}`}}
       {{- with .Values.drmDeployment.annotations }}
+      annotations:
       {{- toYaml . | nindent 8 }}
       {{- end }}
       labels:
@@ -41,6 +22,10 @@ spec:
     spec:
       {{- with .Values.drmDeployment.imagePullSecrets }}
       imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.drmDeployment.volumes }}
+      volumes:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       securityContext:
@@ -55,6 +40,10 @@ spec:
           {{ range $k, $v := .Values.drmDeployment.env }}
           - name: {{ $k | quote }}
             value: {{ $v | quote }}
+          {{- end }}
+          {{- with .Values.drmDeployment.volumeMounts }}
+          volumeMounts:
+            {{- toYaml . | nindent 10 }}
           {{- end }}
           ports:
             - name: http
