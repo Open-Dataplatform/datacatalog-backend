@@ -32,6 +32,7 @@ namespace DataCatalog.Api.Repositories
                 .Include(a => a.DatasetChangeLogs).ThenInclude(a => a.DatasetPermissionChange)
                 .Include(a => a.DataContracts).ThenInclude(a => a.DataSource)
                 .Include(a => a.ServiceLevelAgreement)
+                .Include(a => a.DataAvailabilityInfo)
                 .AsSplitQuery()
                 .FirstOrDefault(a => a.Id == id);
           

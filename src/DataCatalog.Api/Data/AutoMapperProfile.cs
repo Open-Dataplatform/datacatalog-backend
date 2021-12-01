@@ -231,6 +231,8 @@ namespace DataCatalog.Api.Data
             CreateMap<ServiceLevelAgreement, Domain.ServiceLevelAgreement>();
             CreateMap<Domain.ServiceLevelAgreement, ServiceLevelAgreementResponse>();
             CreateMap<ServiceLevelAgreementResponse, GuidId>();
+
+            CreateMap<DataAvailabilityInfoDto, DataAvailabilityInfo>();
         }
 
         void CreateMapEnum<TEnum>()
