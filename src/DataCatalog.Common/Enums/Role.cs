@@ -4,6 +4,7 @@
     {
         Admin,
         DataSteward,
-        User
+        User,
+        MetadataProvider
     }
 }

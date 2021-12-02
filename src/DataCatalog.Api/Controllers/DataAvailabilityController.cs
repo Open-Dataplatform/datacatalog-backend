@@ -1,6 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using DataCatalog.Api.Data.Dto;
 using DataCatalog.Api.Infrastructure;
@@ -10,7 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace DataCatalog.Api.Controllers
 {
-    [AuthorizeRoles(Role.Admin)] // TODO - replace with new role
+    [AuthorizeRoles(Role.MetadataProvider)]
     [Route("api/[controller]")]
     [ApiController]
     public class DataAvailabilityController : ControllerBase
