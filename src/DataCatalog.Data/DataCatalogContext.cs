@@ -117,13 +117,6 @@ namespace DataCatalog.Data
             });
 
 
-            modelBuilder.Entity<DataAvailabilityInfo>(e =>
-            {
-                e.HasOne(d => d.Dataset)
-                    .WithOne(d => d.DataAvailabilityInfo)
-                    .IsRequired(false);
-            });
-
         }
     }
 }
