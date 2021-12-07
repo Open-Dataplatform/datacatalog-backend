@@ -29,5 +29,7 @@ namespace DataCatalog.Data.Model
 
         public Guid? ServiceLevelAgreementId { get; set; }
         public ServiceLevelAgreement ServiceLevelAgreement { get; set; }
+
+        public DataAvailabilityInfo DataAvailabilityInfo { get; set; }
     }
 }

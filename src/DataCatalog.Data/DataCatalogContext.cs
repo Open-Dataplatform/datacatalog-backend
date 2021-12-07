@@ -25,6 +25,7 @@ namespace DataCatalog.Data
         public DbSet<DataContract> DataContracts { get; set; }
         public DbSet<ServiceLevelAgreement> ServiceLevelAgreement { get; set; }
         public DbSet<DatasetPermissionChange> DatasetPermissionChanges { get; set; }
+        public DbSet<DataAvailabilityInfo> DataAvailabilityInfo { get; set; }
 
         public DataCatalogContext(DbContextOptions options) : base(options) { }
 
@@ -114,6 +115,7 @@ namespace DataCatalog.Data
                 e.Property(dpc => dpc.AccessType).HasConversion<string>();
                 e.Property(dpc => dpc.AccessMemberType).HasConversion<string>();
             });
+
 
         }
     }

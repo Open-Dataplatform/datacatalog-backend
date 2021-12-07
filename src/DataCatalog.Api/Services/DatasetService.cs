@@ -410,5 +410,34 @@ namespace DataCatalog.Api.Services
 
             if (exceptions.Any()) throw new ValidationExceptionCollection("Dataset could not be created", exceptions);
         }
+
+        public async Task InsertOrUpdateAvailability(DataAvailabilityInfoDto request)
+        {
+            if (request.FirstAvailableData == DateTime.MinValue 
+                || request.LatestAvailableData == DateTime.MinValue 
+                || request.LatestAvailableData < request.FirstAvailableData)
+            {
+                throw new ValidationException("First and latest available data must be valid timestamps and latest must be larger than or equal to first");
+            }
+
+            var dataset = await _datasetRepository.FindByIdAsync(request.DatasetId);
+
+            if (dataset == null)
+            {
+                throw new NotFoundException();
+            }
+
+            if (dataset.DataAvailabilityInfo == null)
+            {
+                dataset.DataAvailabilityInfo = _mapper.Map<DataCatalog.Data.Model.DataAvailabilityInfo>(request);
+            }
+            else 
+            {
+                _mapper.Map(request, dataset.DataAvailabilityInfo);
+                dataset.DataAvailabilityInfo.ModifiedDate = DateTime.UtcNow;
+            }
+
+            await _unitOfWork.CompleteAsync();
+        }
     }
 }
