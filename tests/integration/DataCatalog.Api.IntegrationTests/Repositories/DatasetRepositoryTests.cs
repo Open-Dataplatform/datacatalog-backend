@@ -14,6 +14,7 @@ using Microsoft.EntityFrameworkCore;
 using Xunit;
 using DataCatalog.Data;
 using DataCatalog.Api.Services;
+using DataCatalog.Api.Utils;
 using Microsoft.Extensions.Logging;
 using Moq;
 
