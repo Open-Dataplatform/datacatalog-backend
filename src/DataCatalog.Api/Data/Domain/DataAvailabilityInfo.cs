@@ -3,18 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace DataCatalog.Api.Data.Dto
+namespace DataCatalog.Api.Data.Domain
 {
-    public class DataAvailabilityInfoUpsertRequest
+    public class DataAvailabilityInfo
     {
         public Guid DatasetId { get; set; }
 
         public DateTime FirstAvailableData { get; set; }
         public DateTime LatestAvailableData { get; set; }
-    }
-
-    public class DataAvailabilityInfoResponse : DataAvailabilityInfoUpsertRequest
-    {
         public DateTime ModifiedDate { get; set; }
     }
 }

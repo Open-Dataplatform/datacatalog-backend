@@ -411,7 +411,7 @@ namespace DataCatalog.Api.Services
             if (exceptions.Any()) throw new ValidationExceptionCollection("Dataset could not be created", exceptions);
         }
 
-        public async Task InsertOrUpdateAvailability(DataAvailabilityInfoDto request)
+        public async Task InsertOrUpdateAvailability(DataAvailabilityInfoUpsertRequest request)
         {
             if (request.FirstAvailableData == DateTime.MinValue 
                 || request.LatestAvailableData == DateTime.MinValue 

@@ -18,6 +18,6 @@ namespace DataCatalog.Api.Services
         Task<IEnumerable<Dataset>> GetDatasetByCategoryAsync(Guid categoryId, SortType sortType, int take, int pageSize, int pageIndex);
         Task<IEnumerable<Dataset>> GetDatasetsBySearchTermAsync(string searchTerm, SortType sortType, int take, int pageSize, int pageIndex);
         Task<LineageDataset> GetDatasetLineageAsync(Guid id);
-        Task InsertOrUpdateAvailability(DataAvailabilityInfoDto request);
+        Task InsertOrUpdateAvailability(DataAvailabilityInfoUpsertRequest request);
     }
 }

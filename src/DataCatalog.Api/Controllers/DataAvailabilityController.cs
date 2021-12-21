@@ -23,7 +23,7 @@ namespace DataCatalog.Api.Controllers
         /// Upsert availability info for a dataset
         /// </summary>
         [HttpPost]
-        public async Task PostAsync([FromBody] DataAvailabilityInfoDto request)
+        public async Task PostAsync([FromBody] DataAvailabilityInfoUpsertRequest request)
         {
             await _datasetService.InsertOrUpdateAvailability(request);
         }
