@@ -15,6 +15,6 @@ namespace DataCatalog.Api.Data.Dto
 
     public class DataAvailabilityInfoResponse : DataAvailabilityInfoUpsertRequest
     {
-        public DateTime ModifiedDate { get; set; }
+        public DateTimeOffset ModifiedDate { get; set; }
     }
 }
