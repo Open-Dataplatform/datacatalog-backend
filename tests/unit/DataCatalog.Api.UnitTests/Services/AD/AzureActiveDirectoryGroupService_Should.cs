@@ -6,6 +6,7 @@ using AutoFixture.Xunit2;
 using DataCatalog.Api.Data.Domain;
 using DataCatalog.Api.Services.AD;
 using DataCatalog.Api.UnitTests.AutoMoqAttribute;
+using DataCatalog.Common.Enums;
 using DataCatalog.Common.UnitTests.AutoMoqAttribute;
 using Microsoft.Graph;
 using Moq;
@@ -161,7 +162,11 @@ namespace DataCatalog.Api.UnitTests.Services.AD
 
         [Theory]
         [GraphAutoMoq]
+        [MapperInlineAutoMoq(Common.Enums.AccessType.Read)]
+        [MapperInlineAutoMoq(Common.Enums.AccessType.Write)]
         public async Task Add_Member_If_Member_Is_Not_In_Group_On_AddGroupMemberAsync(
+            Common.Enums.AccessType accessType,
+            Guid datasetId,
             GroupMembersCollectionWithReferencesPage memberPage,
             string groupId,
             string memberId,
@@ -176,7 +181,7 @@ namespace DataCatalog.Api.UnitTests.Services.AD
                 .Returns(Task.CompletedTask);
 
             // Act
-            await sut.AddGroupMemberAsync(groupId, memberId);
+            await sut.AddGroupMemberAsync(datasetId, groupId, memberId, accessType);
 
             // Assert
             graphServiceClientMock.Verify(x => x.Groups[groupId].Members.References.Request().AddAsync(It.Is<DirectoryObject>(a => Equals(a.Id, memberId))), Times.Once);
@@ -184,12 +189,16 @@ namespace DataCatalog.Api.UnitTests.Services.AD
 
         [Theory]
         [GraphAutoMoq]
+        [MapperInlineAutoMoq(Common.Enums.AccessType.Read)]
+        [MapperInlineAutoMoq(Common.Enums.AccessType.Write)]
         public async Task Does_Not_Add_Member_If_Member_Is_Already_In_Group_On_AddGroupMemberAsync(
-                GroupMembersCollectionWithReferencesPage memberPage,
-                string groupId,
-                string memberId,
-                [Frozen] Mock<IGraphServiceClient> graphServiceClientMock,
-                AzureGroupService sut)
+            Common.Enums.AccessType accessType,
+            Guid datasetId,
+            GroupMembersCollectionWithReferencesPage memberPage,
+            string groupId,
+            string memberId,
+            [Frozen] Mock<IGraphServiceClient> graphServiceClientMock,
+            AzureGroupService sut)
         {
             // Arrange
             memberPage.Add(new DirectoryObject { Id = memberId });
@@ -200,7 +209,7 @@ namespace DataCatalog.Api.UnitTests.Services.AD
                 .Returns(Task.CompletedTask);
 
             // Act
-            await sut.AddGroupMemberAsync(groupId, memberId);
+            await sut.AddGroupMemberAsync(datasetId, groupId, memberId, accessType);
 
             // Assert
             graphServiceClientMock.Verify(x => x.Groups[groupId].Members.References.Request().AddAsync(It.Is<DirectoryObject>(a => Equals(a.Id, memberId))), Times.Never);
@@ -208,7 +217,11 @@ namespace DataCatalog.Api.UnitTests.Services.AD
 
         [Theory]
         [GraphAutoMoq]
+        [MapperInlineAutoMoq(Common.Enums.AccessType.Read)]
+        [MapperInlineAutoMoq(Common.Enums.AccessType.Write)]
         public async Task Throw_On_Exception_On_AddGroupMemberAsync(
+            Common.Enums.AccessType accessType,
+            Guid datasetId,
             string groupId,
             string memberId,
             Exception e,
@@ -223,7 +236,7 @@ namespace DataCatalog.Api.UnitTests.Services.AD
                 .Returns(Task.CompletedTask);
 
             // Act
-            var ex = await Assert.ThrowsAsync<Exception>(() => sut.AddGroupMemberAsync(groupId, memberId));
+            var ex = await Assert.ThrowsAsync<Exception>(() => sut.AddGroupMemberAsync(datasetId, groupId, memberId, accessType));
 
             // Assert
             ex.ShouldBe(e);
@@ -231,7 +244,11 @@ namespace DataCatalog.Api.UnitTests.Services.AD
 
         [Theory]
         [GraphAutoMoq]
+        [MapperInlineAutoMoq(Common.Enums.AccessType.Read)]
+        [MapperInlineAutoMoq(Common.Enums.AccessType.Write)]
         public async Task Not_Throw_On_ServiceException_On_AddGroupMemberAsync(
+            Common.Enums.AccessType accessType,
+            Guid datasetId,
             string groupId,
             string memberId,
             ServiceException se,
@@ -246,12 +263,16 @@ namespace DataCatalog.Api.UnitTests.Services.AD
                 .Returns(Task.CompletedTask);
 
             // Act / Assert
-            await sut.AddGroupMemberAsync(groupId, memberId).ShouldNotThrowAsync();
+            await sut.AddGroupMemberAsync(datasetId, groupId, memberId, accessType).ShouldNotThrowAsync();
         }
 
         [Theory]
         [GraphAutoMoq]
+        [MapperInlineAutoMoq(Common.Enums.AccessType.Read)]
+        [MapperInlineAutoMoq(Common.Enums.AccessType.Write)]
         public async Task Correctly_Remove_Member_From_Group_On_RemoveGroupMemberAsync(
+            Common.Enums.AccessType accessType,
+            Guid datasetId,
             GroupMembersCollectionWithReferencesPage memberPage,
             string groupId,
             string memberId,
@@ -267,7 +288,7 @@ namespace DataCatalog.Api.UnitTests.Services.AD
                 .Returns(Task.CompletedTask);
 
             // Act
-            await sut.RemoveGroupMemberAsync(groupId, memberId);
+            await sut.RemoveGroupMemberAsync(datasetId, groupId, memberId, accessType);
 
             // Assert
             graphServiceClientMock.Verify(x => x.Groups[groupId].Members[memberId].Reference.Request().DeleteAsync(),
@@ -276,7 +297,11 @@ namespace DataCatalog.Api.UnitTests.Services.AD
 
         [Theory]
         [GraphAutoMoq]
+        [MapperInlineAutoMoq(Common.Enums.AccessType.Read)]
+        [MapperInlineAutoMoq(Common.Enums.AccessType.Write)]
         public async Task Not_Throw_On_ServiceException_On_RemoveGroupMemberAsync(
+            Common.Enums.AccessType accessType,
+            Guid datasetId,
             string groupId,
             string memberId,
             ServiceException se,
@@ -288,12 +313,16 @@ namespace DataCatalog.Api.UnitTests.Services.AD
                 .ThrowsAsync(se);
 
             // Act / Assert
-            await sut.RemoveGroupMemberAsync(groupId, memberId).ShouldNotThrowAsync();
+            await sut.RemoveGroupMemberAsync(datasetId, groupId, memberId, accessType).ShouldNotThrowAsync();
         }
 
         [Theory]
         [GraphAutoMoq]
+        [MapperInlineAutoMoq(Common.Enums.AccessType.Read)]
+        [MapperInlineAutoMoq(Common.Enums.AccessType.Write)]
         public async Task Throw_On_Exception_On_RemoveGroupMemberAsync(
+            Common.Enums.AccessType accessType,
+            Guid datasetId,
             string groupId,
             string memberId,
             Exception e,
@@ -305,7 +334,7 @@ namespace DataCatalog.Api.UnitTests.Services.AD
                 .ThrowsAsync(e);
 
             // Act 
-            var ex = await Assert.ThrowsAsync<Exception>(() => sut.RemoveGroupMemberAsync(groupId, memberId));
+            var ex = await Assert.ThrowsAsync<Exception>(() => sut.RemoveGroupMemberAsync(datasetId, groupId, memberId, accessType));
             
             // Assert
             ex.ShouldBe(e);

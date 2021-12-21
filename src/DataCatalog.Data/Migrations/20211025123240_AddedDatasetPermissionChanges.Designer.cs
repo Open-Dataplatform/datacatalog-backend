@@ -4,14 +4,16 @@ using DataCatalog.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace DataCatalog.Data.Migrations
 {
     [DbContext(typeof(DataCatalogContext))]
-    partial class DataCatalogContextModelSnapshot : ModelSnapshot
+    [Migration("20211025123240_AddedDatasetPermissionChanges")]
+    partial class AddedDatasetPermissionChanges
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -58,39 +60,6 @@ namespace DataCatalog.Data.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Category");
-                });
-
-            modelBuilder.Entity("DataCatalog.Data.Model.DataAvailabilityInfo", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime>("CreatedDate")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("datetime2")
-                        .HasDefaultValueSql("getutcdate()");
-
-                    b.Property<Guid>("DatasetId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime>("FirstAvailableData")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime>("LatestAvailableData")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime>("ModifiedDate")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("datetime2")
-                        .HasDefaultValueSql("getutcdate()");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("DatasetId")
-                        .IsUnique();
-
-                    b.ToTable("DataAvailabilityInfo");
                 });
 
             modelBuilder.Entity("DataCatalog.Data.Model.DataContract", b =>
@@ -629,17 +598,6 @@ namespace DataCatalog.Data.Migrations
                     b.ToTable("TransformationDataset");
                 });
 
-            modelBuilder.Entity("DataCatalog.Data.Model.DataAvailabilityInfo", b =>
-                {
-                    b.HasOne("DataCatalog.Data.Model.Dataset", "Dataset")
-                        .WithOne("DataAvailabilityInfo")
-                        .HasForeignKey("DataCatalog.Data.Model.DataAvailabilityInfo", "DatasetId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Dataset");
-                });
-
             modelBuilder.Entity("DataCatalog.Data.Model.DataContract", b =>
                 {
                     b.HasOne("DataCatalog.Data.Model.DataSource", "DataSource")
@@ -819,8 +777,6 @@ namespace DataCatalog.Data.Migrations
 
             modelBuilder.Entity("DataCatalog.Data.Model.Dataset", b =>
                 {
-                    b.Navigation("DataAvailabilityInfo");
-
                     b.Navigation("DataContracts");
 
                     b.Navigation("DataFields");

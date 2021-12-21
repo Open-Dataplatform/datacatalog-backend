@@ -1,4 +1,4 @@
-﻿namespace DataCatalog.Api.Data.Domain
+﻿namespace DataCatalog.Common.Enums
 {
     public enum AccessMemberType
     {

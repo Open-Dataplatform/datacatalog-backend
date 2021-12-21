@@ -13,6 +13,7 @@ using DataCatalog.Api.Services.AD;
 using DataCatalog.Api.Services.Egress;
 using DataCatalog.Api.Services.Local;
 using DataCatalog.Api.Services.Storage;
+using DataCatalog.Api.Utils;
 using DataCatalog.Common.Data;
 using DataCatalog.Common.Extensions;
 using DataCatalog.Common.Implementations;

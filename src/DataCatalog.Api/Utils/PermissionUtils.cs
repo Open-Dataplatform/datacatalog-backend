@@ -1,7 +1,8 @@
+using DataCatalog.Api.Services;
 using DataCatalog.Common.Data;
 using DataCatalog.Common.Enums;
 
-namespace DataCatalog.Api.Services
+namespace DataCatalog.Api.Utils
 {
     public class PermissionUtils : IPermissionUtils
     {
@@ -12,7 +13,7 @@ namespace DataCatalog.Api.Services
             _current = current;
         }
 
-        public bool IsAdminOrDataSteward => _current.Roles.Contains(Role.Admin) || _current.Roles.Contains(Role.DataSteward);
+        public bool IsAdminOrDataSteward => _current.Roles.Contains(Role.Admin) || _current.Roles.Contains(Role.DataSteward) || _current.Roles.Contains(Role.MetadataProvider);
 
         public bool FilterUnpublishedDatasets => !IsAdminOrDataSteward;
 

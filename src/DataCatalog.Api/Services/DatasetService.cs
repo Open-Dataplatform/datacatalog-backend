@@ -91,7 +91,7 @@ namespace DataCatalog.Api.Services
             await InsertOrUpdateDuration(request.Frequency, dbDataset, DurationType.Frequency);
             await InsertOrUpdateDuration(request.Resolution, dbDataset, DurationType.Resolution);
             InsertOrUpdateDataContracts(dbDataset, request.DataSources);
-            await AddChangeLog(dbDataset);
+            AddChangeLog(dbDataset, DatasetChangeType.Insert);
             dbDataset.ProvisionStatus = ProvisionDatasetStatusEnum.Pending;
 
             await _unitOfWork.CompleteAsync();
@@ -135,7 +135,7 @@ namespace DataCatalog.Api.Services
             await InsertOrUpdateDuration(request.Frequency, dbDataset, DurationType.Frequency);
             await InsertOrUpdateDuration(request.Resolution, dbDataset, DurationType.Resolution);
             InsertOrUpdateDataContracts(dbDataset, request.DataSources);
-            await AddChangeLog(dbDataset);
+            AddChangeLog(dbDataset, DatasetChangeType.Update);
             dbDataset.Version++;
             await _unitOfWork.CompleteAsync();
 
@@ -333,15 +333,16 @@ namespace DataCatalog.Api.Services
             }
         }
 
-        private async Task AddChangeLog(DataCatalog.Data.Model.Dataset dataset)
+        private void AddChangeLog(DataCatalog.Data.Model.Dataset dataset, DatasetChangeType datasetChangeType)
         {
-            await _datasetChangeLogRepository.AddAsync(
+            _datasetChangeLogRepository.Add(
                 new DataCatalog.Data.Model.DatasetChangeLog
                 {
                     Dataset = _mapper.Map<DataCatalog.Data.Model.Dataset>(dataset),
                     MemberId = _current.MemberId,
                     Name = _current.Name,
-                    Email = _current.Email
+                    Email = _current.Email,
+                    DatasetChangeType = datasetChangeType
                 }
             );
         }
@@ -408,6 +409,35 @@ namespace DataCatalog.Api.Services
                 }
 
             if (exceptions.Any()) throw new ValidationExceptionCollection("Dataset could not be created", exceptions);
+        }
+
+        public async Task InsertOrUpdateAvailability(DataAvailabilityInfoUpsertRequest request)
+        {
+            if (request.FirstAvailableData == DateTime.MinValue 
+                || request.LatestAvailableData == DateTime.MinValue 
+                || request.LatestAvailableData < request.FirstAvailableData)
+            {
+                throw new ValidationException("First and latest available data must be valid timestamps and latest must be larger than or equal to first");
+            }
+
+            var dataset = await _datasetRepository.FindByIdAsync(request.DatasetId);
+
+            if (dataset == null)
+            {
+                throw new NotFoundException();
+            }
+
+            if (dataset.DataAvailabilityInfo == null)
+            {
+                dataset.DataAvailabilityInfo = _mapper.Map<DataCatalog.Data.Model.DataAvailabilityInfo>(request);
+            }
+            else 
+            {
+                _mapper.Map(request, dataset.DataAvailabilityInfo);
+                dataset.DataAvailabilityInfo.ModifiedDate = DateTime.UtcNow;
+            }
+
+            await _unitOfWork.CompleteAsync();
         }
     }
 }

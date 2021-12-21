@@ -30,5 +30,7 @@ namespace DataCatalog.Api.Data.Domain
 
         public Guid ServiceLevelAgreementId { get; set; }
         public ServiceLevelAgreement ServiceLevelAgreement { get; set; }
+
+        public DataAvailabilityInfo DataAvailabilityInfo { get; set; }
      }
 }

@@ -55,6 +55,7 @@ namespace DataCatalog.Api.Data.Dto
 
         public ProvisionDatasetStatusEnum ProvisionStatus { get; set; }
         public ServiceLevelAgreementResponse ServiceLevelAgreement { get; set; }
+        public DataAvailabilityInfoResponse DataAvailabilityInfo { get; set; }
     }
 
     public class ContactInfo

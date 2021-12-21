@@ -8,7 +8,7 @@ namespace DataCatalog.Api.Repositories
     public interface IDatasetChangeLogRepository
     {
         Task<IEnumerable<DatasetChangeLog>> ListAsync();
-        Task AddAsync(DatasetChangeLog datasetChangeLog);
+        void Add(DatasetChangeLog datasetChangeLog);
         Task<DatasetChangeLog> FindByIdAsync(Guid id);
         void Update(DatasetChangeLog datasetChangeLog);
         void Remove(DatasetChangeLog datasetChangeLog);

@@ -62,6 +62,16 @@ namespace DataCatalog.Api.Extensions
             {
                 config.DocExpansion = "list";
                 config.DocumentPath = $"{virtualBasePath}/swagger/{{documentName}}/swagger.json";
+                config.TransformToExternalPath = (internalUiRoute, request) =>
+                {
+                    if (internalUiRoute.StartsWith("/") &&
+                        internalUiRoute.StartsWith(request.PathBase) == false)
+                    {
+                        return request.PathBase + internalUiRoute;
+                    }
+
+                    return internalUiRoute;
+                };
             });
         }
     }

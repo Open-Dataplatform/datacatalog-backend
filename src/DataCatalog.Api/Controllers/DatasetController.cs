@@ -110,12 +110,12 @@ namespace DataCatalog.Api.Controllers
                     if (datasetHadAllUsersBefore && !datasetShouldHaveAllUsersNow)
                     {
                         // Updated from public to non-public -> Remove AllUsersGroup
-                        await _groupService.RemoveGroupMemberAsync(readerGroupId, _allUsersGroupProvider.GetAllUsersGroup());
+                        await _groupService.RemoveGroupMemberAsync(request.Id, readerGroupId, _allUsersGroupProvider.GetAllUsersGroup(), AccessType.Read);
                     }
                     else if (!datasetHadAllUsersBefore && datasetShouldHaveAllUsersNow)
                     {
                         // Updated from non-public to public -> Add AllUsersGroup
-                        await _groupService.AddGroupMemberAsync(readerGroupId, _allUsersGroupProvider.GetAllUsersGroup());
+                        await _groupService.AddGroupMemberAsync(request.Id, readerGroupId, _allUsersGroupProvider.GetAllUsersGroup(), AccessType.Read);
                     }
                 }
             }

@@ -4,14 +4,16 @@ using DataCatalog.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace DataCatalog.Data.Migrations
 {
     [DbContext(typeof(DataCatalogContext))]
-    partial class DataCatalogContextModelSnapshot : ModelSnapshot
+    [Migration("20211201133218_AddedDataAvailabilityInfo")]
+    partial class AddedDataAvailabilityInfo
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -633,9 +635,7 @@ namespace DataCatalog.Data.Migrations
                 {
                     b.HasOne("DataCatalog.Data.Model.Dataset", "Dataset")
                         .WithOne("DataAvailabilityInfo")
-                        .HasForeignKey("DataCatalog.Data.Model.DataAvailabilityInfo", "DatasetId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("DataCatalog.Data.Model.DataAvailabilityInfo", "DatasetId");
 
                     b.Navigation("Dataset");
                 });

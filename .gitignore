@@ -388,3 +388,5 @@ FodyWeavers.xsd
 **/DataCatalog-log-*.txt
 # Visual Studio Code
 .vscode/
+chart/charts/*
+chart/Chart.lock

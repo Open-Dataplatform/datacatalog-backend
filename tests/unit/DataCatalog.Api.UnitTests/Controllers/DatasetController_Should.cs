@@ -89,7 +89,7 @@ namespace DataCatalog.Api.UnitTests.Controllers
             // Assert
             result.Result.ShouldBeOfType(typeof(OkObjectResult));
 
-            activeDirectoryGroupServiceMock.Verify(x => x.AddGroupMemberAsync(readerGroupId, allUsersGroupId), Times.Once);
+            activeDirectoryGroupServiceMock.Verify(x => x.AddGroupMemberAsync(request.Id, readerGroupId, allUsersGroupId, AccessType.Read), Times.Once);
         }
 
         [Theory]
@@ -133,7 +133,7 @@ namespace DataCatalog.Api.UnitTests.Controllers
             // Assert
             result.Result.ShouldBeOfType(typeof(OkObjectResult));
 
-            activeDirectoryGroupServiceMock.Verify(x => x.RemoveGroupMemberAsync(readerGroupId, allUsersGroupId), Times.Once);
+            activeDirectoryGroupServiceMock.Verify(x => x.RemoveGroupMemberAsync(request.Id, readerGroupId, allUsersGroupId, AccessType.Read), Times.Once);
         }
     }
 }
