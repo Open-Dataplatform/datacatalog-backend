@@ -10,7 +10,7 @@ using DataCatalog.Api.Services;
 
 namespace DataCatalog.Api.Controllers
 {
-    [AuthorizeRoles(Role.Admin, Role.DataSteward, Role.User)]
+    [AuthorizeRoles(Role.Admin, Role.DataSteward, Role.User, Role.ServiceReader)]
     [ApiController]
     [Route("api/[controller]")]
     public class DataSourceController : ControllerBase

@@ -5,6 +5,7 @@
         Admin,
         DataSteward,
         User,
-        MetadataProvider
+        MetadataProvider,
+        ServiceReader
     }
 }
