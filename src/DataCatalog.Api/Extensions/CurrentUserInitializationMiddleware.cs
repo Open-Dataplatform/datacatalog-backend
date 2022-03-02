@@ -71,6 +71,8 @@ namespace DataCatalog.Api.Extensions
                 _current.Roles.Add(Role.User);
             if (executingUser.IsInRole(Role.MetadataProvider.ToString()))
                 _current.Roles.Add(Role.MetadataProvider);
+            if (executingUser.IsInRole(Role.ServiceReader.ToString()))
+                _current.Roles.Add(Role.ServiceReader);
         }
     }
 }
